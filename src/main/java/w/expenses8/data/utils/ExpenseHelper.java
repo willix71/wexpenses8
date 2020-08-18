@@ -6,12 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import w.expenses8.data.model.domain.Expense;
-import w.expenses8.data.model.domain.ExpenseType;
-import w.expenses8.data.model.domain.Payee;
-import w.expenses8.data.model.domain.Tag;
-import w.expenses8.data.model.domain.TransactionEntry;
-import w.expenses8.data.model.enums.TransactionFactor;
+import w.expenses8.data.domain.model.Expense;
+import w.expenses8.data.domain.model.ExpenseType;
+import w.expenses8.data.domain.model.Payee;
+import w.expenses8.data.domain.model.Tag;
+import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.model.enums.TransactionFactor;
 
 public class ExpenseHelper {
 

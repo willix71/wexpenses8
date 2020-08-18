@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
-import w.expenses8.data.service.domain.IPayeeService;
+import w.expenses8.data.domain.service.IPayeeService;
 
 @Slf4j
 @Import(DataConfig.class)

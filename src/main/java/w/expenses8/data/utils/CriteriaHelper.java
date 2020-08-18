@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 
-import w.expenses8.data.criteria.core.RangeCriteria;
+import w.expenses8.data.core.criteria.RangeCriteria;
 
 public class CriteriaHelper {
 

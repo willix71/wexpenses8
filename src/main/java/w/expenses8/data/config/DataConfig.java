@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages="w.expenses8.data.dao.domain") 
-@ComponentScan(basePackages="w.expenses8.data.service.domain")
+@EnableJpaRepositories(basePackages="w.expenses8.data.domain.dao") 
+@ComponentScan(basePackages="w.expenses8.data.domain.service")
 public class DataConfig {
 
 }
