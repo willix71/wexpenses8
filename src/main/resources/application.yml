@@ -1,0 +1,37 @@
+spring:
+    devtools:
+        livereload: 
+           enabled: true 
+    datasource:
+        url: jdbc:h2:c:/tmp/db/wexpenses8-devyml;AUTO_SERVER=TRUE
+        username: sa
+        password: sa
+    jpa:
+       hibernate:
+           ddl-auto: create-drop
+       show-sql: true
+       properties:
+           hibernate:
+              format_sql: false
+
+hibernate:
+    show_sql: true
+
+logging:
+    file:
+        name: c:/tmp/logs/wexpenses8.log
+    pattern:
+        file: "%d [%t] %5p %c{1}:%L - %m%n"
+        console: "%d [%t] %-5level %logger : %msg%n"
+    level:
+        org.springframework.web: DEBUG        
+server:  
+  port: 8090    
+  max-http-header-size: 10000000
+  servlet:
+    context-path: /wexpenses8
+
+wexpenses:
+  default:
+     currency: CHF
+
