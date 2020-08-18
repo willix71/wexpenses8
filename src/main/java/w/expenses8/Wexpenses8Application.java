@@ -1,7 +1,5 @@
 package w.expenses8;
 
-import java.util.List;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +8,6 @@ import org.springframework.context.annotation.Import;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
-import w.expenses8.data.model.domain.Payee;
 import w.expenses8.data.service.domain.IPayeeService;
 
 @Slf4j

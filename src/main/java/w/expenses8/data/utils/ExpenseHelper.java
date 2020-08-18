@@ -1,7 +1,10 @@
 package w.expenses8.data.utils;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import w.expenses8.data.model.domain.Expense;
 import w.expenses8.data.model.domain.ExpenseType;
@@ -38,9 +41,9 @@ public class ExpenseHelper {
 			if (o instanceof Tag) {
 				Tag t = (Tag) o;
 				if (x.getTransactions()==null || x.getTransactions().isEmpty()) {
-					x.addTransaction(TransactionEntry.with().factor(TransactionFactor.OUT).build().addTag(t));
+					x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.OUT).addTag(t));
 				} else {
-					x.addTransaction(TransactionEntry.with().factor(TransactionFactor.IN).build().addTag(t));
+					x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.IN).addTag(t));
 				}
 				continue;
 			}
@@ -64,4 +67,27 @@ public class ExpenseHelper {
 		
 		return x;
 	}
+	
+	public static String toString(Expense x) {
+		StringBuilder b = new StringBuilder();
+		if (x.isNew()) {
+			b.append("[new] ");
+		} else {
+			b.append("id:").append(x.getId()+"."+x.getVersion()).append(" ");
+		}
+		b.append("uid:").append(x.getUid());
+		b.append(x.getExpenseType()==null?"[type]":x.getExpenseType().getName()).append(" ");
+		b.append(x.getDate()==null?"[date] ":new SimpleDateFormat("dd/MM/yyyy ").format(x.getDate()));
+		b.append(MessageFormat.format("{0,number,0.00}{1} ", x.getCurrencyAmount(), x.getCurrencyCode()));
+		if (x.getExchangeRate()!=null) {
+			b.append(MessageFormat.format("{0,number,0.00000} ",x.getExchangeRate().getRate()));
+		}
+		if (x.getPayee()!=null) {
+			b.append(x.getPayee().getName());
+		}
+		b.append(x.getTransactions().stream().map(t->t.getTags()).collect(Collectors.toList()));
+		return b.toString();
+	}
+	
+	
 }

@@ -7,120 +7,78 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.ComparableExpression;
-import com.querydsl.core.types.dsl.ComparableExpressionBase;
-import com.querydsl.core.types.dsl.LiteralExpression;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
-import w.expenses8.data.criteria.core.RangeCriteria;
 import w.expenses8.data.criteria.domain.ExpenseCriteria;
 import w.expenses8.data.dao.domain.IExpenseDao;
+import w.expenses8.data.model.core.DBable;
 import w.expenses8.data.model.domain.Expense;
-import w.expenses8.data.model.domain.Payee;
 import w.expenses8.data.model.domain.QExpense;
-import w.expenses8.data.model.domain.QPayee;
+import w.expenses8.data.model.domain.QTransactionEntry;
 import w.expenses8.data.service.core.GenericServiceImpl;
 import w.expenses8.data.service.domain.IExpenseService;
-import w.expenses8.data.service.domain.IPayeeService;
-
+import w.expenses8.data.utils.CollectionHelper;
+import w.expenses8.data.utils.CriteriaHelper;
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
 
 	@PersistenceContext
 	private EntityManager entityManager;
-
-	@Autowired
-	private IPayeeService payeeService;
 	
 	@Autowired
 	public ExpenseService(IExpenseDao dao) {
 		super(Expense.class, dao);
 	}
 
+	void persist(DBable<?> d) {
+		if (d!=null && d.isNew()) {
+			entityManager.persist(d);
+		}
+	}
 	@Override
-	public Expense save(Expense entity) {
-		if (entity.getPayee()!=null && entity.getPayee().isNew()) {
-			entity.setPayee(payeeService.save(entity.getPayee()));
-		}
-		return super.save(entity);
+	public Expense save(Expense x) {
+		persist(x.getExpenseType());
+		persist(x.getPayee());
+		persist(x.getExchangeRate());
+		CollectionHelper.stream(x.getTransactions()).forEach(te->CollectionHelper.stream(te.getTags()).forEach(tag->persist(tag)));
+		return super.save(x);
 	}
-
-	private <T extends Comparable<T>> BooleanBuilder add(BooleanBuilder predicate, RangeCriteria<T> range, ComparableExpression<T> value) {
-		if (range != null) {
-			if (range.getFrom() != null) {
-				predicate = predicate.and(value.gt(range.getFrom()).or(value.eq(range.getFrom())));
-			}
-			if (range.getTo() != null) {
-				predicate = predicate.and(value.lt(range.getFrom()));
-			}
-		}
-		return predicate;
-	}
-	private <T extends Number & Comparable<T>> BooleanBuilder add(BooleanBuilder predicate, RangeCriteria<T> range, NumberExpression<T> value) {
-		if (range != null) {
-			if (range.getFrom() != null) {
-				predicate = predicate.and(value.gt(range.getFrom()).or(value.eq(range.getFrom())));
-			}
-			if (range.getTo() != null) {
-				predicate = predicate.and(value.lt(range.getFrom()));
-			}
-		}
-		return predicate;
-	}
-	
+		
 	@Override
 	public List<Expense> findExpenses(ExpenseCriteria criteria) {
-		IExpenseDao dao = getDao();
-		
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = add(predicate, criteria.getDate(), QExpense.expense.date);
-		predicate = add(predicate, criteria.getCurrencyAmount(), QExpense.expense.currencyAmount);
-		predicate = add(predicate, criteria.getAccountingValue(), QExpense.expense.accountingValue);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getDate(), QExpense.expense.date);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), QExpense.expense.currencyAmount);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), QExpense.expense.accountingValue);
 
 		if (criteria.getCurrencyCode()!=null) {
 			predicate = predicate.and(QExpense.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
 		}
 		if (criteria.getExpenseType()!=null) {
 			predicate = predicate.and(QExpense.expense.expenseType.eq(criteria.getExpenseType()));
-		}
+		}		
 		
+		//select ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags
 		var query = new JPAQuery<Expense>(entityManager);
-		query.from(QExpense.expense).where(predicate).orderBy(new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date));
+		query.distinct().select(QExpense.expense).from(QExpense.expense)
+			.leftJoin(QExpense.expense.expenseType).fetchJoin()
+			.leftJoin(QExpense.expense.exchangeRate).fetchJoin()
+			.leftJoin(QExpense.expense.payee).fetchJoin()
+			.leftJoin(QExpense.expense.transactions, QTransactionEntry.transactionEntry).fetchJoin()
+			.leftJoin(QTransactionEntry.transactionEntry.tags).fetchJoin()
+			.where(predicate)
+			.orderBy(new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date));
 		return query.fetch();
+		
 	}
 
-	@Override
-	public List<Expense> findExpenses2(ExpenseCriteria criteria) {
-		IExpenseDao dao = getDao();
-		
-		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = add(predicate, criteria.getDate(), QExpense.expense.date);
-		predicate = add(predicate, criteria.getCurrencyAmount(), QExpense.expense.currencyAmount);
-		predicate = add(predicate, criteria.getAccountingValue(), QExpense.expense.accountingValue);
-
-		if (criteria.getCurrencyCode()!=null) {
-			predicate = predicate.and(QExpense.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
-		}
-		if (criteria.getExpenseType()!=null) {
-			predicate = predicate.and(QExpense.expense.expenseType.eq(criteria.getExpenseType()));
-		}
-		
-		var query = new JPAQuery<Expense>(entityManager);
-		query.from(QExpense.expense).where(predicate).orderBy(new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date));
-		return query.fetch();
-	}
+// return StreamSupport.stream(getDao().findAll(predicate, new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date)).spliterator(),false).collect(Collectors.toList());
 //        var qCity = QCity.city;
 //
 //        var query = new JPAQuery(entityManager);

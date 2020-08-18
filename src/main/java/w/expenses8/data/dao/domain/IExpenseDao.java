@@ -11,6 +11,6 @@ import w.expenses8.data.model.domain.Expense;
 public interface IExpenseDao extends IGenericDao<Expense, Long>, IUidableDao<Expense> {
 
     @Override
-    @Query("select ex from Expense ex left join fetch ex.transactions left join fetch ex.exchangeRate left join fetch ex.payee")
+    @Query("select distinct ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags")
     List<Expense> findAll();
 }

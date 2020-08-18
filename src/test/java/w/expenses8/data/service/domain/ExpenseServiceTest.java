@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
+import w.expenses8.data.criteria.core.RangeCriteria;
+import w.expenses8.data.criteria.domain.ExpenseCriteria;
 import w.expenses8.data.model.domain.Expense;
 import w.expenses8.data.model.domain.Payee;
 import w.expenses8.data.model.domain.Tag;
@@ -34,13 +37,14 @@ import w.expenses8.data.utils.ExpenseHelper;
 @TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=create-drop","spring.datasource.url=jdbc:h2:mem:ExpenseServiceTest;DB_CLOSE_DELAY=-1"})
 public class ExpenseServiceTest {
 
-	private static final String EXPENSE_UID_1 = "11111-22222-33333";
-	
 	@Autowired
 	IExpenseService expenseService;
 	
 	@Autowired
-	IPayeeService payeeService;
+	ITagService tagService;
+	
+	@Autowired
+	private StoreService storeService;
 	
 	@BeforeEach
 	public void separatorBefore(TestInfo info) {
@@ -54,72 +58,99 @@ public class ExpenseServiceTest {
 	
 	@Test
 	@Order(1)
-	public void test_insert1() {
+	public void test_insertWithNewRelations() {
 		Payee someone = Payee.with().name("Someone").build();
+		Tag cach = Tag.with().type(TagEnum.ASSET).name("cash").build();
+		Tag tax = Tag.with().type(TagEnum.EXPENSE).name("tax").build();
 		
-		Expense x = Expense.with().date(new Date()).currencyAmount(new BigDecimal(20)).currencyCode("CHF").accountingValue(new BigDecimal(20)).payee(someone).build();
-		x.addTransaction(TransactionEntry.with().factor(TransactionFactor.OUT).currencyAmount(new BigDecimal(20)).accountingValue(new BigDecimal(20)).build().addTag(Tag.with().name("tag").type(TagEnum.EXPENSE).build()));
-		x.addTransaction(TransactionEntry.with().factor(TransactionFactor.IN).currencyAmount(new BigDecimal(20)).accountingValue(new BigDecimal(20)).build());
-		Expense x1 = expenseService.save(x);
-		log.info("\n\t==== Saved Expense {} ====", x1);
-		assertThat(x1.getId()).isNotNull();
+		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(20),"CHF",someone, cach, tax);
+		Expense saved = expenseService.save(x);
+		log.info("\n\t==== Saved Expense {} ====", saved);
+		assertThat(x).isSameAs(saved);
+		assertThat(saved.getId()).isNotNull();
+		Expense loaded =expenseService.load(saved.getId());
+		assertThat(loaded).isNotNull().isNotSameAs(saved);
 	}
 	
 	@Test
 	@Order(2)
-	public void test_insert2() {
-		Payee someone = payeeService.save(Payee.with().name("SomeoneElse").build());
+	public void test_insertWithExistingRelation() {
+		Payee someone = storeService.save(Payee.with().name("SomeoneElse").build());
+		Tag mastercard = storeService.save(Tag.with().type(TagEnum.ASSET).name("mastercard").build());
+		Tag insurance = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("insurance").build());
 		
-		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(20),"CHF",someone);
-		Expense x1 = expenseService.save(x);
-		log.info("\n\t===== Saved Expense {} ====", x1);
-		assertThat(x1.getId()).isNotNull();
+		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(50),"CHF",someone, mastercard, insurance);
+		Expense saved = expenseService.save(x);
+		log.info("\n\t===== Saved Expense {} ====", saved);
+		assertThat(saved.getId()).isNotNull();
 	}
 	
 	@Test
 	@Order(3)
 	public void test_update3() {
-		Payee someone = payeeService.save(Payee.with().name("SomeoneElse").build());
+		Payee someone = storeService.save(Payee.with().name("Mr and Mrs Smith").build());
+		Tag visa = storeService.save(Tag.with().type(TagEnum.ASSET).name("visa").build());
+		Tag grocery = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("grocery").build());
 		
-		Expense x = Expense.with().uid(EXPENSE_UID_1).date(new Date()).currencyAmount(new BigDecimal(20)).currencyCode("CHF").accountingValue(new BigDecimal(100)).payee(someone).build();
-		x.addTransaction(TransactionEntry.with().factor(TransactionFactor.OUT).currencyAmount(new BigDecimal(100)).accountingValue(new BigDecimal(100)).build());
-		x.addTransaction(TransactionEntry.with().factor(TransactionFactor.IN).currencyAmount(new BigDecimal(100)).accountingValue(new BigDecimal(100)).build());
-		Expense x1 = expenseService.save(x);
-		log.info("\n\t===== Saved 1 Expense {} ====", x1);
-		assertThat(x1.getVersion()).isEqualTo(0L);
+		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(100),"CHF",someone, visa, grocery);
+		Expense saved = expenseService.save(x);
+		log.info("\n\t===== Saved 1 Expense {} ====", saved);
+		assertThat(saved.getVersion()).isEqualTo(0L);
 		
-		x1.setPayee(Payee.with().name("New Payee").build()); // new payee
-		Expense x2 = expenseService.save(x1);
-		log.info("\n\t===== Saved 2 Expense {} ====", x2);
-		assertThat(x2.getVersion()).isEqualTo(1L);
+		saved.setPayee(Payee.with().name("New Payee").build()); // new payee
+		Expense updated1 = expenseService.save(saved);
+		log.info("\n\t===== Saved 2 Expense {} ====", updated1);
+		assertThat(updated1.getVersion()).isEqualTo(1L);
 		
-		x2.setPayee(someone); // existing payee
-		x2.getTransactions().get(1).setCurrencyAmount(new BigDecimal(90)).setAccountingValue(new BigDecimal(90)); // modify transaction
-		x2.addTransaction(TransactionEntry.with().factor(TransactionFactor.IN).currencyAmount(new BigDecimal(10)).accountingValue(new BigDecimal(10)).build()); // new transaction
-		Expense x3 = expenseService.save(x2);
-		log.info("\n\t===== Saved 3 Expense {} ====", x3);
-		assertThat(x3.getVersion()).isEqualTo(2L);
-		assertThat(x3.getTransactions()).hasSize(3);
+		updated1.setPayee(someone); // existing payee
+		updated1.getTransactions().get(1).setCurrencyAmount(new BigDecimal(90)).setAccountingValue(new BigDecimal(90)); // modify transaction
+		Tag newTag = Tag.with().type(TagEnum.EXPENSE).name("beer").build(); // new tag
+		TransactionEntry newEntry = new  TransactionEntry().setFactor(TransactionFactor.IN).addTag(newTag); // new transaction entry
+		updated1.addTransaction(newEntry); // add new transaction
+		updated1.updateValues();
+		Expense updated2 = expenseService.save(updated1);
+		log.info("\n\t===== Saved 3 Expense {} ====", updated2);
+		assertThat(updated2.getVersion()).isEqualTo(2L);
+		assertThat(updated2.getTransactions()).hasSize(3);
 	}
 	
 	
 	@Test
 	@Order(10)
 	public void test_listAll() {
-		log.info("\n\t===== All Expenses {} ====", expenseService.loadAll());
+		List<Expense> all = expenseService.loadAll();
+		assertThat(all).isNotEmpty();
+		log.info("\n\t===== All Expenses {} ====", all);
+		
+		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 	}
 	
 	@Test
-	@Order(11)
-	public void test_findByUid() {
-		log.info("\n\t===== Find by uid {} ====", expenseService.loadByUid(EXPENSE_UID_1));
+	@Order(10)
+	public void test_listByCriteria() {
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeCriteria<BigDecimal>(new BigDecimal(50),new BigDecimal(100))).build());
+		log.info("\n\t===== Criteria Expenses {} ====", all);		
+		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
+		assertThat(all).hasSize(1);
 	}
-	
+
 	@Test
 	@Order(100)
 	public void test_delete() {
-		expenseService.delete(expenseService.loadByUid(EXPENSE_UID_1));
-		log.info("\n\t===== deleted uid {} ====", EXPENSE_UID_1);
-		assertThat(expenseService.loadByUid(EXPENSE_UID_1)).isNull();
+		Payee nonono = storeService.save(Payee.with().name("No no no").uid("uid-no-no-no").build());
+		Tag in = storeService.save(Tag.with().type(TagEnum.ASSET).name("in").uid("uid-in").build());
+		Tag out = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("out").uid("uid-out").build());
+		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(100),"CHF",nonono, in, out);
+		expenseService.save(x);
+		
+		assertThat(expenseService.loadByUid(x.getUid())).isNotNull();
+		
+		expenseService.delete(expenseService.loadByUid(x.getUid()));
+		log.info("\n\t===== deleted uid {} ====", x.getUid());
+		assertThat(expenseService.loadByUid(x.getUid())).isNull();
+		
+		assertThat(storeService.load(Payee.class, nonono.getId())).isNotNull();
+		assertThat(storeService.load(Tag.class, in.getId())).isNotNull();
+		assertThat(storeService.load(Tag.class, out.getId())).isNotNull();
 	}
 }

@@ -25,6 +25,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -32,16 +33,17 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.model.core.DBable;
+import w.expenses8.data.model.enums.TransactionFactor;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor //@AllArgsConstructor
+@Accessors(chain = true) @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "Expense2")
 public class Expense extends DBable<Expense> {
 
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade={MERGE, REFRESH, DETACH})
+	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private ExpenseType expenseType;
 	
 	@NonNull
@@ -57,36 +59,32 @@ public class Expense extends DBable<Expense> {
 	@NotBlank
 	@Size(min=3,max=3)
 	private String currencyCode;
-
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
+	private ExchangeRate exchangeRate;
+	
 	@NonNull
 	@javax.validation.constraints.NotNull
 	private BigDecimal accountingValue;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade={MERGE, REFRESH, DETACH})
-	private ExchangeRate exchangeRate;
-	
-	@ManyToOne(fetch = FetchType.EAGER, cascade={MERGE, REFRESH, DETACH})
+	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private Payee payee;
 	
 	private String description;
 	
 	@Valid
 	@Size(min = 2, message = "A expense must have at least 2 transaction lines: one IN and one OUT")
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@OrderBy("factor, accountingValue")
 	private List<TransactionEntry> transactions;
 	
-	public void addTransaction(TransactionEntry transaction) {
+	public Expense addTransaction(TransactionEntry transaction) {
 		if (transactions == null) {
 			transactions = new ArrayList<TransactionEntry>();
 		}
 		transactions.add(transaction);
 		transaction.setExpense(this);
-	}
-
-	public Expense withTransaction(TransactionEntry transaction) {
-		addTransaction(transaction);
 		return this;
 	}
 	
@@ -96,17 +94,22 @@ public class Expense extends DBable<Expense> {
 		} else {
 			accountingValue = exchangeRate.apply(currencyAmount);
 		}
-		for(TransactionEntry e : transactions) {
-			if (e.getCurrencyAmount()==null) {
-				e.setCurrencyAmount(currencyAmount);
-			}
-			if (e.getAccountingValue()==null) {
-				if (exchangeRate == null) {
-					e.setAccountingValue(e.getCurrencyAmount());
-				} else {
-					e.setAccountingValue(exchangeRate.apply(e.getCurrencyAmount()));
+		computeCurrencyAmount(TransactionFactor.IN);
+		computeCurrencyAmount(TransactionFactor.OUT);
+		transactions.stream().forEach(e->e.setAccountingValue(exchangeRate == null?e.getCurrencyAmount():exchangeRate.apply(e.getCurrencyAmount())));
+	}
+	
+	private void computeCurrencyAmount(TransactionFactor factor) {
+		long numberOfEmpty = transactions.stream().filter(t->t.getFactor()==factor && t.getCurrencyAmount()==null).count();
+		if (numberOfEmpty > 0) {
+			BigDecimal leftOver = currencyAmount;
+			for(TransactionEntry t : transactions) {
+				if (t.getFactor()==factor && t.getCurrencyAmount()!=null) {
+					leftOver = leftOver.subtract(t.getCurrencyAmount());
 				}
 			}
+			BigDecimal perEach = leftOver.divide(BigDecimal.valueOf(numberOfEmpty));
+			transactions.stream().filter(t->t.getFactor()==factor && t.getCurrencyAmount()==null).forEach(t->t.setCurrencyAmount(perEach));
 		}
 	}
 	

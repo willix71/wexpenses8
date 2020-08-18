@@ -27,7 +27,7 @@ public class Payee extends DBable<Payee> {
 
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade={MERGE, REFRESH, DETACH})
+	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private PayeeType payeeType;
 	
 	@NonNull

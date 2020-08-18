@@ -9,6 +9,4 @@ import w.expenses8.data.service.core.IGenericService;
 public interface IExpenseService extends IGenericService<Expense, Long> {
 	
 	List<Expense> findExpenses(ExpenseCriteria criteria);
-	
-	List<Expense> findExpenses2(ExpenseCriteria criteria);
 }
