@@ -1,5 +1,7 @@
 package w.expenses8.data.domain.criteria;
 
+import java.util.Collection;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +15,5 @@ import w.expenses8.data.domain.model.Tag;
 public class TransactionEntryCriteria extends ExpenseCriteria {
 
 	private Integer accountingYear;
-	private Tag tag;
+	private Collection<Tag> tags;
 }

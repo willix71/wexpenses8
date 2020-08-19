@@ -25,6 +25,7 @@ import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
+
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
 
@@ -35,12 +36,13 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	public ExpenseService(IExpenseDao dao) {
 		super(Expense.class, dao);
 	}
-
+	
 	void persist(DBable<?> d) {
 		if (d!=null && d.isNew()) {
 			entityManager.persist(d);
 		}
 	}
+	
 	@Override
 	public Expense save(Expense x) {
 		persist(x.getExpenseType());
@@ -62,7 +64,10 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		}
 		if (criteria.getExpenseType()!=null) {
 			predicate = predicate.and(QExpense.expense.expenseType.eq(criteria.getExpenseType()));
-		}		
+		}
+		if (criteria.getPayee()!=null) {
+			predicate = predicate.and(QExpense.expense.payee.eq(criteria.getPayee()));
+		}
 		
 		//select ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags
 		var query = new JPAQuery<Expense>(entityManager);

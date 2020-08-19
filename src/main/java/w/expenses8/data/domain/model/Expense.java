@@ -34,6 +34,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
+import w.expenses8.data.utils.DateHelper;
 
 @SuperBuilder(builderMethodName = "with")
 @Accessors(chain = true) @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -89,6 +90,7 @@ public class Expense extends DBable<Expense> {
 	}
 	
 	public void updateValues() {
+		transactions.stream().filter(t->t.getAccountingYear()==null).forEach(t->t.setAccountingYear(DateHelper.year(date)));
 		if (exchangeRate == null) {
 			accountingValue = currencyAmount;
 		} else {

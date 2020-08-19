@@ -1,6 +1,7 @@
 package w.expenses8.data.domain.model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 
 	private Integer accountingYear;
 
-	private Long acountingOrder;
+	private Long accountingOrder;
 	
 	private BigDecimal accountingBalance;
 	
@@ -82,8 +83,21 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 		this.currencyAmount = t.currencyAmount;
 		this.accountingValue = t.accountingValue;
 		this.accountingYear = t.accountingYear;
-		this.acountingOrder = t.acountingOrder;
+		this.accountingOrder = t.accountingOrder;
 		this.accountingBalance = t.accountingBalance;
 		this.tags = t.getTags()==null?null:new HashSet<Tag>(t.getTags());
+	}
+	
+
+	private TransactionEntry(TransactionFactor factor, Tag... tags) {
+		this.factor = factor;
+		this.tags = new HashSet<Tag>(Arrays.asList(tags));
+	}
+
+	public static TransactionEntry in(Tag...tags) {
+		return new TransactionEntry(TransactionFactor.IN, tags);
+	}
+	public static TransactionEntry out(Tag...tags) {
+		return new TransactionEntry(TransactionFactor.OUT, tags);
 	}
 }

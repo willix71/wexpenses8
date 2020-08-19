@@ -28,9 +28,6 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagEnum;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
-import w.expenses8.data.domain.service.IExpenseService;
-import w.expenses8.data.domain.service.ITagService;
-import w.expenses8.data.domain.service.StoreService;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
