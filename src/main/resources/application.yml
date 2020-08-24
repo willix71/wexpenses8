@@ -35,3 +35,6 @@ wexpenses:
   default:
      currency: CHF
 
+joinfaces:
+  jsf:
+    PROJECT_STAGE: Development
