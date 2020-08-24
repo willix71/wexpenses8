@@ -24,14 +24,12 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @MappedSuperclass
-//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DBable<T extends DBable<T>> implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 2482940442245899869L;

@@ -17,16 +17,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true)
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "ExpenseRate2")
 public class ExchangeRate extends DBable<ExchangeRate> {

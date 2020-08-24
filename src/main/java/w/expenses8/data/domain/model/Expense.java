@@ -30,14 +30,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.utils.DateHelper;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "Expense2")
 public class Expense extends DBable<Expense> {
@@ -72,6 +71,8 @@ public class Expense extends DBable<Expense> {
 	private Payee payee;
 	
 	private String description;
+	
+	private String externalReference;
 	
 	@Valid
 	@Size(min = 2, message = "A expense must have at least 2 transaction lines: one IN and one OUT")

@@ -9,18 +9,18 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "Payee2")
 public class Payee extends DBable<Payee> {
@@ -42,6 +42,13 @@ public class Payee extends DBable<Payee> {
 	private String city;
 	private String countryCode;
 	
+    @Pattern(regexp="|\\d{1,2}-\\d{1,6}-\\d")
+    private String postalAccount;
+    private String postalBank;
+    
+    //@Ibanized
+    private String iban;
+
 	@Override
 	public void copy(Payee t) {
 		super.copy(t);

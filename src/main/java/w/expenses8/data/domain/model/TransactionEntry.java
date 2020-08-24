@@ -22,14 +22,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.model.enums.TransactionFactorType;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "TransactionEntry2")
 @TypeDefs({@TypeDef(name = "transactionFactorType", typeClass = TransactionFactorType.class) })

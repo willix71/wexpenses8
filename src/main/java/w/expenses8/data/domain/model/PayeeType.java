@@ -6,12 +6,11 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.AbstractType;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor
+@Getter @Setter  @NoArgsConstructor
 @Entity
 @Table(name = "PayeeType2")
 public class PayeeType extends AbstractType<PayeeType> {
