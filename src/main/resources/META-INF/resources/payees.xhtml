@@ -1,0 +1,71 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Payees</ui:define>
+
+	<ui:define name="content">
+		<h:form id="payeesForm">
+			<p:growl id="growl" />
+			
+			<p:fieldset id="criteria" legend="Filter" toggleable="true" toggleSpeed="500">
+		        <h:panelGrid columns="3" cellpadding="2">  
+					<h:inputText id="payeeContains" value="#{payeeController.criteria.text}" />
+					
+					<p:commandButton id="filterPayees" value="Update" type="submit" action="#{payeeController.refresh}" update="payeesTable" />
+					<p:commandButton id="resetFilter" value="Reset" type="submit" action="#{payeeController.reset}" update="criteria payeesTable" />
+				</h:panelGrid>
+			</p:fieldset>
+			
+			<p:dataTable id="payeesTable" var="x" value="#{payeeController.payees}" resizableColumns="true"
+                 paginator="true"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                 rowsPerPageTemplate="5,10,50,100,1000"
+				 rows="10"
+                 rowKey="#{x.id}"
+                 selection="#{payeeController.selectedPayee}" 
+                 selectionMode="single"
+                 >
+        
+        		<p:column headerText="Type" style="width:10%;">
+            		<h:outputText value="#{x.payeeType.name}" />
+        		</p:column>
+
+            	<p:column headerText="Name" style="width:35%;">
+            		<h:outputText value="#{x.prefix}" /><h:outputText value="#{x.name}" /> <h:outputText value="&#160;" /> <h:outputText value="#{x.extra}" />
+        		</p:column>
+        		
+        		<p:column headerText="City" style="width:25%;">
+            		<h:outputText value="#{x.zip}" /><h:outputText value="#{x.city}" /> <h:outputText value="&#160;" /> <h:outputText value="#{x.countryCode}" />
+        		</p:column>
+
+        		<p:column headerText="CCP" style="width:10%;">
+            		<h:outputText value="#{x.postalAccount}" />
+        		</p:column>
+
+        		<p:column headerText="Iban" style="width:15%;">
+            		<h:outputText value="#{x.iban}" />
+        		</p:column>
+			</p:dataTable>
+			
+			<p:contextMenu for="payeesTable">
+		        <p:menuitem value="View" update="payeeDetail" icon="pi pi-search" oncomplete="PF('payeeDialog').show()"/>
+		        <p:menuitem value="Refresh" update="payeesTable" icon="pi pi-times" action="#{payeeController.refresh}"/>
+		    </p:contextMenu>
+     
+			<p:outputPanel id="payeeDetail">
+	 			<p:dialog id="payeeDialogID" widgetVar="payeeDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top">
+				<!--   modal="true" showEffect="fade" hideEffect="fade" resizable="false" -->
+					<wex:payeeDetail payee="#{payeeController.selectedPayee}" />
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>	
