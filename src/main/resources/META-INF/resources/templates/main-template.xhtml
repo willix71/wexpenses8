@@ -1,0 +1,32 @@
+<html lang="en" 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+	<title>
+		<ui:insert name="title">Wexpenses</ui:insert>
+	</title>
+	
+	<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+	<h:outputStylesheet name="wexpenses.css" library="css"/>
+	
+	<h:outputScript name="wexpenses.js" library="js"/>
+</h:head>
+
+<h:body>
+	<f:view>
+		<h2 class="wx-title">
+			<a href="#{request.contextPath}/index.xhtml"><h:graphicImage name="logo.jpeg" library="images" width="50" height="50"/></a>
+
+			<ui:insert name="title">Wexpenses</ui:insert>
+		</h2>
+		
+		<ui:insert name="content" />
+		
+		<ui:insert name="footer" />
+	</f:view>
+</h:body>
+</html>
