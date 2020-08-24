@@ -24,6 +24,7 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CriteriaHelper;
+import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class TransactionEntryService extends GenericServiceImpl<TransactionEntry, Long, ITransactionEntryDao> implements ITransactionEntryService {
@@ -52,7 +53,13 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		if (criteria.getPayee()!=null) {
 			predicate = predicate.and(QExpense.expense.payee.eq(criteria.getPayee()));
 		}		
-
+		if (!StringHelper.isEmpty(criteria.getPayeeText())) {
+			String text = CriteriaHelper.like(criteria.getPayeeText().toLowerCase());
+			QExpense ex = QExpense.expense;
+			predicate = predicate.and(
+			 ex.payee.prefix.lower().like(text).or(ex.payee.name.lower().like(text)).or(ex.payee.extra.lower().like(text)).or(ex.payee.city.lower().like(text)));
+		}
+		
 		// TransactionEntry criteria
 		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), entry.currencyAmount);
 		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), entry.accountingValue);

@@ -27,7 +27,6 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagEnum;
-import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -103,10 +102,11 @@ public class ExpenseServiceTest {
 		assertThat(updated1.getVersion()).isEqualTo(1L);
 		
 		updated1.setPayee(someone); // existing payee
-		updated1.getTransactions().get(1).setCurrencyAmount(new BigDecimal(90)).setAccountingValue(new BigDecimal(90)); // modify transaction
+		TransactionEntry in1 = updated1.getTransactions().get(1);
+		in1.setCurrencyAmount(new BigDecimal(90));
+		in1.setAccountingValue(new BigDecimal(90));
 		Tag newTag = Tag.with().type(TagEnum.EXPENSE).name("beer").build(); // new tag
-		TransactionEntry newEntry = new  TransactionEntry().setFactor(TransactionFactor.IN).addTag(newTag); // new transaction entry
-		updated1.addTransaction(newEntry); // add new transaction
+		updated1.addTransaction(TransactionEntry.in(newTag)); // add new transaction entry
 		updated1.updateValues();
 		Expense updated2 = expenseService.save(updated1);
 		log.info("\n\t===== Saved 3 Expense {} ====", updated2);
@@ -134,6 +134,15 @@ public class ExpenseServiceTest {
 		assertThat(all).hasSize(1);
 	}
 
+	@Test
+	@Order(10)
+	public void test_listByCriteriaPayeeText() {
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeCriteria<BigDecimal>(new BigDecimal(5),null)).payeeText("someone").build());
+		log.info("\n\t===== Someone's Expenses {} ====", all);		
+		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
+		assertThat(all).hasSize(2);
+	}
+	
 	@Test
 	@Order(100)
 	public void test_delete() {

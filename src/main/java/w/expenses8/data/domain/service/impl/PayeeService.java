@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import w.expenses8.data.core.service.GenericServiceImpl;
+import w.expenses8.data.domain.criteria.PayeeCriteria;
 import w.expenses8.data.domain.dao.IPayeeDao;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.service.IPayeeService;
+import w.expenses8.data.utils.CriteriaHelper;
+import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> implements IPayeeService {
@@ -31,6 +34,15 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 
 	@Override
 	public List<Payee> findByText(String text) {
-		return getDao().findByText(like(text));
+		return getDao().findByText(CriteriaHelper.like(text.toLowerCase()));
+	}
+
+	@Override
+	public List<Payee> findPayees(PayeeCriteria criteria) {
+		if (criteria==null || StringHelper.isEmpty(criteria.getText())) {
+			return loadAll();
+		} else {
+			return findByText(criteria.getText());
+		}
 	}
 }

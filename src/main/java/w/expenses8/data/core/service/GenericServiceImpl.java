@@ -84,11 +84,5 @@ public class GenericServiceImpl <T, ID extends Serializable, D extends IGenericD
 	public void delete(ID id) {
 		dao.deleteById(id);
 	}
-	
-	protected String like(String txt) {
-		if (txt.contains("*")) 
-			return txt.replace('*', '%');
-		else 
-			return "%" + txt + "%";
-	}
+
 }

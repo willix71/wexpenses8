@@ -11,7 +11,6 @@ import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.model.enums.TransactionFactor;
 
 public class ExpenseHelper {
 
@@ -41,9 +40,9 @@ public class ExpenseHelper {
 			if (o instanceof Tag) {
 				Tag t = (Tag) o;
 				if (x.getTransactions()==null || x.getTransactions().isEmpty()) {
-					x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.OUT).addTag(t));
+					x.addTransaction(TransactionEntry.out(t));
 				} else {
-					x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.IN).addTag(t));
+					x.addTransaction(TransactionEntry.in(t));
 				}
 				continue;
 			}
@@ -60,8 +59,8 @@ public class ExpenseHelper {
 		}
 		
 		if (x.getTransactions()==null || x.getTransactions().isEmpty()) {
-			x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.OUT));
-			x.addTransaction(new TransactionEntry().setFactor(TransactionFactor.IN));	
+			x.addTransaction(TransactionEntry.out());
+			x.addTransaction(TransactionEntry.in());	
 		}
 		x.updateValues();
 		

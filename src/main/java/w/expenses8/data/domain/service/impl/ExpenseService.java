@@ -25,6 +25,7 @@ import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
+import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
@@ -54,31 +55,38 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		
 	@Override
 	public List<Expense> findExpenses(ExpenseCriteria criteria) {
+		QExpense ex = QExpense.expense;
+		
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = CriteriaHelper.addRange(predicate, criteria.getDate(), QExpense.expense.date);
-		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), QExpense.expense.currencyAmount);
-		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), QExpense.expense.accountingValue);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getDate(), ex.date);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), ex.currencyAmount);
+		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), ex.accountingValue);
 
 		if (criteria.getCurrencyCode()!=null) {
-			predicate = predicate.and(QExpense.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
+			predicate = predicate.and(ex.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
 		}
 		if (criteria.getExpenseType()!=null) {
-			predicate = predicate.and(QExpense.expense.expenseType.eq(criteria.getExpenseType()));
+			predicate = predicate.and(ex.expenseType.eq(criteria.getExpenseType()));
 		}
 		if (criteria.getPayee()!=null) {
-			predicate = predicate.and(QExpense.expense.payee.eq(criteria.getPayee()));
+			predicate = predicate.and(ex.payee.eq(criteria.getPayee()));
+		}
+		if (!StringHelper.isEmpty(criteria.getPayeeText())) {
+			String text = CriteriaHelper.like(criteria.getPayeeText().toLowerCase());
+			predicate = predicate.and(
+			 ex.payee.prefix.lower().like(text).or(ex.payee.name.lower().like(text)).or(ex.payee.extra.lower().like(text)).or(ex.payee.city.lower().like(text)));
 		}
 		
 		//select ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags
 		var query = new JPAQuery<Expense>(entityManager);
-		query.distinct().select(QExpense.expense).from(QExpense.expense)
-			.leftJoin(QExpense.expense.expenseType).fetchJoin()
-			.leftJoin(QExpense.expense.exchangeRate).fetchJoin()
-			.leftJoin(QExpense.expense.payee).fetchJoin()
-			.leftJoin(QExpense.expense.transactions, QTransactionEntry.transactionEntry).fetchJoin()
+		query.distinct().select(ex).from(ex)
+			.leftJoin(ex.expenseType).fetchJoin()
+			.leftJoin(ex.exchangeRate).fetchJoin()
+			.leftJoin(ex.payee).fetchJoin()
+			.leftJoin(ex.transactions, QTransactionEntry.transactionEntry).fetchJoin()
 			.leftJoin(QTransactionEntry.transactionEntry.tags).fetchJoin()
 			.where(predicate)
-			.orderBy(new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date));
+			.orderBy(new OrderSpecifier<Date>(Order.DESC, ex.date));
 		return query.fetch();
 		
 	}

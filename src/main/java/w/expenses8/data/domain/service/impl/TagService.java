@@ -10,6 +10,7 @@ import w.expenses8.data.domain.dao.ITagDao;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.enums.TagEnum;
 import w.expenses8.data.domain.service.ITagService;
+import w.expenses8.data.utils.CriteriaHelper;
 
 @Service
 public class TagService extends GenericServiceImpl<Tag, Long, ITagDao> implements ITagService {
@@ -26,7 +27,7 @@ public class TagService extends GenericServiceImpl<Tag, Long, ITagDao> implement
 
 	@Override
 	public List<Tag> findByText(String text) {
-		return getDao().findByText(like(text));
+		return getDao().findByText(CriteriaHelper.like(text));
 	}
 	
 	@Override

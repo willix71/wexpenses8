@@ -31,4 +31,11 @@ public class CriteriaHelper {
 		}
 		return predicate;
 	}
+	
+	public static String like(String txt) {
+		if (txt.contains("*")) 
+			return txt.replace('*', '%');
+		else 
+			return "%" + txt + "%";
+	}
 }

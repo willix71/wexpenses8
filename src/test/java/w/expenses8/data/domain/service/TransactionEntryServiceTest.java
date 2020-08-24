@@ -79,8 +79,6 @@ public class TransactionEntryServiceTest {
 		assertThat(expenseService.count()).isEqualTo(4);
 		assertThat(transactionEntryService.count()).isEqualTo(9);
 		
-		for(TransactionEntry e: transactionEntryService.loadAll()) { System.out.println(e.getAccountingValue()); }
-		
 		List<TransactionEntry> accounted2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingYear(2019).build());
 		assertThat(accounted2019).hasSize(5);
 		
