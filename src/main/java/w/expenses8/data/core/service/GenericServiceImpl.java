@@ -51,7 +51,13 @@ public class GenericServiceImpl <T, ID extends Serializable, D extends IGenericD
 		if (dao instanceof IUidableDao) {
 			@SuppressWarnings("unchecked")
 			IUidableDao<T> idBableJpaDao = (IUidableDao<T>) dao;
-			return idBableJpaDao.findByUid(uid);
+			if (uid.startsWith(".")) {
+				return idBableJpaDao.findByUidEndsWith(uid.substring(1));
+			} else if (uid.endsWith(".")) {
+				return idBableJpaDao.findByUidStartsWith(uid.substring(0,uid.length()-1));
+			} else {
+				return idBableJpaDao.findByUid(uid);
+			}
 		}
 		return null;
 	}
