@@ -12,6 +12,10 @@ public interface IPayeeDao extends IGenericDao<Payee, Long>, IUidableDao<Payee> 
 
 	Payee findByName(String name);
 
-	@Query("from Payee p where lower(p.name) like ?1 or lower(p.prefix) like ?1 or lower(p.extra) like ?1 or lower(p.city) like ?1")
+	@Override
+	@Query("select distinct p from Payee p left join fetch p.payeeType")
+	List<Payee> findAll();
+
+	@Query("select distinct p from Payee p left join fetch p.payeeType where lower(p.name) like ?1 or lower(p.prefix) like ?1 or lower(p.extra) like ?1 or lower(p.city) like ?1")
 	List<Payee> findByText(String text);
 }
