@@ -25,7 +25,7 @@ public class PayeeController {
 	private PayeeCriteria criteria = new PayeeCriteria();
 	private List<Payee> payees;
 	private Payee selectedPayee;
-
+    
 	public List<Payee> getPayees() {
 		if (payees == null) {
 			refresh();
@@ -43,4 +43,11 @@ public class PayeeController {
 		criteria.setText(null);
 		refresh();
 	}
+	
+	public void save() {
+		int index = payees.indexOf(selectedPayee);
+		Payee newP = payeeService.save(selectedPayee);
+		payees.set(index, newP);
+	}
+
 }

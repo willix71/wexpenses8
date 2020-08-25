@@ -1,0 +1,10 @@
+.wex-field-label {
+	font-weight: bold;
+}
+
+.wex-field-value {
+}
+
+.wex-field-edit, .wex-field-edit>input {
+	width: 100% !important
+}

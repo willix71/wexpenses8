@@ -23,7 +23,7 @@
 				</h:panelGrid>
 			</p:fieldset>
 			
-			<p:dataTable id="payeesTable" var="x" value="#{payeeController.payees}" resizableColumns="true"
+			<p:dataTable id="payeesTable" styleClass="js-payeesTable" var="x" value="#{payeeController.payees}" resizableColumns="true"
                  paginator="true"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
@@ -57,13 +57,24 @@
 			
 			<p:contextMenu for="payeesTable">
 		        <p:menuitem value="View" update="payeeDetail" icon="pi pi-search" oncomplete="PF('payeeDialog').show()"/>
+		        <p:menuitem value="Edit" update="payeeEditionForm" icon="pi pi-search" oncomplete="PF('payeeDialog2').show()"/>
 		        <p:menuitem value="Refresh" update="payeesTable" icon="pi pi-times" action="#{payeeController.refresh}"/>
 		    </p:contextMenu>
      
 			<p:outputPanel id="payeeDetail">
 	 			<p:dialog id="payeeDialogID" widgetVar="payeeDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top">
 				<!--   modal="true" showEffect="fade" hideEffect="fade" resizable="false" -->
-					<wex:payeeDetail payee="#{payeeController.selectedPayee}" />
+					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="false"/>
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+		
+		<h:form id="payeeEditionForm" >
+			<p:outputPanel id="payeeDetail2">
+	 			<p:dialog id="payeeDialogID2" widgetVar="payeeDialog2" header="UID:#{payeeController.selectedPayee.uid}" position="top" modal="true">
+					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="true"/>
+					<p:commandButton id="payeeSave" value="Save" type="submit" action="#{payeeController.save}" oncomplete="PF('payeeDialog2').hide()" update="@('.js-payeesTable')"/>
+					<p:commandButton id="payeeCancel" value="Cancel" type="button" onclick="PF('payeeDialog2').hide()" />
 				</p:dialog>
 			</p:outputPanel>
 		</h:form>
