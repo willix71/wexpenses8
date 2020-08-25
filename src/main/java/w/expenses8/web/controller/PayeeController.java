@@ -47,7 +47,20 @@ public class PayeeController {
 	public void save() {
 		int index = payees.indexOf(selectedPayee);
 		Payee newP = payeeService.save(selectedPayee);
-		payees.set(index, newP);
+		if (index<0) {
+			payees.add(newP);
+		} else {
+			payees.set(index, newP);
+		}
 	}
 
+	public void newPayee() {
+		selectedPayee = new Payee();
+	}
+	
+	public void delete() {
+		int index = payees.indexOf(selectedPayee);
+		payeeService.delete(selectedPayee);
+		payees.remove(index);
+	}
 }

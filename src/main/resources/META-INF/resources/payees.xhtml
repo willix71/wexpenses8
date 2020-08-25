@@ -58,6 +58,8 @@
 			<p:contextMenu for="payeesTable">
 		        <p:menuitem value="View" update="payeeDetail" icon="pi pi-search" oncomplete="PF('payeeDialog').show()"/>
 		        <p:menuitem value="Edit" update="payeeEditionForm" icon="pi pi-search" oncomplete="PF('payeeDialog2').show()"/>
+		        <p:menuitem value="Delete" update="payeeDeletePanel" icon="pi pi-search" oncomplete="PF('payeeDeleteDialog').show()"/>
+		        <p:menuitem value="New" update="payeeEditionForm" icon="pi pi-search" action="#{payeeController.newPayee}" oncomplete="PF('payeeDialog2').show()"/>
 		        <p:menuitem value="Refresh" update="payeesTable" icon="pi pi-times" action="#{payeeController.refresh}"/>
 		    </p:contextMenu>
      
@@ -65,6 +67,14 @@
 	 			<p:dialog id="payeeDialogID" widgetVar="payeeDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top">
 				<!--   modal="true" showEffect="fade" hideEffect="fade" resizable="false" -->
 					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="false"/>
+				</p:dialog>
+			</p:outputPanel>
+
+			<p:outputPanel id="payeeDeletePanel">
+	 			<p:dialog id="payeeDeleteDialogID" widgetVar="payeeDeleteDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top" modal="true">
+					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="false"/>
+					<p:commandButton id="payeeDelete" value="Delete" type="submit" action="#{payeeController.delete}" oncomplete="PF('payeeDeleteDialog').hide()" update="@('.js-payeesTable')"/>
+					<p:commandButton id="payeeCancelDelete" value="Cancel" type="button" onclick="PF('payeeDeleteDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
 		</h:form>
