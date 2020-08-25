@@ -68,4 +68,13 @@ public class PayeeServiceTest {
 		List<Payee> ps = payeeService.findByText("Test");
 		assertThat(ps).hasSize(3).contains(p1).doesNotContain(p2);
 	}
+	
+	@Test
+	@Order(6)
+	public void test_findByUid() {
+		Payee xxx = payeeService.findByName("XXX");
+		assertThat(payeeService.loadByUid(xxx.getUid())).isEqualTo(xxx);
+		assertThat(payeeService.loadByUid("." + xxx.getUid().substring(10))).as("starts with").isEqualTo(xxx);
+		assertThat(payeeService.loadByUid(xxx.getUid().substring(0,5) + ".")).as("ends with").isEqualTo(xxx);
+	}
 }

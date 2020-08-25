@@ -121,6 +121,7 @@ public class ExpenseServiceTest {
 		List<Expense> all = expenseService.loadAll();
 		assertThat(all).isNotEmpty();
 		log.info("\n\t===== All Expenses {} ====", all);
+		assertThat(all).hasSize(3);
 		
 		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 	}
