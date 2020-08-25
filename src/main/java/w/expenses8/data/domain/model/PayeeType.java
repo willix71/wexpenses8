@@ -12,7 +12,7 @@ import w.expenses8.data.core.model.AbstractType;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor
 @Entity
-@Table(name = "PayeeType2")
+@Table(name = "WEX_PayeeType")
 public class PayeeType extends AbstractType<PayeeType> {
 
 	private static final long serialVersionUID = 1L;

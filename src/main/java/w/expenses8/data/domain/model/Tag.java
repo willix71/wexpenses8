@@ -15,7 +15,7 @@ import w.expenses8.data.domain.model.enums.TagEnum;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Table(name = "Tag2")
+@Table(name = "WEX_Tag")
 public class Tag extends AbstractType<Tag> {
 
 	private static final long serialVersionUID = 1L;

@@ -20,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.OnDelete;
@@ -28,7 +29,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
@@ -38,7 +38,7 @@ import w.expenses8.data.utils.DateHelper;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Table(name = "Expense2")
+@Table(name = "WEX_Expense")
 public class Expense extends DBable<Expense> {
 
 	private static final long serialVersionUID = 1L;
@@ -46,16 +46,13 @@ public class Expense extends DBable<Expense> {
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private ExpenseType expenseType;
 	
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
 
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	private BigDecimal currencyAmount;
 
-	@NonNull
 	@NotBlank
 	@Size(min=3,max=3)
 	private String currencyCode;
@@ -63,8 +60,7 @@ public class Expense extends DBable<Expense> {
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private ExchangeRate exchangeRate;
 	
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	private BigDecimal accountingValue;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})

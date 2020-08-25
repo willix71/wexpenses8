@@ -22,7 +22,7 @@ import w.expenses8.data.core.model.DBable;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Table(name = "Payee2")
+@Table(name = "WEX_Payee")
 public class Payee extends DBable<Payee> {
 
 	private static final long serialVersionUID = 1L;

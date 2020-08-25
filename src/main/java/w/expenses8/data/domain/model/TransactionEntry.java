@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -20,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
@@ -30,7 +30,7 @@ import w.expenses8.data.domain.model.enums.TransactionFactorType;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Table(name = "TransactionEntry2")
+@Table(name = "WEX_TransactionEntry")
 @TypeDefs({@TypeDef(name = "transactionFactorType", typeClass = TransactionFactorType.class) })
 public class TransactionEntry extends DBable<TransactionEntry> {
 
@@ -42,17 +42,14 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	@Builder.Default
 	private boolean systemEntry = false;
 	
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	@Type(type = "transactionFactorType")
 	private TransactionFactor factor;
 	
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	private BigDecimal currencyAmount;
 
-	@NonNull
-	@javax.validation.constraints.NotNull
+	@NotNull
 	private BigDecimal accountingValue;
 
 	private Integer accountingYear;

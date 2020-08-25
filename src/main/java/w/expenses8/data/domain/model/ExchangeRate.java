@@ -23,7 +23,7 @@ import w.expenses8.data.core.model.DBable;
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Table(name = "ExpenseRate2")
+@Table(name = "WEX_ExchangeRate")
 public class ExchangeRate extends DBable<ExchangeRate> {
 
 	private static final long serialVersionUID = 1L;
