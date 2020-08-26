@@ -1,5 +1,6 @@
 package w.expenses8.web.controller;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.view.ViewScoped;
@@ -17,7 +18,8 @@ import w.expenses8.data.domain.service.IPayeeService;
 @Named
 @ViewScoped
 @Getter @Setter
-public class PayeeController {
+@SuppressWarnings("serial")
+public class PayeeController implements Serializable {
 
 	@Inject
 	private IPayeeService payeeService;

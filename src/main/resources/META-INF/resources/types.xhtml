@@ -1,0 +1,74 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses ExpenseTypes</ui:define>
+
+	<ui:define name="content">
+		<h:form id="expenseTypesTableForm">
+			<p:growl id="growl" />
+
+			<p:dataTable id="expenseTypesTable" styleClass="js-expenseTypesTable" var="x" value="#{expenseTypeController.expenseTypes}" resizableColumns="true"
+                 paginator="true"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                 rowsPerPageTemplate="5,10,50,100,1000"
+				 rows="10"
+                 rowKey="#{x.uid}"
+                 selection="#{expenseTypeController.selectedExpenseType}" 
+                 selectionMode="single"
+                 editable="true"
+                 >
+
+        		<p:ajax event="rowEdit" listener="#{expenseTypeController.onRowEdit}" update=":expenseTypesTableForm:growl" />
+        		<p:ajax event="rowEditCancel" listener="#{expenseTypeController.onRowCancel}" update=":expenseTypesTableForm:growl" />
+                
+                <p:column headerText="Id" sortBy="#{x.id}">
+            		<h:outputText value="#{x.fullId}" />
+        		</p:column>
+        		
+        		<p:column headerText="Name" sortBy="#{x.name}" style="width:30%;">
+        			<p:cellEditor>
+            			<f:facet name="output"><h:outputText value="#{x.name}" /></f:facet>
+            			<f:facet name="input"><p:inputText value="#{x.name}" style="width:100%" label="name"/></f:facet>
+            		</p:cellEditor>
+        		</p:column>
+
+            	<p:column headerText="Description" sortBy="#{x.description}" style="width:50%;">
+            		<p:cellEditor>
+            			<f:facet name="output"><h:outputText value="#{x.description}" /></f:facet>
+            			<f:facet name="input"><p:inputText value="#{x.description}" style="width:100%" label="name"/></f:facet>
+            		</p:cellEditor>
+        		</p:column>
+        
+        		<p:column headerText="Selectable" sortBy="#{x.selectable}">
+            		<h:outputText value="#{x.selectable}" />
+        		</p:column>
+        		
+        		<p:column style="width:35px">
+            		<p:rowEditor />
+        		</p:column>
+			</p:dataTable>
+			
+			<p:contextMenu for="expenseTypesTable">
+		        <p:menuitem value="New" update="expenseTypesTable" icon="pi pi-plus" action="#{expenseTypeController.newExpenseType}"/>
+		        <p:menuitem value="Delete" update="expenseTypeDeletePanel" icon="pi pi-trash" oncomplete="PF('w_expenseTypeDeleteDialog').show()"/>
+		        <p:menuitem value="Refresh" update="@form" icon="pi pi-replay" action="#{expenseTypeController.refresh}"/>
+		    </p:contextMenu>
+		    
+		    <p:outputPanel id="expenseTypeDeletePanel">
+	 			<p:dialog id="expenseTypeDeleteDialog" widgetVar="w_expenseTypeDeleteDialog" header="UID:#{expenseTypeController.selectedExpenseType.uid}" position="top" modal="true">
+					Delete #{expenseTypeController.selectedExpenseType.name} ? <p/>
+					<p:commandButton id="expenseTypeDeleteBtn" value="Delete" type="submit" action="#{expenseTypeController.delete}" oncomplete="PF('w_expenseTypeDeleteDialog').hide()" update="@('.js-expenseTypesTable')"/>
+					<p:commandButton id="expenseTypeCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_expenseTypeDeleteDialog').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>	

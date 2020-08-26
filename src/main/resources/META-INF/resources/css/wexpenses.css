@@ -8,3 +8,13 @@
 .wex-field-edit, .wex-field-edit>input {
 	width: 100% !important
 }
+
+.wex-cell-centered {
+	text-align: center;	
+}
+
+.ui-filter-column .ui-column-customfilter .custom-filter {
+     width: 100%;
+     box-sizing: border-box;
+     font-size: 10;
+ }

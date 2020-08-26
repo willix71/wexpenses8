@@ -1,0 +1,85 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses PayeeTypes</ui:define>
+
+	<ui:define name="content">
+		<h:form id="typesTableForm">
+			<p:growl id="growl" />
+
+			<p:dataTable id="typesTable" widgetVar="w_typesTable" styleClass="js-typesTable" var="x" value="#{payeeTypeController.types}" resizableColumns="true"
+                 paginator="true"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                 rowsPerPageTemplate="5,10,50,100,1000"
+				 rows="10"
+                 rowKey="#{x.uid}"
+                 selection="#{payeeTypeController.selectedType}" 
+                 selectionMode="single"
+                 editable="true"
+                 >
+
+        		<p:ajax event="rowEdit" listener="#{payeeTypeController.onRowEdit}" update="typesTable :typesTableForm:growl" />
+        		<p:ajax event="rowEditCancel" listener="#{payeeTypeController.onRowCancel}" update="typesTable :typesTableForm:growl" />
+                
+                <p:column headerText="Id" sortBy="#{x.id}">
+            		<h:outputText value="#{x.fullId}" />
+        		</p:column>
+        		
+        		<p:column headerText="Name" sortBy="#{x.name}" filterBy="#{x.name}" filterMatchMode="contains">
+        			<p:cellEditor>
+            			<f:facet name="output"><h:outputText value="#{x.name}" /></f:facet>
+            			<f:facet name="input"><p:inputText value="#{x.name}" style="width:100%" label="name"/></f:facet>
+            		</p:cellEditor>
+        		</p:column>
+
+            	<p:column headerText="Description" sortBy="#{x.description}" filterBy="#{x.description}" filterMatchMode="contains">
+            		<p:cellEditor>
+            			<f:facet name="output"><h:outputText value="#{x.description}" /></f:facet>
+            			<f:facet name="input"><p:inputText value="#{x.description}" style="width:100%" label="name"/></f:facet>
+            		</p:cellEditor>
+        		</p:column>
+        
+        		<p:column headerText="Selectable" sortBy="#{x.selectable}" styleClass="wex-cell-centered" filterBy="#{x.selectable}" filterMatchMode="equals">
+        		   	<f:facet name="filter">
+	        		   	<p:selectOneButton onchange="PF('w_typesTable').filter()" styleClass="custom-filter">
+	                    	<f:converter converterId="javax.faces.Boolean" />
+	                    	<f:selectItem itemLabel="all" itemValue="" />
+	                    	<f:selectItem itemLabel="yes" itemValue="true" />
+	                    	<f:selectItem itemLabel="no" itemValue="false" />
+	                	</p:selectOneButton>
+	                </f:facet>
+            		<p:cellEditor>
+            			<f:facet name="output"><h:panelGroup rendered="#{x.selectable}"><i class="pi pi-check"></i></h:panelGroup></f:facet>
+            			<f:facet name="input"><p:selectBooleanCheckbox value="#{x.selectable}" /></f:facet>
+            		</p:cellEditor>
+        		</p:column>
+        		
+        		<p:column style="width:35px">
+            		<p:rowEditor />
+        		</p:column>
+			</p:dataTable>
+			
+			<p:contextMenu for="typesTable">
+		        <p:menuitem value="New" update="typesTable" icon="pi pi-plus" action="#{payeeTypeController.newType}"/>
+		        <p:menuitem value="Delete" update="typeDeletePanel" icon="pi pi-trash" oncomplete="PF('w_typeDeleteDialog').show()"/>
+		        <p:menuitem value="Refresh" update="@form" icon="pi pi-replay" action="#{payeeTypeController.refresh}"/>
+		    </p:contextMenu>
+		    
+		    <p:outputPanel id="typeDeletePanel">
+	 			<p:dialog id="typeDeleteDialog" widgetVar="w_typeDeleteDialog" header="UID:#{payeeTypeController.selectedType.uid}" position="top" modal="true">
+					Delete #{payeeTypeController.selectedType.name} ? <p/>
+					<p:commandButton id="typeDeleteBtn" value="Delete" type="submit" action="#{payeeTypeController.delete}" oncomplete="PF('w_typeDeleteDialog').hide()" update="@('.js-typesTable')"/>
+					<p:commandButton id="typeCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_typeDeleteDialog').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>	

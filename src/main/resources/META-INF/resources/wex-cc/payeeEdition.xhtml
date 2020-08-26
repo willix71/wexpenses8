@@ -63,7 +63,6 @@
 			<h:outputText value="country" styleClass="wex-field-label"/>
 			<h:outputText value="#{cc.attrs.payee.countryCode}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:inputText id="payeeCountryId" value="#{cc.attrs.payee.countryCode}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
-
 		</h:panelGrid>
    	</composite:implementation>
 </ui:component>

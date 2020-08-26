@@ -1,0 +1,72 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+   	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="expense" type="w.expenses8.data.domain.model.Expense" required="true" />
+		<composite:attribute name="edition" default="false" />
+	</composite:interface>
+	
+	<composite:implementation>
+		<h:panelGrid columns="3" rendered="#{not empty cc.attrs.expense}">
+			<h:panelGroup>
+				id: #{cc.attrs.expense.fullId} 
+			</h:panelGroup>
+			<h:panelGroup>
+				created:
+				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
+					<f:param value="#{cc.attrs.expense.createdTs}" />
+				</h:outputFormat>
+			</h:panelGroup>
+			<h:panelGroup>	
+				modified:
+				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
+					<f:param value="#{cc.attrs.expense.modifiedTs}" />
+				</h:outputFormat>
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<h:panelGrid columns="2" rendered="#{not empty cc.attrs.expense}" style="width:100%">
+			<h:outputText value="type" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.expense.expenseType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:autoComplete id="expenseTypeId" value="#{cc.attrs.expense.expenseType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+			 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
+             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" />
+             	
+			<h:outputText value="payee" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.expense.payee.prefix}#{cc.attrs.expense.payee.name} #{cc.attrs.expense.payee.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:autoComplete id="expensePayeeId" value="#{cc.attrs.expense.payee}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+			 	dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
+             	var="theme" itemLabel="#{theme.prefix}#{theme.name} #{theme.extra}" itemValue="#{theme}" forceSelection="true" />
+			
+			<h:outputText value="date" styleClass="wex-field-label"/>
+			<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+				<f:param value="#{cc.attrs.expense.date}" />
+			</h:outputFormat>
+			<p:datePicker id="expenseDateId" value="#{cc.attrs.expense.date}" showIcon="true" rendered="#{cc.attrs.edition}"/>
+			
+			<h:outputText value="amount" styleClass="wex-field-label"/>
+			<h:panelGroup rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+				<h:outputFormat value="{0,number, ###0.00}">
+					<f:param value="#{cc.attrs.expense.currencyAmount}" />
+				</h:outputFormat>
+				<h:outputText value="#{cc.attrs.expense.currencyCode}"/>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-edit">
+			    <p:inputNumber id="expenseCurrencyAmountId" value="#{cc.attrs.expense.currencyAmount}"/>  
+			    <p:inputText id="expenseCurrencyCodeId" value="#{cc.attrs.expense.currencyCode}"/>
+			</h:panelGroup>
+
+			<h:outputText value="external reference" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.expense.externalReference}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="expenseExternalReferenceId" value="#{cc.attrs.expense.externalReference}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			
+			<h:outputText value="description" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.expense.description}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="expenseDescriptionId" value="#{cc.attrs.expense.description}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+		</h:panelGrid>
+   	</composite:implementation>
+</ui:component>

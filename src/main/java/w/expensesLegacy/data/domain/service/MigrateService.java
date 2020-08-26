@@ -44,7 +44,7 @@ public class MigrateService {
 					.currencyAmount(legacyExpense.getAmount())
 					.currencyCode(legacyExpense.getCurrency().getCode())
 					.description(legacyExpense.getDescription())
-					.externalReference(legacyExpense.getDescription())
+					.externalReference(legacyExpense.getExternalReference())
 					.payee(getPayee(legacyExpense.getPayee()))
 					.build();
 			
@@ -100,6 +100,7 @@ public class MigrateService {
 				}
 				tags.add(getTag(account.getName(), 4000, TagEnum.EXPENSE));
 				break;
+			default:
 			}
 		}
 		if (discriminator != null) {
@@ -137,7 +138,8 @@ public class MigrateService {
 		try {
 			return entityManager.createQuery("SELECT a from ExpenseType a where a.uid = ?1", ExpenseType.class).setParameter(1, legacy.getUid()).getSingleResult();
 		} catch(NoResultException noresult) {
-			ExpenseType newType = ExpenseType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs()).name(legacy.getName()).build();
+			ExpenseType newType = ExpenseType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs())
+					.name(legacy.getName()).selectable(legacy.isSelectable()).build();
 			entityManager.persist(newType);
 			entityManager.flush();
 			return newType;
@@ -193,7 +195,8 @@ public class MigrateService {
 		try {
 			return entityManager.createQuery("SELECT a from PayeeType a where a.uid = ?1", PayeeType.class).setParameter(1, legacy.getUid()).getSingleResult();
 		} catch(NoResultException noresult) {
-			PayeeType newType = PayeeType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs()).name(legacy.getName()).build();
+			PayeeType newType = PayeeType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs())
+					.name(legacy.getName()).selectable(legacy.isSelectable()).build();
 			entityManager.persist(newType);
 			entityManager.flush();
 			return newType;
