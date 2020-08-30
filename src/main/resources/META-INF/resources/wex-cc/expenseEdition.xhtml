@@ -77,52 +77,49 @@
 
 		<p:dataTable id="tran" styleClass="js-transactionEntryTable" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}" resizableColumns="true" >
                         
-                <p:column headerText="Id">
+                <p:column headerText="Id" style="max-width:60px; width:60px">
             		<h:outputText value="#{x.fullId}" />
         		</p:column>
                 
-                <p:column headerText="Year">
+                <p:column headerText="Year" style="max-width:70px; width:70px">
             		<h:outputText value="#{x.accountingYear}" rendered="#{not cc.attrs.edition}"/>
-            		<p:inputNumber value="#{x.accountingYear}" rendered="#{cc.attrs.edition}"
-            		thousandSeparator="" decimalPlaces="0" width="50px"/>
+            		<p:spinner id="accountingYearId" value="#{x.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70"/>
         		</p:column>
 
-                <p:column headerText="Factor">
+                <p:column headerText="Factor" style="max-width:120px; width:120px">
             		<h:outputText value="#{x.factor}" rendered="#{not cc.attrs.edition}" />
 	          		<p:selectOneButton value="#{x.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
 	                   	<f:selectItems value="#{dropboxController.transactionFactors}" />
 	               	</p:selectOneButton>
         		</p:column>
 
-                <p:column headerText="System" style="text-align: center">
+                <p:column headerText="System" styleClass="wex-cell-centered" style="max-width:50px; width:50px">
             		<h:panelGroup rendered="#{x.systemEntry and not cc.attrs.edition}"><i class="pi pi-check"></i></h:panelGroup>
             		<p:selectBooleanCheckbox value="#{x.systemEntry}" rendered="#{cc.attrs.edition}" />
         		</p:column>
 
-            	<p:column headerText="Amount" >
+            	<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
             		<h:outputText value="#{x.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}"/>
             		<p:inputNumber value="#{x.currencyAmount}" rendered="#{cc.attrs.edition}"
             			symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="suffix" 
-            			thousandSeparator="'" />
+            			thousandSeparator="'" styleClass="wex-input-right wex-input-150"  />
         		</p:column>
         		
-            	<p:column headerText="Value" >
+            	<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
             		<h:outputText value="#{x.accountingValue}" />
         		</p:column>
         		
-        		<p:column headerText="Tags"  >
+        		<p:column headerText="Tags" >
         			<h:panelGroup rendered="#{not cc.attrs.edition}">
         				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
         			</h:panelGroup>
         			<h:panelGroup rendered="#{cc.attrs.edition}">
-        				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
-        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tags}" completeMethod="#{dropboxController.completeTag}"
+        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}"
                         	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true">		 
 				            <p:column>
 				                <h:outputText value="#{theme.name}" />
 				            </p:column>
 				        </p:autoComplete>
-        
         			</h:panelGroup>
         		</p:column>
          </p:dataTable>

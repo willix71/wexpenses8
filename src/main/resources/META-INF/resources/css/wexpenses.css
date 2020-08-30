@@ -21,8 +21,32 @@
 	text-align: center;	
 }
 
+.wex-cell-righted {
+	text-align: right;	
+}
+
 .ui-filter-column .ui-column-customfilter .custom-filter {
      width: 100%;
      box-sizing: border-box;
      font-size: 10;
  }
+ 
+.wex-input-70>input {
+	max-width: 70px;
+	width: 70px;
+}
+.wex-input-100>input {
+	max-width: 100px;
+	width: 100px;
+}
+.wex-input-120>input {
+	max-width: 120px;
+	width: 120px;
+}
+.wex-input-150>input {
+	max-width: 150px;
+	width: 150px;
+}
+.wex-input-right>input {
+	text-align: right;
+}
