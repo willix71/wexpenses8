@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
 import w.expenses8.data.core.criteria.RangeCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
-import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
@@ -72,10 +71,10 @@ public class TransactionEntryServiceTest {
 		Tag shaun = storeService.save(Tag.with().type(TagType.DISCRIMINATOR).name("shaun").build());
 		ExpenseType bvo = storeService.save(ExpenseType.with().name("BVO").build());
 		
-		Expense x1 = expenseService.save(ExpenseHelper.build(toDate(10,6,2019),new BigDecimal(20),"CHF",migros, cash, grocery));
-		Expense x2 = expenseService.save(ExpenseHelper.build(toDate(4,12,2019),new BigDecimal(30),"USD",migros, visa, grocery, Tag.with().type(TagType.EXPENSE).name("beer").build()));
-		Expense x3 = expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(40),"CHF",doctor, cash, TransactionEntry.in(health, kim)));
-		Expense x4 = expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(50),"CHF",doctor, cash, TransactionEntry.in(health, shaun)));
+		expenseService.save(ExpenseHelper.build(toDate(10,6,2019),new BigDecimal(20),"CHF",migros, cash, grocery));
+		expenseService.save(ExpenseHelper.build(toDate(4,12,2019),new BigDecimal(30),"USD",migros, visa, grocery, Tag.with().type(TagType.EXPENSE).name("beer").build()));
+		expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(40),"CHF",doctor, cash, TransactionEntry.in(health, kim)));
+		expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(50),"CHF",doctor, cash, TransactionEntry.in(health, shaun)));
 		assertThat(expenseService.count()).isEqualTo(4);
 		assertThat(transactionEntryService.count()).isEqualTo(9);
 		

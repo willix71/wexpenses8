@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -28,7 +29,7 @@ public class ExchangeRate extends DBable<ExchangeRate> {
 
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Payee institution;
 
 	@Temporal(TemporalType.DATE)

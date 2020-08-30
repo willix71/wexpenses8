@@ -5,9 +5,9 @@ import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.REFRESH;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -75,11 +75,11 @@ public class Expense extends DBable<Expense> {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@OrderBy("factor, accountingValue")
-	private List<TransactionEntry> transactions;
+	private Set<TransactionEntry> transactions;
 	
 	public Expense addTransaction(TransactionEntry transaction) {
 		if (transactions == null) {
-			transactions = new ArrayList<TransactionEntry>();
+			transactions = new HashSet<TransactionEntry>();
 		}
 		transactions.add(transaction);
 		transaction.setExpense(this);

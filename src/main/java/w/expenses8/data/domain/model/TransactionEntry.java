@@ -3,6 +3,8 @@ package w.expenses8.data.domain.model;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -64,10 +66,26 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	
 	public TransactionEntry addTag(Tag tag) {
 		if (tags == null) {
-			tags = new HashSet<Tag>();
+			new HashSet<Tag>();
 		}
 		tags.add(tag);
 		return this;
+	}
+	
+	// we need a list for the <p:autoComplete>
+	public List<Tag> getTagsList() {
+		return tags==null?null:new LinkedList<Tag>(tags);
+	}
+	
+	public void setTagsList(List<Tag> tagsList) {
+		if (tagsList == null) {
+			tags = null;
+		} else if (tags==null) {
+			tags = new HashSet<Tag>(tagsList);
+		} else {
+			tags.addAll(tagsList);
+			tags.retainAll(tagsList);
+		}
 	}
 	
 	@Override
@@ -82,8 +100,7 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 		this.accountingOrder = t.accountingOrder;
 		this.accountingBalance = t.accountingBalance;
 		this.tags = t.getTags()==null?null:new HashSet<Tag>(t.getTags());
-	}
-	
+	}	
 
 	private TransactionEntry(TransactionFactor factor, Tag... tags) {
 		this.factor = factor;

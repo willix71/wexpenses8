@@ -27,6 +27,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
+import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -102,16 +103,25 @@ public class ExpenseServiceTest {
 		assertThat(updated1.getVersion()).isEqualTo(1L);
 		
 		updated1.setPayee(someone); // existing payee
-		TransactionEntry in1 = updated1.getTransactions().get(1);
+		TransactionEntry in1 = CollectionHelper.last(updated1.getTransactions());
 		in1.setCurrencyAmount(new BigDecimal(90));
 		in1.setAccountingValue(new BigDecimal(90));
-		Tag newTag = Tag.with().type(TagType.EXPENSE).name("beer").build(); // new tag
-		updated1.addTransaction(TransactionEntry.in(newTag)); // add new transaction entry
+		Tag newTag1 = Tag.with().type(TagType.EXPENSE).name("beer").build(); // new tag
+		Tag newTag2 = Tag.with().type(TagType.EXPENSE).name("wine").build(); // new tag
+		updated1.addTransaction(TransactionEntry.in(newTag1,newTag2)); // add new transaction entry
 		updated1.updateValues();
 		Expense updated2 = expenseService.save(updated1);
 		log.info("\n\t===== Saved 3 Expense {} ====", updated2);
 		assertThat(updated2.getVersion()).isEqualTo(2L);
 		assertThat(updated2.getTransactions()).hasSize(3);
+		
+		// load using the criteria (loads all in one)
+		List<Expense> loadeds = expenseService.findExpenses(ExpenseCriteria.with().accountingValue(new RangeCriteria<BigDecimal>(new BigDecimal(100),null)).build());
+		assertThat(loadeds).hasSize(1);
+		Expense loaded = CollectionHelper.first(loadeds);		
+		assertThat(loaded.getVersion()).isEqualTo(2L);
+		assertThat(loaded.getTransactions()).hasSize(3);
+		
 	}
 	
 	
