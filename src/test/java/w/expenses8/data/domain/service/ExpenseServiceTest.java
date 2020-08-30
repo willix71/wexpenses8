@@ -26,7 +26,7 @@ import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -59,8 +59,8 @@ public class ExpenseServiceTest {
 	@Order(1)
 	public void test_insertWithNewRelations() {
 		Payee someone = Payee.with().name("Someone").build();
-		Tag cach = Tag.with().type(TagEnum.ASSET).name("cash").build();
-		Tag tax = Tag.with().type(TagEnum.EXPENSE).name("tax").build();
+		Tag cach = Tag.with().type(TagType.ASSET).name("cash").build();
+		Tag tax = Tag.with().type(TagType.EXPENSE).name("tax").build();
 		
 		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(20),"CHF",someone, cach, tax);
 		Expense saved = expenseService.save(x);
@@ -75,8 +75,8 @@ public class ExpenseServiceTest {
 	@Order(2)
 	public void test_insertWithExistingRelation() {
 		Payee someone = storeService.save(Payee.with().name("SomeoneElse").build());
-		Tag mastercard = storeService.save(Tag.with().type(TagEnum.ASSET).name("mastercard").build());
-		Tag insurance = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("insurance").build());
+		Tag mastercard = storeService.save(Tag.with().type(TagType.ASSET).name("mastercard").build());
+		Tag insurance = storeService.save(Tag.with().type(TagType.EXPENSE).name("insurance").build());
 		
 		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(50),"CHF",someone, mastercard, insurance);
 		Expense saved = expenseService.save(x);
@@ -88,8 +88,8 @@ public class ExpenseServiceTest {
 	@Order(3)
 	public void test_update3() {
 		Payee someone = storeService.save(Payee.with().name("Mr and Mrs Smith").build());
-		Tag visa = storeService.save(Tag.with().type(TagEnum.ASSET).name("visa").build());
-		Tag grocery = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("grocery").build());
+		Tag visa = storeService.save(Tag.with().type(TagType.ASSET).name("visa").build());
+		Tag grocery = storeService.save(Tag.with().type(TagType.EXPENSE).name("grocery").build());
 		
 		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(100),"CHF",someone, visa, grocery);
 		Expense saved = expenseService.save(x);
@@ -105,7 +105,7 @@ public class ExpenseServiceTest {
 		TransactionEntry in1 = updated1.getTransactions().get(1);
 		in1.setCurrencyAmount(new BigDecimal(90));
 		in1.setAccountingValue(new BigDecimal(90));
-		Tag newTag = Tag.with().type(TagEnum.EXPENSE).name("beer").build(); // new tag
+		Tag newTag = Tag.with().type(TagType.EXPENSE).name("beer").build(); // new tag
 		updated1.addTransaction(TransactionEntry.in(newTag)); // add new transaction entry
 		updated1.updateValues();
 		Expense updated2 = expenseService.save(updated1);
@@ -148,8 +148,8 @@ public class ExpenseServiceTest {
 	@Order(100)
 	public void test_delete() {
 		Payee nonono = storeService.save(Payee.with().name("No no no").uid("uid-no-no-no").build());
-		Tag in = storeService.save(Tag.with().type(TagEnum.ASSET).name("in").uid("uid-in").build());
-		Tag out = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("out").uid("uid-out").build());
+		Tag in = storeService.save(Tag.with().type(TagType.ASSET).name("in").uid("uid-in").build());
+		Tag out = storeService.save(Tag.with().type(TagType.EXPENSE).name("out").uid("uid-out").build());
 		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(100),"CHF",nonono, in, out);
 		expenseService.save(x);
 		

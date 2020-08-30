@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import w.expenses8.data.core.dao.IGenericDao;
 import w.expenses8.data.core.dao.IUidableDao;
 import w.expenses8.data.domain.model.Tag;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 
 public interface ITagDao extends IGenericDao<Tag, Long>, IUidableDao<Tag> {
 
@@ -16,6 +16,6 @@ public interface ITagDao extends IGenericDao<Tag, Long>, IUidableDao<Tag> {
 	@Query("from Tag t where t.name like ?1 or t.number like ?1")
 	List<Tag> findByText(String like);
 	
-	List<Tag> findByType(TagEnum type);
+	List<Tag> findByType(TagType type);
 
 }

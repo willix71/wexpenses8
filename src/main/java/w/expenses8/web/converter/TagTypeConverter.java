@@ -8,18 +8,18 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
 
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 
 @Named
-@FacesConverter(value = "tagEnumConverter", managed = true)
-public class TagEnumConverter implements Converter<TagEnum> {
+@FacesConverter(value = "tagTypeConverter", managed = true)
+public class TagTypeConverter implements Converter<TagType> {
 
 	@Override
-	public TagEnum getAsObject(FacesContext fc, UIComponent uic, String name) {
+	public TagType getAsObject(FacesContext fc, UIComponent uic, String name) {
 		if (name != null && name.trim().length() > 0) {
 			try {
-				return TagEnum.valueOf(name);
-			} catch (NumberFormatException e) {
+				return TagType.valueOf(name);
+			} catch (Exception e) {
 				throw new ConverterException(
 						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid tag enum type."));
 			}
@@ -29,7 +29,7 @@ public class TagEnumConverter implements Converter<TagEnum> {
 	}
 
 	@Override
-	public String getAsString(FacesContext fc, UIComponent uic, TagEnum object) {
+	public String getAsString(FacesContext fc, UIComponent uic, TagType object) {
 		if (object != null) {
 			return object.toString();
 		} else {

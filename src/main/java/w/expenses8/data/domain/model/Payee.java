@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
+import w.expenses8.data.domain.validation.Ibanized;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
@@ -46,7 +47,7 @@ public class Payee extends DBable<Payee> {
     private String postalAccount;
     private String postalBank;
     
-    //@Ibanized
+    @Ibanized
     private String iban;
 
 	@Override

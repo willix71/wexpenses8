@@ -1,3 +1,11 @@
+.wx-title {
+	display: flex;
+	align-items:center
+}
+
+.wx-title a {
+	text-decoration: none;
+}
 .wex-field-label {
 	font-weight: bold;
 }

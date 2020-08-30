@@ -21,7 +21,7 @@
 					<f:param value="#{cc.attrs.expense.createdTs}" />
 				</h:outputFormat>
 			</h:panelGroup>
-			<h:panelGroup>	
+			<h:panelGroup rendered="#{not empty cc.attrs.expense.modifiedTs}">	
 				modified:
 				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
 					<f:param value="#{cc.attrs.expense.modifiedTs}" />
@@ -46,8 +46,12 @@
 			<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 				<f:param value="#{cc.attrs.expense.date}" />
 			</h:outputFormat>
-			<p:datePicker id="expenseDateId" value="#{cc.attrs.expense.date}" showIcon="true" rendered="#{cc.attrs.edition}"/>
-			
+			<p:datePicker id="expenseDateId" value="#{cc.attrs.expense.date}" rendered="#{cc.attrs.edition}"
+				pattern="dd/MM/yyyy"
+				showIcon="true"
+				showButtonBar="true"
+				 />
+				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
 			<h:panelGroup rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 				<h:outputFormat value="{0,number, ###0.00}">
@@ -56,8 +60,10 @@
 				<h:outputText value="#{cc.attrs.expense.currencyCode}"/>
 			</h:panelGroup>
 			<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-edit">
-			    <p:inputNumber id="expenseCurrencyAmountId" value="#{cc.attrs.expense.currencyAmount}"/>  
-			    <p:inputText id="expenseCurrencyCodeId" value="#{cc.attrs.expense.currencyCode}"/>
+			    <p:inputNumber id="expenseCurrencyAmountId" value="#{cc.attrs.expense.currencyAmount}" thousandSeparator="'"/>  
+			    <p:selectOneMenu id="expenseCurrencyCodeId" value="#{cc.attrs.expense.currencyCode}" >
+                	<f:selectItems value="#{dropboxController.currencies}" />
+            	</p:selectOneMenu>
 			</h:panelGroup>
 
 			<h:outputText value="external reference" styleClass="wex-field-label"/>
@@ -68,5 +74,57 @@
 			<h:outputText value="#{cc.attrs.expense.description}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:inputText id="expenseDescriptionId" value="#{cc.attrs.expense.description}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		</h:panelGrid>
+
+		<p:dataTable id="tran" styleClass="js-transactionEntryTable" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}" resizableColumns="true" >
+                        
+                <p:column headerText="Id">
+            		<h:outputText value="#{x.fullId}" />
+        		</p:column>
+                
+                <p:column headerText="Year">
+            		<h:outputText value="#{x.accountingYear}" rendered="#{not cc.attrs.edition}"/>
+            		<p:inputNumber value="#{x.accountingYear}" rendered="#{cc.attrs.edition}"
+            		thousandSeparator="" decimalPlaces="0" width="50px"/>
+        		</p:column>
+
+                <p:column headerText="Factor">
+            		<h:outputText value="#{x.factor}" rendered="#{not cc.attrs.edition}" />
+	          		<p:selectOneButton value="#{x.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
+	                   	<f:selectItems value="#{dropboxController.transactionFactors}" />
+	               	</p:selectOneButton>
+        		</p:column>
+
+                <p:column headerText="System" style="text-align: center">
+            		<h:panelGroup rendered="#{x.systemEntry and not cc.attrs.edition}"><i class="pi pi-check"></i></h:panelGroup>
+            		<p:selectBooleanCheckbox value="#{x.systemEntry}" rendered="#{cc.attrs.edition}" />
+        		</p:column>
+
+            	<p:column headerText="Amount" >
+            		<h:outputText value="#{x.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}"/>
+            		<p:inputNumber value="#{x.currencyAmount}" rendered="#{cc.attrs.edition}"
+            			symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="suffix" 
+            			thousandSeparator="'" />
+        		</p:column>
+        		
+            	<p:column headerText="Value" >
+            		<h:outputText value="#{x.accountingValue}" />
+        		</p:column>
+        		
+        		<p:column headerText="Tags"  >
+        			<h:panelGroup rendered="#{not cc.attrs.edition}">
+        				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
+        			</h:panelGroup>
+        			<h:panelGroup rendered="#{cc.attrs.edition}">
+        				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
+        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tags}" completeMethod="#{dropboxController.completeTag}"
+                        	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true">		 
+				            <p:column>
+				                <h:outputText value="#{theme.name}" />
+				            </p:column>
+				        </p:autoComplete>
+        
+        			</h:panelGroup>
+        		</p:column>
+         </p:dataTable>
    	</composite:implementation>
 </ui:component>

@@ -4,7 +4,7 @@ import java.util.List;
 
 import w.expenses8.data.core.service.IGenericService;
 import w.expenses8.data.domain.model.Tag;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 
 public interface ITagService extends IGenericService<Tag, Long> {
 
@@ -12,5 +12,5 @@ public interface ITagService extends IGenericService<Tag, Long> {
 	
 	List<Tag> findByText(String text);
 
-	List<Tag> findByType(TagEnum type);
+	List<Tag> findByType(TagType type);
 }

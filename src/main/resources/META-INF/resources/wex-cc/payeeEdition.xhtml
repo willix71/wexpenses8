@@ -62,7 +62,24 @@
 			
 			<h:outputText value="country" styleClass="wex-field-label"/>
 			<h:outputText value="#{cc.attrs.payee.countryCode}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeCountryId" value="#{cc.attrs.payee.countryCode}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<p:selectOneMenu id="payeeCountryId" value="#{cc.attrs.payee.countryCode}" rendered="#{cc.attrs.edition}">
+                <f:selectItem itemLabel="--" itemValue="" noSelectionOption="true" />
+                <f:selectItems value="#{dropboxController.countries}" />
+            </p:selectOneMenu>
+			
+			<h:panelGroup><br/></h:panelGroup><h:panelGroup><br/></h:panelGroup>
+
+			<h:outputText value="CCP" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.payee.postalAccount}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeePostalAccountId" value="#{cc.attrs.payee.postalAccount}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+
+			<h:outputText value="Bank" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.payee.postalBank}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeePostalBankId" value="#{cc.attrs.payee.postalBank}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+
+			<h:outputText value="Iban" styleClass="wex-field-label"/>
+			<h:outputText value="#{cc.attrs.payee.iban}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeIbanId" value="#{cc.attrs.payee.iban}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		</h:panelGrid>
    	</composite:implementation>
 </ui:component>

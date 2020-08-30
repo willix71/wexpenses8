@@ -10,7 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.AbstractType;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
@@ -22,7 +22,7 @@ public class Tag extends AbstractType<Tag> {
 
 	@NonNull
 	@javax.validation.constraints.NotNull
-	private TagEnum type;
+	private TagType type;
 
 	private Integer number;
 

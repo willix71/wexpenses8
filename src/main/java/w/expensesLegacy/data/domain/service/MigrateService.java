@@ -20,7 +20,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expensesLegacy.data.domain.model.Account;
 import w.expensesLegacy.data.domain.model.Consolidation;
 import w.expensesLegacy.data.domain.model.Discriminator;
@@ -78,46 +78,46 @@ public class MigrateService {
 		if (account != null) {
 			switch(account.getType()) {
 			case ASSET:
-				tags.add(getTag(account.getName(), 1000, TagEnum.ASSET));
+				tags.add(getTag(account.getName(), 1000, TagType.ASSET));
 				break;
 			case LIABILITY:
-				tags.add(getTag(account.getName(), 2000, TagEnum.LIABILITY));
+				tags.add(getTag(account.getName(), 2000, TagType.LIABILITY));
 				break;
 			case INCOME:
-				tags.add(getTag(account.getName(), 3000, TagEnum.INCOME));
+				tags.add(getTag(account.getName(), 3000, TagType.INCOME));
 				break;
 			case EXPENSE:
 				if (account.getParent()!=null) {
 					if ("vacances".equals(account.getParent().getName())) {
-						tags.add(getTag("vacances", 4000, TagEnum.EXPENSE));
-						tags.add(getTag(account.getName(),Integer.parseInt(account.getNumber()), TagEnum.FLAG));
+						tags.add(getTag("vacances", 4000, TagType.EXPENSE));
+						tags.add(getTag(account.getName(),Integer.parseInt(account.getNumber()), TagType.FLAG));
 						break;
 					} else if ("home".equals(account.getRoot().getName())) {
 						if (discriminator == null) {
-							tags.add(getTag("house", 5000, TagEnum.DISCRIMINATOR));
+							tags.add(getTag("house", 5000, TagType.DISCRIMINATOR));
 						}
 					}
 				}
-				tags.add(getTag(account.getName(), 4000, TagEnum.EXPENSE));
+				tags.add(getTag(account.getName(), 4000, TagType.EXPENSE));
 				break;
 			default:
 			}
 		}
 		if (discriminator != null) {
-			tags.add(getTag(account.getName(), 5000, TagEnum.DISCRIMINATOR));
+			tags.add(getTag(account.getName(), 5000, TagType.DISCRIMINATOR));
 		}
 		if (consolidation != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(consolidation.getDate());
 			String name = MessageFormat.format("{0,number,00}/{1,number,0000}", c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
 			int number = c.get(Calendar.YEAR) * 100 + c.get(Calendar.MONTH)+1;
-			tags.add(getTag(name, number, TagEnum.CONSOLIDATION));
+			tags.add(getTag(name, number, TagType.CONSOLIDATION));
 		}
 		return tags;
 	}
 
 
-	protected Tag getTag(String name, Integer number, TagEnum type) {
+	protected Tag getTag(String name, Integer number, TagType type) {
 		try {
 			return entityManager.createQuery("SELECT a from Tag a where a.name = ?1", Tag.class).setParameter(1, name).getSingleResult();
 		} catch(NoResultException noresult) {

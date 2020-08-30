@@ -18,7 +18,7 @@
 		        <h:panelGrid columns="3" cellpadding="2">  
 					<h:inputText id="payeeContains" value="#{payeeController.criteria.text}" />
 					
-					<p:commandButton id="filterPayeesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{payeeController.refresh}" update="payeesTable" />
+					<p:commandButton id="filterPayeesBtn" icon="pi pi-search" value="Update" type="submit" action="#{payeeController.refresh}" update="payeesTable" />
 					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" type="submit" action="#{payeeController.reset}" update="criteriaFields payeesTable" />
 				</h:panelGrid>
 			</p:fieldset>
@@ -29,28 +29,32 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
                  rowsPerPageTemplate="5,10,50,100,1000"
 				 rows="10"
-                 rowKey="#{x.id}"
+                 rowKey="#{x.uid}"
                  selection="#{payeeController.selectedPayee}" 
                  selectionMode="single"
                  >
-        
-        		<p:column headerText="Type" style="width:10%;">
+                
+                <p:column headerText="Id" sortBy="#{x.id}">
+            		<h:outputText value="#{x.fullId}" />
+        		</p:column>
+        		  
+        		<p:column headerText="Type" sortBy="#{x.payeeType.name}" filterBy="#{x.payeeType.name}" filterMatchMode="contains">
             		<h:outputText value="#{x.payeeType.name}" />
         		</p:column>
 
-            	<p:column headerText="Name" style="width:35%;">
-            		<h:outputText value="#{x.prefix}" /><h:outputText value="#{x.name}" /> <h:outputText value="&#160;" /> <h:outputText value="#{x.extra}" />
+            	<p:column headerText="Name" sortBy="#{x.prefix}#{x.name} #{x.extra}" filterBy="#{x.prefix}#{x.name} #{x.extra}" filterMatchMode="contains">
+            		<h:outputText value="#{x.prefix}#{x.name} #{x.extra}" />
         		</p:column>
         		
-        		<p:column headerText="City" style="width:25%;">
-            		<h:outputText value="#{x.zip}" /><h:outputText value="#{x.city}" /> <h:outputText value="&#160;" /> <h:outputText value="#{x.countryCode}" />
+        		<p:column headerText="City" sortBy="#{x.zip} #{x.city} #{x.countryCode}" filterBy="#{x.zip} #{x.city} #{x.countryCode}" filterMatchMode="contains">
+            		<h:outputText value="#{x.zip} #{x.city} #{x.countryCode}" />
         		</p:column>
 
-        		<p:column headerText="CCP" style="width:10%;">
+        		<p:column headerText="CCP" sortBy="#{x.postalAccount}" filterBy="#{x.postalAccount}" filterMatchMode="contains">
             		<h:outputText value="#{x.postalAccount}" />
         		</p:column>
 
-        		<p:column headerText="Iban" style="width:15%;">
+        		<p:column headerText="Iban" sortBy="#{x.iban}" filterBy="#{x.iban}" filterMatchMode="contains">
             		<h:outputText value="#{x.iban}" />
         		</p:column>
 			</p:dataTable>
@@ -82,7 +86,7 @@
 			<p:outputPanel id="payeeEditionPanel">
 	 			<p:dialog id="payeeEditionDialog" widgetVar="w_payeeEditionDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top" modal="true">
 					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="true"/>
-					<p:commandButton id="payeeSave" value="Save" type="submit" action="#{payeeController.save}" oncomplete="PF('w_payeeEditionDialog').hide()" update="@('.js-payeesTable')"/>
+					<p:commandButton id="payeeSave" value="Save" type="submit" action="#{payeeController.save}" update="@('.js-payeesTable')"/>
 					<p:commandButton id="payeeCancel" value="Cancel" type="button" onclick="PF('w_payeeEditionDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>

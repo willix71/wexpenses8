@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.dao.ITagDao;
 import w.expenses8.data.domain.model.Tag;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.utils.CriteriaHelper;
 
@@ -31,7 +31,7 @@ public class TagService extends GenericServiceImpl<Tag, Long, ITagDao> implement
 	}
 	
 	@Override
-	public List<Tag> findByType(TagEnum type) {
+	public List<Tag> findByType(TagType type) {
 		return getDao().findByType(type);
 	}
 }

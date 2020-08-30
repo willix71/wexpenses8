@@ -1,7 +1,5 @@
 package w.expenses8.web.controller;
 
-import java.util.Locale;
-
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 

@@ -29,7 +29,7 @@ import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.model.enums.TagEnum;
+import w.expenses8.data.domain.model.enums.TagType;
 import static w.expenses8.data.utils.DateHelper.*;
 import w.expenses8.data.utils.ExpenseHelper;
 
@@ -64,16 +64,16 @@ public class TransactionEntryServiceTest {
 	public void test_findTransactionEntrys() {
 		Payee migros = storeService.save(Payee.with().name("Migros").build());
 		Payee doctor = storeService.save(Payee.with().name("Doctor").build());
-		Tag cash = storeService.save(Tag.with().type(TagEnum.ASSET).name("cash").build());
-		Tag visa = storeService.save(Tag.with().type(TagEnum.LIABILITY).name("visa").build());
-		Tag grocery = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("grocery").build());
-		Tag health = storeService.save(Tag.with().type(TagEnum.EXPENSE).name("health").build());
-		Tag kim = storeService.save(Tag.with().type(TagEnum.DISCRIMINATOR).name("kim").build());
-		Tag shaun = storeService.save(Tag.with().type(TagEnum.DISCRIMINATOR).name("shaun").build());
+		Tag cash = storeService.save(Tag.with().type(TagType.ASSET).name("cash").build());
+		Tag visa = storeService.save(Tag.with().type(TagType.LIABILITY).name("visa").build());
+		Tag grocery = storeService.save(Tag.with().type(TagType.EXPENSE).name("grocery").build());
+		Tag health = storeService.save(Tag.with().type(TagType.EXPENSE).name("health").build());
+		Tag kim = storeService.save(Tag.with().type(TagType.DISCRIMINATOR).name("kim").build());
+		Tag shaun = storeService.save(Tag.with().type(TagType.DISCRIMINATOR).name("shaun").build());
 		ExpenseType bvo = storeService.save(ExpenseType.with().name("BVO").build());
 		
 		Expense x1 = expenseService.save(ExpenseHelper.build(toDate(10,6,2019),new BigDecimal(20),"CHF",migros, cash, grocery));
-		Expense x2 = expenseService.save(ExpenseHelper.build(toDate(4,12,2019),new BigDecimal(30),"USD",migros, visa, grocery, Tag.with().type(TagEnum.EXPENSE).name("beer").build()));
+		Expense x2 = expenseService.save(ExpenseHelper.build(toDate(4,12,2019),new BigDecimal(30),"USD",migros, visa, grocery, Tag.with().type(TagType.EXPENSE).name("beer").build()));
 		Expense x3 = expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(40),"CHF",doctor, cash, TransactionEntry.in(health, kim)));
 		Expense x4 = expenseService.save(ExpenseHelper.build(bvo, new Date(),new BigDecimal(50),"CHF",doctor, cash, TransactionEntry.in(health, shaun)));
 		assertThat(expenseService.count()).isEqualTo(4);

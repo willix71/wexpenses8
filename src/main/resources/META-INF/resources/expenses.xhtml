@@ -28,26 +28,30 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
                  rowsPerPageTemplate="5,10,50,100,1000"
 				 rows="10"
-                 rowKey="#{x.id}"
+                 rowKey="#{x.uid}"
                  selection="#{expenseController.selectedExpense}" 
                  selectionMode="single"
                  >
         
-        		<p:column headerText="Type" style="width:10%;">
+                <p:column headerText="Id" sortBy="#{x.id}">
+            		<h:outputText value="#{x.fullId}" />
+        		</p:column>
+        		
+        		<p:column headerText="Date" style="width:15%;text-align: right">
+            		<h:outputFormat value="{0,date,dd/MM/yyyy}">
+						<f:param value="#{x.date}" />
+					</h:outputFormat>
+        		</p:column>
+        		
+        		<p:column headerText="Type" style="width:10%;text-align: center">
             		<h:outputText value="#{x.expenseType.name}" />
         		</p:column>
 
             	<p:column headerText="Payee" style="width:35%;">
             		<h:outputText value="#{x.payee.prefix}#{x.payee.name} #{x.payee.extra}" />
         		</p:column>
-        		
-        		<p:column headerText="City" style="width:15%;">
-            		<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
-						<f:param value="#{x.date}" />
-					</h:outputFormat>
-        		</p:column>
 
-        		<p:column headerText="Amount" style="width:15%;">
+        		<p:column headerText="Amount" style="width:15%;text-align: right">
             		<h:outputText value="#{x.currencyAmount}" />
         		</p:column>
 
@@ -83,7 +87,7 @@
 			<p:outputPanel id="expenseEditionPanel">
 	 			<p:dialog id="expenseEditionDialog" widgetVar="w_expenseEditionDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top" modal="true">
 					<wex:expenseEdition expense="#{expenseController.selectedExpense}" edition="true"/>
-					<p:commandButton id="expenseSave" value="Save" type="submit" action="#{expenseController.save}" oncomplete="PF('w_expenseEditionDialog').hide()" update="@('.js-expensesTable')"/>
+					<p:commandButton id="expenseSave" value="Save" type="submit" action="#{expenseController.save}" update="@('.js-expensesTable')"/>
 					<p:commandButton id="expenseCancel" value="Cancel" type="button" onclick="PF('w_expenseEditionDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
