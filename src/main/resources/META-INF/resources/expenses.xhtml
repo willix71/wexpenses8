@@ -2,6 +2,7 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://java.sun.com/jsf/core" 
 	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
@@ -11,85 +12,68 @@
 	<ui:define name="title">Wexpenses Expenses</ui:define>
 
 	<ui:define name="content">
-		<h:form id="expensesTableForm">
+		<h:form id="wexTableForm">
 			<p:growl id="growl" />
 			
+			<c:set var="controller" value="#{expenseController}" />
+
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
-		        <h:panelGrid columns="3" cellpadding="2">  
-					
-					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="expensesTable" />
-					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" type="submit" action="#{expenseController.reset}" update="criteriaFields expensesTable" />
+		        <h:panelGrid columns="3" cellpadding="2">  					
+					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
+					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" type="submit" action="#{controller.reset}" update="criteriaFields wexTable" />
 				</h:panelGrid>
 			</p:fieldset>
-			
-			<p:dataTable id="expensesTable" styleClass="js-expensesTable" var="x" value="#{expenseController.expenses}" resizableColumns="true"
+
+			<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
                  paginator="true"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
                  rowsPerPageTemplate="5,10,50,100,1000"
 				 rows="10"
                  rowKey="#{x.uid}"
-                 selection="#{expenseController.selectedExpense}" 
+                 selection="#{controller.selectedElement}" 
                  selectionMode="single"
                  >
-        
-                <p:column headerText="Id" sortBy="#{x.id}">
-            		<h:outputText value="#{x.fullId}" />
-        		</p:column>
-        		
-        		<p:column headerText="Date" style="width:15%;text-align: right">
-            		<h:outputFormat value="{0,date,dd/MM/yyyy}">
-						<f:param value="#{x.date}" />
-					</h:outputFormat>
-        		</p:column>
-        		
-        		<p:column headerText="Type" style="width:10%;text-align: center">
-            		<h:outputText value="#{x.expenseType.name}" />
-        		</p:column>
-
-            	<p:column headerText="Payee" style="width:35%;">
-            		<h:outputText value="#{x.payee.prefix}#{x.payee.name} #{x.payee.extra}" />
-        		</p:column>
-
-        		<p:column headerText="Amount" style="width:15%;text-align: right">
-            		<h:outputText value="#{x.currencyAmount}" />
-        		</p:column>
-
-        		<p:column headerText="Currency" style="width:15%;">
-            		<h:outputText value="#{x.currencyCode}" />
-        		</p:column>
+				<f:facet name="header">
+					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
+					<p:columnToggler datasource="wexTable" trigger="toggler" />
+				</f:facet>
+				
+				<ui:include src="/includes/dbableColumns.xhtml"/>
+				
+                 <ui:include src="/includes/expensesColumns.xhtml"/>
 			</p:dataTable>
 			
-			<p:contextMenu for="expensesTable">
-		        <p:menuitem value="View" update="expenseDetailPanel" icon="pi pi-eye" oncomplete="PF('w_expenseDetailDialog').show()"/>
-		        <p:menuitem value="Edit" update="expenseEditionForm" icon="pi pi-pencil" oncomplete="PF('w_expenseEditionDialog').show()"/>
-		        <p:menuitem value="Delete" update="expenseDeletePanel" icon="pi pi-trash" oncomplete="PF('w_expenseDeleteDialog').show()"/>
-		        <p:menuitem value="New" update="expenseEditionForm" icon="pi pi-plus" action="#{expenseController.newExpense}" oncomplete="PF('w_expenseEditionDialog').show()"/>
-		        <p:menuitem value="Refresh" update="expensesTable" icon="pi pi-replay" action="#{expenseController.refresh}"/>
+			<p:contextMenu for="wexTable">
+		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()"/>
+		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()"/>
+		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()"/>
+		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{controller.newElement}" oncomplete="PF('w_wexEditionDialog').show()"/>
+		        <p:menuitem value="Refresh" update="wexTable" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
      
-			<p:outputPanel id="expenseDetailPanel">
-	 			<p:dialog id="expenseDetailDialog" widgetVar="w_expenseDetailDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top">
-					<wex:expenseEdition expense="#{expenseController.selectedExpense}" edition="false"/>
+			<p:outputPanel id="wexDetailPanel">
+	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="UID:#{controller.selectedElement.uid}" position="top">
+					<wex:expenseEdition expense="#{controller.selectedElement}" edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
-			<p:outputPanel id="expenseDeletePanel">
-	 			<p:dialog id="expenseDeleteDialog" widgetVar="w_expenseDeleteDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top" modal="true">
-					<wex:expenseEdition expense="#{expenseController.selectedExpense}" edition="false"/>
-					<p:commandButton id="expenseDeleteBtn" value="Delete" type="submit" action="#{expenseController.delete}" oncomplete="PF('w_expenseDeleteDialog').hide()" update="@('.js-expensesTable')"/>
-					<p:commandButton id="expenseCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_expenseDeleteDialog').hide()" />
+			<p:outputPanel id="wexDeletePanel">
+	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
+					<wex:expenseEdition expense="#{controller.selectedElement}" edition="false"/>
+					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" action="#{controller.delete}" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')"/>
+					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
 		</h:form>
 		
-		<h:form id="expenseEditionForm" >
- 			<p:dialog id="expenseEditionDialog" widgetVar="w_expenseEditionDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top" modal="true">
-				<p:outputPanel id="expenseEditionPanel">
-					<wex:expenseEdition expense="#{expenseController.selectedExpense}" edition="true"/>
+		<h:form id="wexEditionForm" >
+			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
+				<p:outputPanel id="wexEditionPanel">
+					<wex:expenseEdition expense="#{controller.selectedElement}" edition="true"/>
 				</p:outputPanel>
-				<p:commandButton id="expenseSave" value="Save" action="#{expenseController.save}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_expenseEditionDialog').hide()" update="expenseEditionPanel :expensesTableForm:expensesTable"/>
-				<p:commandButton id="expenseCancel" value="Cancel" onclick="PF('w_expenseEditionDialog').hide()" />
+				<p:commandButton id="wexSave" value="Save" action="#{controller.save}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable"/>
+				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
 			</p:dialog>
 		</h:form>
 	</ui:define>

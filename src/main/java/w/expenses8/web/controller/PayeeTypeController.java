@@ -11,4 +11,4 @@ import w.expenses8.data.domain.model.PayeeType;
 @ViewScoped
 @Getter @Setter
 @SuppressWarnings("serial")
-public class PayeeTypeController extends AbstractTypeController<PayeeType> { }
+public class PayeeTypeController extends AbstractTypeListController<PayeeType> { }

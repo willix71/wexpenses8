@@ -11,4 +11,4 @@ import w.expenses8.data.domain.model.Tag;
 @ViewScoped
 @Getter @Setter
 @SuppressWarnings("serial")
-public class TagController extends AbstractTypeController<Tag> { }
+public class TagController extends AbstractTypeListController<Tag> { }

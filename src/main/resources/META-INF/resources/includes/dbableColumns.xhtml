@@ -1,0 +1,24 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
+
+	<p:column headerText="Id" sortBy="#{x.id}">
+		<h:outputText value="#{x.fullId}" />
+	</p:column>
+
+	<p:column headerText="Uid" sortBy="#{x.id}" visible="false">
+		<h:outputText value="#{x.uid}" />
+	</p:column>
+
+	<p:column headerText="Created" sortBy="#{x.createdTs}" visible="false">
+		<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
+			<f:param value="#{x.createdTs}" />
+		</h:outputFormat>
+	</p:column>
+
+
+</ui:composition>

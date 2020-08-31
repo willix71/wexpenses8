@@ -1,0 +1,29 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
+
+	<p:column headerText="Type" sortBy="#{x.payeeType.name}" filterBy="#{x.payeeType.name}" filterMatchMode="contains">
+		<h:outputText value="#{x.payeeType.name}" />
+	</p:column>
+
+	<p:column headerText="Name" sortBy="#{x.prefix}#{x.name} #{x.extra}" filterBy="#{x.prefix}#{x.name} #{x.extra}" filterMatchMode="contains">
+		<h:outputText value="#{x.prefix}#{x.name} #{x.extra}" />
+	</p:column>
+
+	<p:column headerText="City" sortBy="#{x.zip} #{x.city} #{x.countryCode}" filterBy="#{x.zip} #{x.city} #{x.countryCode}" filterMatchMode="contains">
+		<h:outputText value="#{x.zip} #{x.city} #{x.countryCode}" />
+	</p:column>
+
+	<p:column headerText="CCP" sortBy="#{x.postalAccount}" filterBy="#{x.postalAccount}" filterMatchMode="contains">
+		<h:outputText value="#{x.postalAccount}" />
+	</p:column>
+
+	<p:column headerText="Iban" sortBy="#{x.iban}" filterBy="#{x.iban}" filterMatchMode="contains">
+		<h:outputText value="#{x.iban}" />
+	</p:column>
+	
+</ui:composition>
