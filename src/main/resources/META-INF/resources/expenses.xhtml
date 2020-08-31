@@ -84,13 +84,13 @@
 		</h:form>
 		
 		<h:form id="expenseEditionForm" >
-			<p:outputPanel id="expenseEditionPanel">
-	 			<p:dialog id="expenseEditionDialog" widgetVar="w_expenseEditionDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top" modal="true">
+ 			<p:dialog id="expenseEditionDialog" widgetVar="w_expenseEditionDialog" header="UID:#{expenseController.selectedExpense.uid}" position="top" modal="true">
+				<p:outputPanel id="expenseEditionPanel">
 					<wex:expenseEdition expense="#{expenseController.selectedExpense}" edition="true"/>
-					<p:commandButton id="expenseSave" value="Save" type="submit" action="#{expenseController.save}" update="@('.js-expensesTable')"/>
-					<p:commandButton id="expenseCancel" value="Cancel" type="button" onclick="PF('w_expenseEditionDialog').hide()" />
-				</p:dialog>
-			</p:outputPanel>
+				</p:outputPanel>
+				<p:commandButton id="expenseSave" value="Save" action="#{expenseController.save}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_expenseEditionDialog').hide()" update="expenseEditionPanel :expensesTableForm:expensesTable"/>
+				<p:commandButton id="expenseCancel" value="Cancel" onclick="PF('w_expenseEditionDialog').hide()" />
+			</p:dialog>
 		</h:form>
 	</ui:define>
 </ui:composition>	

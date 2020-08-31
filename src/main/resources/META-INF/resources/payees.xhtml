@@ -83,13 +83,13 @@
 		</h:form>
 		
 		<h:form id="payeeEditionForm" >
-			<p:outputPanel id="payeeEditionPanel">
-	 			<p:dialog id="payeeEditionDialog" widgetVar="w_payeeEditionDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top" modal="true">
+			<p:dialog id="payeeEditionDialog" widgetVar="w_payeeEditionDialog" header="UID:#{payeeController.selectedPayee.uid}" position="top" modal="true">
+				<p:outputPanel id="payeeEditionPanel">
 					<wex:payeeEdition payee="#{payeeController.selectedPayee}" edition="true"/>
-					<p:commandButton id="payeeSave" value="Save" type="submit" action="#{payeeController.save}" update="@('.js-payeesTable')"/>
-					<p:commandButton id="payeeCancel" value="Cancel" type="button" onclick="PF('w_payeeEditionDialog').hide()" />
-				</p:dialog>
-			</p:outputPanel>
+				</p:outputPanel>
+				<p:commandButton id="payeeSave" value="Save" action="#{payeeController.save}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_payeeEditionDialog').hide()" update="payeeEditionPanel :payeesTableForm:payeesTable"/>
+				<p:commandButton id="payeeCancel" value="Cancel" onclick="PF('w_payeeEditionDialog').hide()" />
+			</p:dialog>
 		</h:form>
 	</ui:define>
 </ui:composition>	
