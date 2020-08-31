@@ -7,6 +7,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.primefaces.PrimeFaces;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,7 @@ public class PayeeController implements Serializable {
 		} else {
 			payees.set(index, newP);
 		}
+		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
 	}
 
 	public void newPayee() {
