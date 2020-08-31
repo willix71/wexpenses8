@@ -50,3 +50,19 @@
 .wex-input-right>input {
 	text-align: right;
 }
+
+.wex-tags .ui-autocomplete-multiple-container {
+	width:100%
+}
+
+.wex-tag {
+	border: thin;
+	padding: 1 5 1 3;
+    border-color: darkgrey;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.wex-tag-SYSTEM {
+	background-color: Grey
+}

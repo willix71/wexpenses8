@@ -28,4 +28,12 @@
 		<h:outputText value="#{x.currencyCode}" />
 	</p:column>
 
+	<p:rowExpansion>
+		<h:panelGroup>
+			<ui:repeat var="t" value="#{x.tags}">
+				<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+			</ui:repeat>
+		</h:panelGroup>
+	</p:rowExpansion>
+	
 </ui:composition>

@@ -16,7 +16,7 @@ public class ExpenseController extends AbstractListController<Expense> {
 	@Inject
 	private IExpenseService expenseService;
 	
-	private ExpenseCriteria criteria = new ExpenseCriteria();
+	private ExpenseCriteria criteria = ExpenseCriteria.thisYear();
 	
 	public ExpenseCriteria getCriteria() {
 		return criteria;
@@ -26,6 +26,10 @@ public class ExpenseController extends AbstractListController<Expense> {
 		this.criteria = criteria;
 	}
 
+	public void reset() {
+		criteria = ExpenseCriteria.thisYear();
+	}
+	
 	@Override
 	protected void loadEntities() {
 		elements = expenseService.findExpenses(criteria);

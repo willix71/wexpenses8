@@ -7,7 +7,9 @@ import static javax.persistence.CascadeType.REFRESH;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -84,6 +86,10 @@ public class Expense extends DBable<Expense> {
 		transactions.add(transaction);
 		transaction.setExpense(this);
 		return this;
+	}
+	
+	public List<Tag> getTags() {
+		return transactions.stream().flatMap(t->t.getTags().stream()).distinct().collect(Collectors.toList());
 	}
 	
 	public void updateValues() {

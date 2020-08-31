@@ -75,7 +75,7 @@
 			<p:inputText id="expenseDescriptionId" value="#{cc.attrs.expense.description}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		</h:panelGrid>
 
-		<p:dataTable id="tran" styleClass="js-transactionEntryTable" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}" resizableColumns="true" >
+		<p:dataTable id="tran" styleClass="js-transactionEntryTable" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}" resizableColumns="true" expandedRow="true">
                         
                 <p:column headerText="Id" style="max-width:60px; width:60px">
             		<h:outputText value="#{x.fullId}" />
@@ -109,19 +109,19 @@
             		<h:outputText value="#{x.accountingValue}" />
         		</p:column>
         		
-        		<p:column headerText="Tags" >
+        		<p:rowExpansion>
         			<h:panelGroup rendered="#{not cc.attrs.edition}">
         				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
         			</h:panelGroup>
         			<h:panelGroup rendered="#{cc.attrs.edition}">
-        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}"
-                        	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true">		 
+        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true"
+                        	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">		 
 				            <p:column>
-				                <h:outputText value="#{theme.name}" />
+				                <h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}"/>
 				            </p:column>
 				        </p:autoComplete>
         			</h:panelGroup>
-        		</p:column>
+        		</p:rowExpansion>
          </p:dataTable>
    	</composite:implementation>
 </ui:component>
