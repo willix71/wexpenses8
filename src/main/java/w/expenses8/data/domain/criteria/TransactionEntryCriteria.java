@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.domain.model.Tag;
 
 @SuperBuilder(builderMethodName = "with")
-@Accessors(chain = true) @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 public class TransactionEntryCriteria extends ExpenseCriteria {
+
+	private static final long serialVersionUID = 1L;
 
 	private Integer accountingYear;
 	private Collection<Tag> tags;

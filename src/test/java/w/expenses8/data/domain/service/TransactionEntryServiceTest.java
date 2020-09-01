@@ -1,8 +1,10 @@
 package w.expenses8.data.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static w.expenses8.data.utils.DateHelper.toDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -22,14 +24,14 @@ import org.springframework.test.context.TestPropertySource;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
-import w.expenses8.data.core.criteria.RangeCriteria;
+import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
+import w.expenses8.data.core.criteria.RangeNumberCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
-import static w.expenses8.data.utils.DateHelper.*;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -81,7 +83,7 @@ public class TransactionEntryServiceTest {
 		List<TransactionEntry> accounted2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingYear(2019).build());
 		assertThat(accounted2019).hasSize(5);
 		
-		List<TransactionEntry> year2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().date(new RangeCriteria<Date>(toDate(1,1,2019), toDate(1,1,2020))).build());
+		List<TransactionEntry> year2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().localDate(new RangeLocalDateCriteria(LocalDate.of(2019,1,1), LocalDate.of(2020,1,1))).build());
 		assertThat(year2019).hasSize(5);
 		
 		List<TransactionEntry> chf = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().currencyCode("USD").build());
@@ -98,7 +100,7 @@ public class TransactionEntryServiceTest {
 		List<TransactionEntry> bvos = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().expenseType(bvo).build());
 		assertThat(bvos).hasSize(4);
 		
-		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingValue(new RangeCriteria<BigDecimal>(new BigDecimal(40),new BigDecimal(50))).build());
+		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingValue(new RangeNumberCriteria(new BigDecimal(40),new BigDecimal(50))).build());
 		assertThat(groceries).hasSize(2);
 	}
 }

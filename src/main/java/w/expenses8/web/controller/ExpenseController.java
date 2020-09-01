@@ -38,16 +38,8 @@ public class ExpenseController extends AbstractListController<Expense> {
 	
 	@Override
 	protected void loadEntities() {
+		log.info("loading expenses with {}", criteria);
 		elements = expenseService.findExpenses(criteria);
-	}
-	
-	public Expense getSelectedExpense() {
-		return getSelectedElement();
-	}
-	
-	public void setSelectedExpense(Expense selectedElement) {
-		log.info("Selecting expense {}", selectedElement);
-		setSelectedElement(expenseService.reload(selectedElement));
 	}
 	
 	public void newDocumentFile() {

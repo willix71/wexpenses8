@@ -66,7 +66,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		QExpense ex = QExpense.expense;
 		
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = CriteriaHelper.addRange(predicate, criteria.getDate(), ex.date);
+		predicate = CriteriaHelper.addDateRange(predicate, criteria.getLocalDate(), ex.date);	
 		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), ex.currencyAmount);
 		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), ex.accountingValue);
 

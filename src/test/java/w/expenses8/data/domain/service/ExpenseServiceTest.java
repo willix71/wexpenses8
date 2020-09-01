@@ -20,7 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
-import w.expenses8.data.core.criteria.RangeCriteria;
+import w.expenses8.data.core.criteria.RangeNumberCriteria;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.Expense;
@@ -124,7 +124,7 @@ public class ExpenseServiceTest {
 		assertThat(updated2.getTransactions()).hasSize(3);
 		
 		// load using the criteria (loads all in one)
-		List<Expense> loadeds = expenseService.findExpenses(ExpenseCriteria.with().accountingValue(new RangeCriteria<BigDecimal>(new BigDecimal(100),null)).build());
+		List<Expense> loadeds = expenseService.findExpenses(ExpenseCriteria.with().accountingValue(new RangeNumberCriteria(new BigDecimal(100),null)).build());
 		assertThat(loadeds).hasSize(1);
 		Expense loaded = CollectionHelper.first(loadeds);		
 		assertThat(loaded.getVersion()).isEqualTo(2L);
@@ -147,7 +147,7 @@ public class ExpenseServiceTest {
 	@Test
 	@Order(10)
 	public void test_listByCriteria() {
-		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeCriteria<BigDecimal>(new BigDecimal(50),new BigDecimal(100))).build());
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeNumberCriteria(new BigDecimal(50),new BigDecimal(100))).build());
 		log.info("\n\t===== Criteria Expenses {} ====", all);		
 		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 		assertThat(all).hasSize(1);
@@ -156,7 +156,7 @@ public class ExpenseServiceTest {
 	@Test
 	@Order(10)
 	public void test_listByCriteriaPayeeText() {
-		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeCriteria<BigDecimal>(new BigDecimal(5),null)).payeeText("someone").build());
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeNumberCriteria(new BigDecimal(5),null)).payeeText("someone").build());
 		log.info("\n\t===== Someone's Expenses {} ====", all);		
 		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 		assertThat(all).hasSize(2);

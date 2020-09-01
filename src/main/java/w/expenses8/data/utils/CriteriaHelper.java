@@ -1,5 +1,9 @@
 package w.expenses8.data.utils;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -27,6 +31,20 @@ public class CriteriaHelper {
 			}
 			if (range.getTo() != null) {
 				predicate = predicate.and(value.lt(range.getTo()));
+			}
+		}
+		return predicate;
+	}
+
+	public static <T extends Number & Comparable<T>> BooleanBuilder addDateRange(BooleanBuilder predicate, RangeCriteria<LocalDate> range, ComparableExpression<Date> value) {
+		if (range != null) {
+			if (range.getFrom() != null) {
+				Date d =  Date.from(range.getFrom().atStartOfDay(ZoneId.systemDefault()).toInstant());
+				predicate = predicate.and(value.gt(d).or(value.eq(d)));
+			}
+			if (range.getTo() != null) {
+				Date d =  Date.from(range.getTo().atStartOfDay(ZoneId.systemDefault()).toInstant());
+				predicate = predicate.and(value.lt(d));
 			}
 		}
 		return predicate;

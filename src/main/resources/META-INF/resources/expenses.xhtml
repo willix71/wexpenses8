@@ -18,9 +18,17 @@
 			<c:set var="controller" value="#{expenseController}" />
 
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
-		        <h:panelGrid columns="3" cellpadding="2">
-		        	<p:datePicker value="#{expenseController.criteria.date.from}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" />
-		        	<p:datePicker value="#{expenseController.criteria.date.to}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" />
+		        <h:panelGrid columns="2" cellpadding="2">
+		        	<p:datePicker value="#{expenseController.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
+		        	<p:datePicker value="#{expenseController.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
+		        	<p:inputNumber value="#{expenseController.criteria.currencyAmount.from}" />
+		        	<p:inputNumber value="#{expenseController.criteria.currencyAmount.to}" />
+		        	
+		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{expenseController.criteria.currencyCode}" >
+		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+                		<f:selectItems value="#{dropboxController.currencies}" />
+            		</p:selectOneMenu>
+            	
 					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
 					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" type="submit" action="#{controller.reset}" update="criteriaFields wexTable" />
 				</h:panelGrid>
