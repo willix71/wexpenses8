@@ -78,15 +78,14 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 		selectedElement = clazz.newInstance();
 	}
 	
-	public void onRowEdit(RowEditEvent event) {
-		@SuppressWarnings("unchecked")
-		T t = (T) event.getObject();
+	public void onRowEdit(RowEditEvent<T> event) {
+		T t = event.getObject();
 		t = elementService.save(selectedElement);
-		showMessage(nameOf(t) + "' saved");
+		showMessage(nameOf(t) + " saved " + t.getFullId());
 		refresh();
 	}
 
-	public void onRowCancel(RowEditEvent event) {
+	public void onRowCancel(RowEditEvent<T> event) {
 		refresh();
 	}
 	
@@ -103,7 +102,7 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	
 	public void delete() {
 		elementService.delete(selectedElement);
-		showMessage(nameOf(selectedElement) + "' deleted");
+		showMessage(nameOf(selectedElement) + " deleted");
 		refresh();
 		selectedElement = null;
 	}
