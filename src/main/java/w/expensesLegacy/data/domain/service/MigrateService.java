@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
@@ -34,7 +35,7 @@ public class MigrateService {
 	@Transactional
 	public void migrate() {
 		int i = 0;
-		for(w.expensesLegacy.data.domain.model.Expense legacyExpense: entityManager.createQuery("SELECT a from ExpenseOld a", w.expensesLegacy.data.domain.model.Expense.class).getResultList()) {
+		for(w.expensesLegacy.data.domain.model.Expense legacyExpense: entityManager.createQuery("SELECT a from ExpenseOld a order by a.date DESC", w.expensesLegacy.data.domain.model.Expense.class).getResultList()) {
 			System.out.println(++i + ") " + legacyExpense);
 			
 			Expense newx = w.expenses8.data.domain.model.Expense.with()
@@ -69,7 +70,13 @@ public class MigrateService {
 			}
 			newx.setExchangeRate(getExchangeRate(rate));
 			newx.updateValues();
-			entityManager.persist(newx);			
+			if (legacyExpense.getFileDate()!=null && legacyExpense.getFileName()!=null) {
+				newx.addDocumentFile(new DocumentFile(newx, legacyExpense.getFileDate(), legacyExpense.getFileName()));
+			}
+			entityManager.persist(newx);
+			entityManager.flush();
+			if (i>100) break;
+			//System.exit(0);
 		}
 	}
 	
