@@ -27,5 +27,8 @@
 				</h:outputFormat>
 			</h:panelGroup>
 		</h:panelGrid>
+		<h:panelGrid rendered="#{empty cc.attrs.dbable}">
+			Nothing to display
+		</h:panelGrid>
 	</composite:implementation>
 </ui:component>

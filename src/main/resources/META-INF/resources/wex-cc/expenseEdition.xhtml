@@ -105,48 +105,48 @@
     	</p:contextMenu>
 		
 		<p/>		
-		<p:dataTable id="transactionEntriesTableId" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}"
+		<p:dataTable id="transactionEntriesTableId" var="tentry" value="#{cc.attrs.expense.transactions}" rowKey="#{tentry.uid}"
 				styleClass="js-transactionEntryTable" resizableColumns="true" expandedRow="true" >
 
 			<p:column headerText="Id" style="max-width:60px; width:60px">
-				<h:outputText value="#{x.fullId}" />
+				<h:outputText value="#{tentry.fullId}" />
 			</p:column>
 
 			<p:column headerText="Year" style="max-width:70px; width:70px">
-				<h:outputText value="#{x.accountingYear}" rendered="#{not cc.attrs.edition}" />
-				<p:spinner id="accountingYearId" value="#{x.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" />
+				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
+				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" />
 			</p:column>
 
 			<p:column headerText="Factor" style="max-width:120px; width:120px">
-				<h:outputText value="#{x.factor}" rendered="#{not cc.attrs.edition}" />
-				<p:selectOneButton value="#{x.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
+				<h:outputText value="#{tentry.factor}" rendered="#{not cc.attrs.edition}" />
+				<p:selectOneButton value="#{tentry.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
 					<f:selectItems value="#{dropboxController.transactionFactors}" />
 				</p:selectOneButton>
 			</p:column>
 
 			<p:column headerText="System" styleClass="wex-cell-centered" style="max-width:50px; width:50px">
-				<h:panelGroup rendered="#{x.systemEntry and not cc.attrs.edition}">
+				<h:panelGroup rendered="#{tentry.systemEntry and not cc.attrs.edition}">
 					<i class="pi pi-check"></i>
 				</h:panelGroup>
-				<p:selectBooleanCheckbox value="#{x.systemEntry}" rendered="#{cc.attrs.edition}" />
+				<p:selectBooleanCheckbox value="#{tentry.systemEntry}" rendered="#{cc.attrs.edition}" />
 			</p:column>
 
 			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
-				<h:outputText value="#{x.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
-				<p:inputNumber value="#{x.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="s"
+				<h:outputText value="#{tentry.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
+				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="s"
 					thousandSeparator="'" styleClass="wex-input-right wex-input-150" />
 			</p:column>
 
 			<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
-				<h:outputText value="#{x.accountingValue}" />
+				<h:outputText value="#{tentry.accountingValue}" />
 			</p:column>
 
 			<p:rowExpansion>
 				<h:panelGroup rendered="#{not cc.attrs.edition}">
-					<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
+					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{cc.attrs.edition}">
-					<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+					<p:autoComplete id="tagsId" multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
 						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
 						<p:column>
 							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
