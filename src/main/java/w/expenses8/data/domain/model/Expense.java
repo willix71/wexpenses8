@@ -79,12 +79,48 @@ public class Expense extends DBable<Expense> {
 	@OrderBy("factor, accountingValue")
 	private Set<TransactionEntry> transactions;
 	
+	private Integer documentCount;
+	
+	@Valid
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@OrderBy("documentDate, fileName")
+	private Set<DocumentFile> documentFiles;
+	
+	public void updateDocumentCount() {
+		this.documentCount=documentFiles==null?0:documentFiles.size();
+	}
+
+	public Expense addDocumentFile(DocumentFile document) {
+		if (documentFiles == null) {
+			documentFiles = new HashSet<DocumentFile>();
+		}
+		documentFiles.add(document);
+		document.setExpense(this);
+		updateDocumentCount();
+		return this;
+	}
+
+	public Expense removeDocumentFile(DocumentFile document) {
+		if (documentFiles != null) documentFiles.remove(document);
+		document.setExpense(null);
+		updateDocumentCount();
+		return this;
+	}
+	
 	public Expense addTransaction(TransactionEntry transaction) {
 		if (transactions == null) {
 			transactions = new HashSet<TransactionEntry>();
 		}
 		transactions.add(transaction);
 		transaction.setExpense(this);
+		return this;
+	}
+
+	public Expense removeTransaction(TransactionEntry transaction) {
+		if (transactions != null) transactions.remove(transaction);
+		transaction.setExpense(null);
+		updateDocumentCount();
 		return this;
 	}
 	

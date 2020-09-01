@@ -28,6 +28,10 @@
 		<h:outputText value="#{x.currencyCode}" />
 	</p:column>
 
+	<p:column headerText="Docs" style="width:15%;">
+		<h:outputText value="#{x.documentCount}" />
+	</p:column>
+
 	<p:rowExpansion>
 		<h:panelGroup>
 			<ui:repeat var="t" value="#{x.tags}">

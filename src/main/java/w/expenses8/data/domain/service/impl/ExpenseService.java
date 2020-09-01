@@ -45,6 +45,14 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	}
 	
 	@Override
+	public Expense reload(Expense expense) {
+		if (expense==null) return null;
+		var query = baseQuery().where(QExpense.expense.id.eq(expense.getId()));
+		Expense x = query.fetchOne();
+		return x;
+	}
+
+	@Override
 	public Expense save(Expense x) {
 		persist(x.getExpenseType());
 		persist(x.getPayee());
@@ -78,6 +86,12 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		}
 		
 		//select ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags
+		var query = baseQuery().where(predicate).orderBy(new OrderSpecifier<Date>(Order.DESC, ex.date));
+		return query.fetch();
+		
+	}
+	private JPAQuery<Expense> baseQuery() {
+		QExpense ex = QExpense.expense;
 		var query = new JPAQuery<Expense>(entityManager);
 		query.distinct().select(ex).from(ex)
 			.leftJoin(ex.expenseType).fetchJoin()
@@ -85,10 +99,8 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			.leftJoin(ex.payee).fetchJoin()
 			.leftJoin(ex.transactions, QTransactionEntry.transactionEntry).fetchJoin()
 			.leftJoin(QTransactionEntry.transactionEntry.tags).fetchJoin()
-			.where(predicate)
-			.orderBy(new OrderSpecifier<Date>(Order.DESC, ex.date));
-		return query.fetch();
-		
+			.leftJoin(QExpense.expense.documentFiles).fetchJoin();
+		return query;
 	}
 
 // return StreamSupport.stream(getDao().findAll(predicate, new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date)).spliterator(),false).collect(Collectors.toList());

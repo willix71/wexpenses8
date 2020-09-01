@@ -22,12 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
 import w.expenses8.data.core.criteria.RangeCriteria;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
+import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.utils.CollectionHelper;
+import w.expenses8.data.utils.DateHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -70,6 +72,9 @@ public class ExpenseServiceTest {
 		assertThat(saved.getId()).isNotNull();
 		Expense loaded =expenseService.load(saved.getId());
 		assertThat(loaded).isNotNull().isNotSameAs(saved);
+		
+		Expense reloaded =expenseService.reload(saved);
+		assertThat(reloaded.getDocumentFiles()).isEmpty();
 	}
 	
 	@Test
@@ -96,6 +101,9 @@ public class ExpenseServiceTest {
 		Expense saved = expenseService.save(x);
 		log.info("\n\t===== Saved 1 Expense {} ====", saved);
 		assertThat(saved.getVersion()).isEqualTo(0L);
+		
+		// need to reload so that the documentFiles collections is reloaded
+		saved = expenseService.reload(saved);
 		
 		saved.setPayee(Payee.with().name("New Payee").build()); // new payee
 		Expense updated1 = expenseService.save(saved);
@@ -172,5 +180,53 @@ public class ExpenseServiceTest {
 		assertThat(storeService.load(Payee.class, nonono.getId())).isNotNull();
 		assertThat(storeService.load(Tag.class, in.getId())).isNotNull();
 		assertThat(storeService.load(Tag.class, out.getId())).isNotNull();
+	}
+	
+	@Test
+	@Order(200)
+	public void test_reload() {
+		List<Expense> all = expenseService.loadAll();
+		
+		assertThat(expenseService.reload(all.get(0)).getDocumentFiles()).hasSize(0);
+	}
+	
+	@Test
+	@Order(300)
+	public void test_documentFile() {
+		Payee tempo = Payee.with().name("Temporary").build();
+		Tag tmp1 = Tag.with().type(TagType.ASSET).name("temp1").build();
+		Tag tmp2 = Tag.with().type(TagType.EXPENSE).name("temp2").build();
+		
+		Expense x1 = ExpenseHelper.build(new Date(),new BigDecimal(1000),"CHF",tempo, tmp1,  tmp2);
+		x1.addDocumentFile(new DocumentFile(new Date(), "test file 1"));
+		expenseService.save(x1);
+		
+		// simple id check
+		assertThat(x1.getId()).isNotNull();
+		
+		Expense r1 = expenseService.reload(x1);
+		assertThat(r1.getDocumentFiles()).hasSize(1);
+		assertThat(r1.getDocumentCount()).isEqualTo(1);
+		assertThat(storeService.loadAll(DocumentFile.class)).hasSize(1).extracting(f->f.getFileName()).contains("test file 1");
+		
+		// add another document
+		Expense x2 = expenseService.reload(x1); 
+		x2.addDocumentFile(new DocumentFile(DateHelper.toDate(1,1,2000), "test file 2"));
+		expenseService.save(x2);
+		
+		Expense r2 = expenseService.reload(x2);
+		assertThat(r2.getDocumentFiles()).hasSize(2);
+		assertThat(r2.getDocumentCount()).isEqualTo(2);
+		assertThat(storeService.loadAll(DocumentFile.class)).hasSize(2).extracting(f->f.getFileName()).contains("test file 1","test file 2");
+		
+		Expense x3 = expenseService.reload(x2); 
+		DocumentFile doc = CollectionHelper.first(x3.getDocumentFiles());
+		x3.removeDocumentFile(doc);		
+		expenseService.save(x3);
+		
+		Expense r3 = expenseService.reload(x2);
+		assertThat(r3.getDocumentFiles()).hasSize(1);
+		assertThat(r3.getDocumentCount()).isEqualTo(1);
+		assertThat(storeService.loadAll(DocumentFile.class)).hasSize(1).extracting(f->f.getFileName()).contains("test file 1");
 	}
 }

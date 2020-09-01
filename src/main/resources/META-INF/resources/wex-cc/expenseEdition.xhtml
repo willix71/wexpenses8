@@ -1,8 +1,11 @@
 <ui:component xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:p="http://primefaces.org/ui"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"	
    	xmlns:composite="http://java.sun.com/jsf/composite">
    	
 	<composite:interface>
@@ -11,23 +14,9 @@
 	</composite:interface>
 	
 	<composite:implementation>
-		<h:panelGrid columns="3" rendered="#{not empty cc.attrs.expense}">
-			<h:panelGroup>
-				id: #{cc.attrs.expense.fullId} 
-			</h:panelGroup>
-			<h:panelGroup>
-				created:
-				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
-					<f:param value="#{cc.attrs.expense.createdTs}" />
-				</h:outputFormat>
-			</h:panelGroup>
-			<h:panelGroup rendered="#{not empty cc.attrs.expense.modifiedTs}">	
-				modified:
-				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
-					<f:param value="#{cc.attrs.expense.modifiedTs}" />
-				</h:outputFormat>
-			</h:panelGroup>
-		</h:panelGrid>
+		<c:set var="controller" value="#{expenseController}" />
+		
+		<wex:dbableDetails dbable="#{cc.attrs.expense}"/>
 		
 		<h:panelGrid columns="2" rendered="#{not empty cc.attrs.expense}" style="width:100%">
 			<h:outputText value="type" styleClass="wex-field-label"/>
@@ -50,7 +39,8 @@
 				pattern="dd/MM/yyyy"
 				showIcon="true"
 				showButtonBar="true"
-				 />
+				appendTo="@(body)"
+				/>
 				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
 			<h:panelGroup rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
@@ -73,55 +63,97 @@
 			<h:outputText value="description" styleClass="wex-field-label"/>
 			<h:outputText value="#{cc.attrs.expense.description}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:inputText id="expenseDescriptionId" value="#{cc.attrs.expense.description}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			
+			<h:outputText value="documents" styleClass="wex-field-label"/>
+			<h:outputText id="expenseDocumentCountId" value="#{cc.attrs.expense.documentCount}" styleClass="wex-field-value"/>
 		</h:panelGrid>
 
-		<p:dataTable id="tran" styleClass="js-transactionEntryTable" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}" resizableColumns="true" expandedRow="true">
-                        
-                <p:column headerText="Id" style="max-width:60px; width:60px">
-            		<h:outputText value="#{x.fullId}" />
-        		</p:column>
-                
-                <p:column headerText="Year" style="max-width:70px; width:70px">
-            		<h:outputText value="#{x.accountingYear}" rendered="#{not cc.attrs.edition}"/>
-            		<p:spinner id="accountingYearId" value="#{x.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70"/>
-        		</p:column>
+		<p/>
+		<p:dataTable id="documentFilesTableId"  var="docFile" value="#{cc.attrs.expense.documentFiles}"
+				styleClass="js-documentFilesTable" resizableColumns="true" 
+                selection="#{controller.selectedDocumentFile}" 
+                selectionMode="single"
+                rowKey="#{docFile.uid}"
+                disableContextMenuIfEmpty="false" 
+                > 
+	    
+            <p:column headerText="Date" style="max-width:70px; width:70px">
+           		<h:outputFormat value="{0,date,dd/MM/yyyy}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+					<f:param value="#{docFile.documentDate}" />
+				</h:outputFormat>
+				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{cc.attrs.edition}"
+					pattern="dd/MM/yyyy"
+					showIcon="true"
+					showButtonBar="true"
+					appendTo="@(body)"
+			 	/>
+       		</p:column>
+            
+            <p:column headerText="Filename" style="max-width:120px; width:120px">
+           		<h:outputText value="#{docFile.fileName}" rendered="#{not cc.attrs.edition}" />
+          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+       		</p:column>
+       		
+       		<p:column headerText="View" style="max-width:10px; width:10px" width="5" >
+       			<p:button href="http://www.stackoverflow.com" icon="pi pi-search" target="_blank"/>
+       		</p:column>
+		</p:dataTable>        		
+       
+        <p:contextMenu for="documentFilesTableId">
+        	<p:menuitem value="Add" update="documentFilesTableId expenseDocumentCountId " icon="pi pi-plus" action="#{controller.newDocumentFile}"/>
+        	<p:menuitem value="Delete" update="documentFilesTableId expenseDocumentCountId " icon="pi pi-trash" action="#{controller.deleteDocumentFile}"/>
+    	</p:contextMenu>
+		
+		<p/>		
+		<p:dataTable id="transactionEntriesTableId" var="x" value="#{cc.attrs.expense.transactions}" rowKey="#{x.uid}"
+				styleClass="js-transactionEntryTable" resizableColumns="true" expandedRow="true" >
 
-                <p:column headerText="Factor" style="max-width:120px; width:120px">
-            		<h:outputText value="#{x.factor}" rendered="#{not cc.attrs.edition}" />
-	          		<p:selectOneButton value="#{x.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
-	                   	<f:selectItems value="#{dropboxController.transactionFactors}" />
-	               	</p:selectOneButton>
-        		</p:column>
+			<p:column headerText="Id" style="max-width:60px; width:60px">
+				<h:outputText value="#{x.fullId}" />
+			</p:column>
 
-                <p:column headerText="System" styleClass="wex-cell-centered" style="max-width:50px; width:50px">
-            		<h:panelGroup rendered="#{x.systemEntry and not cc.attrs.edition}"><i class="pi pi-check"></i></h:panelGroup>
-            		<p:selectBooleanCheckbox value="#{x.systemEntry}" rendered="#{cc.attrs.edition}" />
-        		</p:column>
+			<p:column headerText="Year" style="max-width:70px; width:70px">
+				<h:outputText value="#{x.accountingYear}" rendered="#{not cc.attrs.edition}" />
+				<p:spinner id="accountingYearId" value="#{x.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" />
+			</p:column>
 
-            	<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
-            		<h:outputText value="#{x.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}"/>
-            		<p:inputNumber value="#{x.currencyAmount}" rendered="#{cc.attrs.edition}"
-            			symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="suffix" 
-            			thousandSeparator="'" styleClass="wex-input-right wex-input-150"  />
-        		</p:column>
-        		
-            	<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
-            		<h:outputText value="#{x.accountingValue}" />
-        		</p:column>
-        		
-        		<p:rowExpansion>
-        			<h:panelGroup rendered="#{not cc.attrs.edition}">
-        				<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
-        			</h:panelGroup>
-        			<h:panelGroup rendered="#{cc.attrs.edition}">
-        				<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true"
-                        	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">		 
-				            <p:column>
-				                <h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}"/>
-				            </p:column>
-				        </p:autoComplete>
-        			</h:panelGroup>
-        		</p:rowExpansion>
-         </p:dataTable>
+			<p:column headerText="Factor" style="max-width:120px; width:120px">
+				<h:outputText value="#{x.factor}" rendered="#{not cc.attrs.edition}" />
+				<p:selectOneButton value="#{x.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
+					<f:selectItems value="#{dropboxController.transactionFactors}" />
+				</p:selectOneButton>
+			</p:column>
+
+			<p:column headerText="System" styleClass="wex-cell-centered" style="max-width:50px; width:50px">
+				<h:panelGroup rendered="#{x.systemEntry and not cc.attrs.edition}">
+					<i class="pi pi-check"></i>
+				</h:panelGroup>
+				<p:selectBooleanCheckbox value="#{x.systemEntry}" rendered="#{cc.attrs.edition}" />
+			</p:column>
+
+			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
+				<h:outputText value="#{x.currencyAmount} #{cc.attrs.expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
+				<p:inputNumber value="#{x.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="s"
+					thousandSeparator="'" styleClass="wex-input-right wex-input-150" />
+			</p:column>
+
+			<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
+				<h:outputText value="#{x.accountingValue}" />
+			</p:column>
+
+			<p:rowExpansion>
+				<h:panelGroup rendered="#{not cc.attrs.edition}">
+					<ui:repeat var="t" value="#{x.tags}">#{t.name}</ui:repeat>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{cc.attrs.edition}">
+					<p:autoComplete id="tagsId" multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						<p:column>
+							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						</p:column>
+					</p:autoComplete>
+				</h:panelGroup>
+			</p:rowExpansion>
+		</p:dataTable>
    	</composite:implementation>
 </ui:component>
