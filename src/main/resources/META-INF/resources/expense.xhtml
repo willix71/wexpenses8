@@ -1,0 +1,21 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses PayeeTypes</ui:define>
+
+	<ui:define name="content">
+
+
+		<h:form id="wexForm" styleClass="wex-single-element">
+			<wex:expenseEdition expense="#{expenseController.selectedElement}" edition="true"/>
+		</h:form>
+	</ui:define>
+</ui:composition>	

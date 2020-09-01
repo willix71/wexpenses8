@@ -1,3 +1,7 @@
+.wex-single-element {
+   font-family: Arial,sans-serif;
+}
+
 .wx-title {
 	display: flex;
 	align-items:center
@@ -64,5 +68,26 @@
 }
 
 .wex-tag-SYSTEM {
-	background-color: Grey
+	background-color: grey
+}
+.wex-tag-ASSET {
+	background-color: white;
+}
+.wex-tag-LIABILITY {
+	background-color: orange
+}
+.wex-tag-INCOME {
+	background-color: blue
+}
+.wex-tag-EXPENSE {
+	background-color: red
+}
+.wex-tag-DISCRIMINATOR {
+	background-color: yellow;
+}
+.wex-tag-CONSOLIDATION {
+	background-color: silver;
+}
+.wex-tag-FLAG {
+	background-color: green;
 }
