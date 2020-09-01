@@ -22,8 +22,9 @@ import w.expenses8.data.domain.service.ITagService;
 
 @Named
 @ApplicationScoped
-@SuppressWarnings("serial")
 public class DropboxController implements Serializable {
+
+	private static final long serialVersionUID = 3351336696734127296L;
 
 	@Inject
 	private IPayeeTypeService payeeTypeService;

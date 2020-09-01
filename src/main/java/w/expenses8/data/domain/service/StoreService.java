@@ -1,6 +1,7 @@
 package w.expenses8.data.domain.service;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +29,10 @@ public class StoreService {
 	
 	public <T extends DBable<T>> T load(Class<T> clazz, Serializable id) {
 		return entityManager.find(clazz, id);
+	}
+	
+	public <T extends DBable<T>> List<T> loadAll(Class<T> clazz) {
+		return entityManager.createQuery("FROM " + clazz.getSimpleName(), clazz).getResultList();
 	}
 	
 }

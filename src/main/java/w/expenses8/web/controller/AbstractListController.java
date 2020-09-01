@@ -11,11 +11,14 @@ import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.RowEditEvent;
 
+import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.IGenericService;
 
-@SuppressWarnings("serial")
+@Slf4j
 public class AbstractListController<T extends DBable<T>> implements Serializable {
+
+	private static final long serialVersionUID = 3351336696734127296L;
 
 	protected final Class<T> clazz;
 	
@@ -47,6 +50,7 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	}
 
 	public void setSelectedElement(T selectedElement) {
+		log.info("Selecting {}", selectedElement);
 		this.selectedElement = selectedElement;
 	}
 

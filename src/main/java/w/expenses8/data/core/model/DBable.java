@@ -57,6 +57,10 @@ public class DBable<T extends DBable<T>> implements Serializable, Cloneable {
 	private String uid = UUID.randomUUID().toString();
 
 	@PrePersist
+	public void prepersis() {
+		if (modifiedTs != null) modifiedTs = new Date();
+	}
+	
 	@PreUpdate
 	public void preupdate() {
 		modifiedTs = new Date();

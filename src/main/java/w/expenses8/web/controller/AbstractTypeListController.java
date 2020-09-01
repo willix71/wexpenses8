@@ -2,8 +2,9 @@ package w.expenses8.web.controller;
 
 import w.expenses8.data.core.model.AbstractType;
 
-@SuppressWarnings("serial")
 public class AbstractTypeListController<T extends AbstractType<T>> extends AbstractListController<T> {
+
+	private static final long serialVersionUID = 3351336696734127296L;
 
 	public AbstractTypeListController() {
 		super();
