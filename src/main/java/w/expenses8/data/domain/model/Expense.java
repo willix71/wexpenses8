@@ -5,7 +5,7 @@ import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.REFRESH;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -35,7 +33,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
-import w.expenses8.data.utils.DateHelper;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -49,8 +46,7 @@ public class Expense extends DBable<Expense> {
 	private ExpenseType expenseType;
 	
 	@NotNull
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date date;
+	private LocalDateTime date;
 
 	@NotNull
 	private BigDecimal currencyAmount;
@@ -129,7 +125,7 @@ public class Expense extends DBable<Expense> {
 	}
 	
 	public void updateValues() {
-		transactions.stream().filter(t->t.getAccountingYear()==null).forEach(t->t.setAccountingYear(DateHelper.year(date)));
+		transactions.stream().filter(t->t.getAccountingYear()==null).forEach(t->t.setAccountingYear(date.getYear()));
 		if (exchangeRate == null) {
 			accountingValue = currencyAmount;
 		} else {

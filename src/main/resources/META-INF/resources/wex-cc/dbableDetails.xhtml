@@ -16,15 +16,15 @@
 			</h:panelGroup>
 			<h:panelGroup>
 				created:
-				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm:ss}">
-					<f:param value="#{cc.attrs.dbable.createdTs}" />
-				</h:outputFormat>
+				<h:outputText value="#{cc.attrs.dbable.createdTs}" >
+					<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
+				</h:outputText>
 			</h:panelGroup>
 			<h:panelGroup rendered="#{not empty cc.attrs.dbable.modifiedTs}">	
 				modified:
-				<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm:ss}">
-					<f:param value="#{cc.attrs.dbable.modifiedTs}" />
-				</h:outputFormat>
+				<h:outputText value="#{cc.attrs.dbable.modifiedTs}" >
+					<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
+				</h:outputText>
 			</h:panelGroup>
 		</h:panelGrid>
 		<h:panelGrid rendered="#{empty cc.attrs.dbable}">

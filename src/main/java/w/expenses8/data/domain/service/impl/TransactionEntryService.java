@@ -43,7 +43,7 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		BooleanBuilder predicate = new BooleanBuilder();
 		
 		// expense criteria
-		predicate = CriteriaHelper.addDateRange(predicate, criteria.getLocalDate(), entry.expense.date);
+		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, criteria.getLocalDate(), entry.expense.date);
 		if (criteria.getCurrencyCode()!=null) {
 			predicate = predicate.and(entry.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
 		}

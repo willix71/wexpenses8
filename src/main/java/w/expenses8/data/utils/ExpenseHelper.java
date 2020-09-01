@@ -2,7 +2,10 @@ package w.expenses8.data.utils;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -18,7 +21,15 @@ public class ExpenseHelper {
 		Expense x = new Expense();
 		for(Object o:args) {
 			if (o instanceof Date) {
-				x.setDate((Date) o);
+				x.setDate(((Date) o).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+				continue;
+			}
+			if (o instanceof LocalDate) {
+				x.setDate(((LocalDate) o).atStartOfDay());
+				continue;
+			}
+			if (o instanceof LocalDateTime) {
+				x.setDate((LocalDateTime) o);
 				continue;
 			}
 			if (o instanceof ExpenseType) {
@@ -76,7 +87,7 @@ public class ExpenseHelper {
 		}
 		b.append("uid:").append(x.getUid());
 		b.append(x.getExpenseType()==null?"[type]":x.getExpenseType().getName()).append(" ");
-		b.append(x.getDate()==null?"[date] ":new SimpleDateFormat("dd/MM/yyyy ").format(x.getDate()));
+		b.append(x.getDate()==null?"[date] ":x.getDate().format(DateTimeFormatter.ofPattern(("dd/MM/yyyy "))));
 		b.append(MessageFormat.format("{0,number,0.00}{1} ", x.getCurrencyAmount(), x.getCurrencyCode()));
 		if (x.getExchangeRate()!=null) {
 			b.append(MessageFormat.format("{0,number,0.00000} ",x.getExchangeRate().getRate()));

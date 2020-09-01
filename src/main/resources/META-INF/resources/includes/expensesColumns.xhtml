@@ -7,9 +7,9 @@
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
 	<p:column headerText="Date" style="width:15%;text-align: right">
-		<h:outputFormat value="{0,date,dd/MM/yyyy}">
-			<f:param value="#{x.date}" />
-		</h:outputFormat>
+		<h:outputText value="#{x.date}" >
+			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+		</h:outputText>
 	</p:column>
 
 	<p:column headerText="Type" style="width:10%;text-align: center">

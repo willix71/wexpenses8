@@ -1,6 +1,6 @@
 package w.expenses8.data.domain.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,12 +27,12 @@ public class DocumentFile extends DBable<DocumentFile> {
 	private Expense expense;
 	
 	@NotNull
-	private Date documentDate;
+	private LocalDate documentDate;
 	
 	@NotNull
 	private String fileName;
 	
-	public DocumentFile(@NotNull Date documentDate, @NotNull String fileName) {
+	public DocumentFile(@NotNull LocalDate documentDate, @NotNull String fileName) {
 		super();
 		this.documentDate = documentDate;
 		this.fileName = fileName;

@@ -15,9 +15,15 @@
 	</p:column>
 
 	<p:column headerText="Created" sortBy="#{x.createdTs}" visible="false">
-		<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}">
-			<f:param value="#{x.createdTs}" />
-		</h:outputFormat>
+		<h:outputText value="#{x.createdTs}" >
+			<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
+		</h:outputText>
+	</p:column>
+
+	<p:column headerText="Modified" sortBy="#{x.modifiedTs}" visible="false">
+		<h:outputText value="#{x.modifiedTs}" >
+			<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
+		</h:outputText>	
 	</p:column>
 
 </ui:composition>

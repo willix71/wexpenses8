@@ -22,6 +22,7 @@ import w.expenses8.data.domain.model.PayeeType;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
+import w.expenses8.data.utils.DateHelper;
 import w.expensesLegacy.data.domain.model.Account;
 import w.expensesLegacy.data.domain.model.Consolidation;
 import w.expensesLegacy.data.domain.model.Discriminator;
@@ -41,7 +42,7 @@ public class MigrateService {
 			Expense newx = w.expenses8.data.domain.model.Expense.with()
 					.version(legacyExpense.getVersion()).createdTs(legacyExpense.getCreatedTs()).modifiedTs(legacyExpense.getModifiedTs())
 					.expenseType(getExpenseType(legacyExpense.getType()))
-					.date(legacyExpense.getDate())
+					.date(DateHelper.toLocalDateTime(legacyExpense.getDate()))
 					.currencyAmount(legacyExpense.getAmount())
 					.currencyCode(legacyExpense.getCurrency().getCode())
 					.description(legacyExpense.getDescription())
@@ -71,7 +72,7 @@ public class MigrateService {
 			newx.setExchangeRate(getExchangeRate(rate));
 			newx.updateValues();
 			if (legacyExpense.getFileDate()!=null && legacyExpense.getFileName()!=null) {
-				newx.addDocumentFile(new DocumentFile(newx, legacyExpense.getFileDate(), legacyExpense.getFileName()));
+				newx.addDocumentFile(new DocumentFile(newx, DateHelper.toLocalDate(legacyExpense.getFileDate()), legacyExpense.getFileName()));
 			}
 			entityManager.persist(newx);
 			entityManager.flush();
@@ -160,7 +161,7 @@ public class MigrateService {
 				.institution(getPayee(legacy.getInstitution()))
 				.fromCurrencyCode(legacy.getFromCurrency().getCode())
 				.toCurrencyCode(legacy.getToCurrency().getCode())
-				.date(legacy.getDate())
+				.date(DateHelper.toLocalDate(legacy.getDate()))
 				.rate(legacy.getRate())
 				.fee(legacy.getFee())
 				.fixFee(legacy.getFixFee())

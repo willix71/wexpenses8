@@ -32,14 +32,15 @@
              	var="theme" itemLabel="#{theme.prefix}#{theme.name} #{theme.extra}" itemValue="#{theme}" forceSelection="true" />
 			
 			<h:outputText value="date" styleClass="wex-field-label"/>
-			<h:outputFormat value="{0,date,dd/MM/yyyy HH:mm}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
-				<f:param value="#{cc.attrs.expense.date}" />
-			</h:outputFormat>
+			<h:outputText value="#{cc.attrs.expense.date}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+				<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+			</h:outputText>
 			<p:datePicker id="expenseDateId" value="#{cc.attrs.expense.date}" rendered="#{cc.attrs.edition}"
 				pattern="dd/MM/yyyy"
 				showIcon="true"
 				showButtonBar="true"
 				appendTo="@(body)"
+				showTime="true"
 				/>
 				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
@@ -78,9 +79,9 @@
                 > 
 	    
             <p:column headerText="Date" style="max-width:70px; width:70px">
-           		<h:outputFormat value="{0,date,dd/MM/yyyy}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
-					<f:param value="#{docFile.documentDate}" />
-				</h:outputFormat>
+            	<h:outputText value="#{docFile.documentDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+				</h:outputText>
 				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{cc.attrs.edition}"
 					pattern="dd/MM/yyyy"
 					showIcon="true"

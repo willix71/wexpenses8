@@ -1,14 +1,12 @@
 package w.expenses8.data.domain.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -32,8 +30,7 @@ public class ExchangeRate extends DBable<ExchangeRate> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Payee institution;
 
-	@Temporal(TemporalType.DATE)
-	private Date date;
+	private LocalDate date;
 
 	@NonNull
 	@NotBlank

@@ -3,6 +3,7 @@ package w.expenses8.data.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.utils.CollectionHelper;
-import w.expenses8.data.utils.DateHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -198,7 +198,7 @@ public class ExpenseServiceTest {
 		Tag tmp2 = Tag.with().type(TagType.EXPENSE).name("temp2").build();
 		
 		Expense x1 = ExpenseHelper.build(new Date(),new BigDecimal(1000),"CHF",tempo, tmp1,  tmp2);
-		x1.addDocumentFile(new DocumentFile(new Date(), "test file 1"));
+		x1.addDocumentFile(new DocumentFile(LocalDate.now(), "test file 1"));
 		expenseService.save(x1);
 		
 		// simple id check
@@ -211,7 +211,7 @@ public class ExpenseServiceTest {
 		
 		// add another document
 		Expense x2 = expenseService.reload(x1); 
-		x2.addDocumentFile(new DocumentFile(DateHelper.toDate(1,1,2000), "test file 2"));
+		x2.addDocumentFile(new DocumentFile(LocalDate.of(2000, 1, 1), "test file 2"));
 		expenseService.save(x2);
 		
 		Expense r2 = expenseService.reload(x2);

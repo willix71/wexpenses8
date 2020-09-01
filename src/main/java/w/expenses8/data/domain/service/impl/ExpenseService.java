@@ -1,6 +1,5 @@
 package w.expenses8.data.domain.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
@@ -66,7 +63,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		QExpense ex = QExpense.expense;
 		
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = CriteriaHelper.addDateRange(predicate, criteria.getLocalDate(), ex.date);	
+		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, criteria.getLocalDate(), ex.date);	
 		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), ex.currencyAmount);
 		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), ex.accountingValue);
 
@@ -85,8 +82,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			 ex.payee.prefix.lower().like(text).or(ex.payee.name.lower().like(text)).or(ex.payee.extra.lower().like(text)).or(ex.payee.city.lower().like(text)));
 		}
 		
-		//select ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t join fetch t.tags
-		var query = baseQuery().where(predicate).orderBy(new OrderSpecifier<Date>(Order.DESC, ex.date));
+		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
 		
 	}
@@ -101,28 +97,5 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			.leftJoin(QTransactionEntry.transactionEntry.tags).fetchJoin()
 			.leftJoin(QExpense.expense.documentFiles).fetchJoin();
 		return query;
-	}
-
-// return StreamSupport.stream(getDao().findAll(predicate, new OrderSpecifier<Date>(Order.DESC, QExpense.expense.date)).spliterator(),false).collect(Collectors.toList());
-//        var qCity = QCity.city;
-//
-//        var query = new JPAQuery(entityManager);
-//
-//        query.from(qCity).where(qCity.name.eq("Bratislava")).distinct();
-//        var c1 = query.fetch();
-//
-//        logger.info("{}", c1);
-//
-//        var query2 = new JPAQuery(entityManager);
-//        query2.from(qCity).where(qCity.name.endsWith("est").and(qCity.population.lt(1800000)));
-//        var cities = query2.fetch();
-//
-//        logger.info("{}", cities);
-//
-//        BooleanExpression booleanExpression = qCity.population.goe(2_000_000);
-//        OrderSpecifier<String> orderSpecifier = qCity.name.asc();
-//        var cities2 = cityRepository.findAll(booleanExpression, orderSpecifier);
-//
-//        logger.info("{}", cities2);
-//    
+	} 
 }

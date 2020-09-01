@@ -1,5 +1,8 @@
 package w.expenses8.data.utils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -100,9 +103,10 @@ public class DateHelper {
 		}
 	}
 	
-	public static int year(Date d) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(d);
-		return c.get(Calendar.YEAR);
+	public static LocalDate toLocalDate(Date d) {
+		return d==null?null:d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+	public static LocalDateTime toLocalDateTime(Date d) {
+		return d==null?null:d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 }
