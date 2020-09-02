@@ -1,6 +1,7 @@
 package w.expenses8.data.domain.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -56,6 +57,9 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private BigDecimal accountingValue;
 
 	private Integer accountingYear;
+	
+	@NotNull
+	private LocalDate accountingDate;
 
 	private Long accountingOrder;
 	

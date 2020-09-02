@@ -126,6 +126,7 @@ public class Expense extends DBable<Expense> {
 	
 	public void updateValues() {
 		transactions.stream().filter(t->t.getAccountingYear()==null).forEach(t->t.setAccountingYear(date.getYear()));
+		transactions.stream().filter(t->t.getAccountingDate()==null).forEach(t->t.setAccountingDate(date.toLocalDate()));
 		if (exchangeRate == null) {
 			accountingValue = currencyAmount;
 		} else {
