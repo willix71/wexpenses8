@@ -1,0 +1,101 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Accounts</ui:define>
+
+	<ui:define name="content">
+		<h:form id="wexTableForm">
+			<p:growl id="growl" />
+			
+			<c:set var="controller" value="#{transactionEntryController}" />
+
+			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
+		        <h:panelGrid columns="1" cellpadding="2">
+					<p:autoComplete multiple="true" value="#{controller.criteria.tags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						<p:column>
+							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						</p:column>
+					</p:autoComplete>
+				</h:panelGrid>
+		        <h:panelGrid columns="3" cellpadding="2">
+		        	<p:datePicker value="#{controller.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
+		        	<p:datePicker value="#{controller.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
+					<p:spinner value="#{controller.criteria.accountingYear}" styleClass="wex-input-70" thousandSeparator=""/>
+		        	
+		        	<p:inputNumber value="#{controller.criteria.amountValue.from}" />
+		        	<p:inputNumber value="#{controller.criteria.amountValue.to}" />
+		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{controller.criteria.currencyCode}" >
+		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+		        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
+                		<f:selectItems value="#{dropboxController.currencies}" />
+            		</p:selectOneMenu>
+            	
+            		<p:inputText id="expensePayeeTextId" value="#{controller.criteria.payeeText}" />
+					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" action="#{controller.refresh}" update="wexTable" />
+					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" action="#{controller.reset}" update="criteriaFields wexTable" />
+				</h:panelGrid>
+			</p:fieldset>
+			
+			<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
+                 paginator="true"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                 rowsPerPageTemplate="5,10,50,100,1000"
+				 rows="10"
+                 rowKey="#{x.uid}"
+                 selection="#{controller.selectedElement}" 
+                 selectionMode="single"
+                 rowStyleClass="#{x.systemEntry ? 'wex-entry-system' : null}"
+                 >
+				<f:facet name="header">
+					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
+					<p:columnToggler datasource="wexTable" trigger="toggler" />
+				</f:facet>
+        		
+				<ui:include src="/includes/dbableColumns.xhtml"/>
+				
+                <ui:include src="/includes/accountsColumns.xhtml"/>
+			</p:dataTable>
+			
+			<p:contextMenu for="wexTable">
+		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()"/>
+		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()"/>
+		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()"/>
+		        <p:menuitem value="Refresh" update="wexTable" icon="pi pi-replay" action="#{controller.refresh}"/>		        
+		    </p:contextMenu>
+     
+			<p:outputPanel id="wexDetailPanel">
+	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="UID:#{controller.selectedExpense.uid}" position="top">
+					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="false"/>
+				</p:dialog>
+			</p:outputPanel>
+
+			<p:outputPanel id="wexDeletePanel">
+	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="UID:#{controller.selectedExpense.uid}" position="top" modal="true">
+					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="false"/>
+					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" action="#{controller.deleteExpense}" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')"/>
+					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedExpense.uid}" position="top" modal="true">
+				<p:outputPanel id="wexEditionPanel">
+					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="true"/>
+				</p:outputPanel>
+				<p:commandButton id="wexSave" value="Save" action="#{controller.saveExpense}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable"/>
+				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>	

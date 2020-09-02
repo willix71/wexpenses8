@@ -11,7 +11,7 @@
 	</p:column>
 
 	<p:column headerText="Date" style="text-align: right">
-		<h:outputText value="#{x.expense.date}" >
+		<h:outputText value="#{x.accountingDate}" >
 			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
 		</h:outputText>
 	</p:column>
@@ -19,31 +19,27 @@
 	<p:column headerText="Payee">
 		<h:outputText value="#{x.expense.payee.prefix}#{x.expense.payee.name} #{x.expense.payee.extra}" />
 	</p:column>
-	
-	<p:column headerText="System" styleClass="wex-cell-centered" >
-		<h:panelGroup rendered="#{x.systemEntry}">
-			<i class="pi pi-check"></i>
-		</h:panelGroup>
+
+	<p:column headerText="Description" visible="false">
+		<h:outputText value="#{x.expense.description}" />
 	</p:column>
 
 	<p:column headerText="Amount" styleClass="wex-cell-righted" >
 		<h:outputText value="#{x.currencyAmount} #{x.expense.currencyCode}" />
-
 	</p:column>
 
 	<p:column headerText="IN" styleClass="wex-cell-righted" >
-		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor==w.expenses8.data.domain.model.enums.TransactionFactor.IN}"/>
+		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='IN'}"/>
 	</p:column>
 
 	<p:column headerText="OUT" styleClass="wex-cell-righted" >
-		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor==w.expenses8.data.domain.model.enums.TransactionFactor.OUT}"/>
+		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='OUT'}"/>
 	</p:column>
 
-	<p:rowExpansion>
-		<h:panelGroup>
-			<ui:repeat var="t" value="#{x.tags}">
-				<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
-			</ui:repeat>
-		</h:panelGroup>
-	</p:rowExpansion>
+	<p:column headerText="Accounts" styleClass="wex-cell-righted" >
+		<ui:repeat var="t" value="#{x.tags}">
+			<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+		</ui:repeat>
+	</p:column>
+
 </ui:composition>
