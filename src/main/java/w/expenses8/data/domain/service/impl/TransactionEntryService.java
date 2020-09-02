@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
@@ -24,7 +23,6 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CriteriaHelper;
-import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class TransactionEntryService extends GenericServiceImpl<TransactionEntry, Long, ITransactionEntryDao> implements ITransactionEntryService {
@@ -43,26 +41,28 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		BooleanBuilder predicate = new BooleanBuilder();
 		
 		// expense criteria
-		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, criteria.getLocalDate(), entry.expense.date);
-		if (criteria.getCurrencyCode()!=null) {
-			predicate = predicate.and(entry.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
-		}
 		if (criteria.getExpenseType()!=null) {
 			predicate = predicate.and(QExpense.expense.expenseType.eq(criteria.getExpenseType()));
 		}		
 		if (criteria.getPayee()!=null) {
 			predicate = predicate.and(QExpense.expense.payee.eq(criteria.getPayee()));
 		}		
-		if (!StringHelper.isEmpty(criteria.getPayeeText())) {
-			String text = CriteriaHelper.like(criteria.getPayeeText().toLowerCase());
-			QExpense ex = QExpense.expense;
-			predicate = predicate.and(
-			 ex.payee.prefix.lower().like(text).or(ex.payee.name.lower().like(text)).or(ex.payee.extra.lower().like(text)).or(ex.payee.city.lower().like(text)));
+		Predicate payeeTextPredicate = CriteriaHelper.getPayeeTextCriteria(QExpense.expense.payee, criteria.getPayeeText());
+		if (payeeTextPredicate!=null) {
+			predicate = predicate.and(payeeTextPredicate);
 		}
 		
 		// TransactionEntry criteria
-		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), entry.currencyAmount);
-		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), entry.accountingValue);
+		predicate = CriteriaHelper.addLocalDateRange(predicate, criteria.getLocalDate(), entry.accountingDate);
+		if ("value".equalsIgnoreCase(criteria.getCurrencyCode())) {
+			predicate = CriteriaHelper.addRange(predicate, criteria.getAmountValue(), entry.accountingValue);
+		} else {
+			predicate = CriteriaHelper.addRange(predicate, criteria.getAmountValue(), entry.currencyAmount);
+			if (criteria.getCurrencyCode()!=null) {
+				predicate = predicate.and(entry.expense.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
+			}			
+		}
+
 		if (criteria.getAccountingYear()!=null) {
 			predicate = predicate.and(entry.accountingYear.eq(criteria.getAccountingYear()));
 		}
@@ -79,7 +79,7 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 			.leftJoin(QExpense.expense.expenseType).fetchJoin()
 			.leftJoin(entry.tags).fetchJoin()
 			.where(predicate)
-			.orderBy(new OrderSpecifier<>(Order.DESC, entry.accountingOrder));
+			.orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());
 		return query.fetch();
 	}
 	

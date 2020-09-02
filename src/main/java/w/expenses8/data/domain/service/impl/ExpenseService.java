@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
@@ -22,7 +23,6 @@ import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
-import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
@@ -64,22 +64,26 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		
 		BooleanBuilder predicate = new BooleanBuilder();
 		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, criteria.getLocalDate(), ex.date);	
-		predicate = CriteriaHelper.addRange(predicate, criteria.getCurrencyAmount(), ex.currencyAmount);
-		predicate = CriteriaHelper.addRange(predicate, criteria.getAccountingValue(), ex.accountingValue);
 
-		if (criteria.getCurrencyCode()!=null) {
-			predicate = predicate.and(ex.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
+		if ("value".equalsIgnoreCase(criteria.getCurrencyCode())) {
+			predicate = CriteriaHelper.addRange(predicate, criteria.getAmountValue(), ex.accountingValue);
+		} else {
+			predicate = CriteriaHelper.addRange(predicate, criteria.getAmountValue(), ex.currencyAmount);
+			if (criteria.getCurrencyCode()!=null) {
+				predicate = predicate.and(ex.currencyCode.equalsIgnoreCase(criteria.getCurrencyCode()));
+			}			
 		}
+		
 		if (criteria.getExpenseType()!=null) {
 			predicate = predicate.and(ex.expenseType.eq(criteria.getExpenseType()));
 		}
 		if (criteria.getPayee()!=null) {
 			predicate = predicate.and(ex.payee.eq(criteria.getPayee()));
 		}
-		if (!StringHelper.isEmpty(criteria.getPayeeText())) {
-			String text = CriteriaHelper.like(criteria.getPayeeText().toLowerCase());
-			predicate = predicate.and(
-			 ex.payee.prefix.lower().like(text).or(ex.payee.name.lower().like(text)).or(ex.payee.extra.lower().like(text)).or(ex.payee.city.lower().like(text)));
+		
+		Predicate payeeTextPredicate = CriteriaHelper.getPayeeTextCriteria(ex.payee, criteria.getPayeeText());
+		if (payeeTextPredicate!=null) {
+			predicate = predicate.and(payeeTextPredicate);
 		}
 		
 		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());

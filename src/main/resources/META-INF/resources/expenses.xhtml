@@ -18,19 +18,29 @@
 			<c:set var="controller" value="#{expenseController}" />
 
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
-		        <h:panelGrid columns="2" cellpadding="2">
+		        <h:panelGrid columns="3" cellpadding="2">
 		        	<p:datePicker value="#{expenseController.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
 		        	<p:datePicker value="#{expenseController.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
-		        	<p:inputNumber value="#{expenseController.criteria.currencyAmount.from}" />
-		        	<p:inputNumber value="#{expenseController.criteria.currencyAmount.to}" />
+		        	<p:selectOneMenu id="expenseTypeId" value="#{expenseController.criteria.expenseType}" converter="#{expenseTypeConverter}">
+		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+                		<f:selectItems value="#{dropboxController.expenseTypes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
+            		</p:selectOneMenu>
 		        	
+		        	<p:inputNumber value="#{expenseController.criteria.amountValue.from}" />
+		        	<p:inputNumber value="#{expenseController.criteria.amountValue.to}" />
 		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{expenseController.criteria.currencyCode}" >
 		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+		        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
                 		<f:selectItems value="#{dropboxController.currencies}" />
             		</p:selectOneMenu>
             	
+            		<p:inputText id="expensePayeeTextId" value="#{expenseController.criteria.payeeText}" />
 					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
-					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" type="submit" action="#{controller.reset}" update="criteriaFields wexTable" />
+					<p:splitButton id="clearFilterBtn" value="Clear" icon="pi pi-times">
+            			<p:menuitem value="Month" action="#{controller.resetMonth}" update="criteriaFields wexTable" />
+            			<p:menuitem value="Year" action="#{controller.resetYear}" update="criteriaFields wexTable" />
+            			<p:menuitem value="All" action="#{controller.resetAll}" update="criteriaFields wexTable" />
+            		</p:splitButton>
 				</h:panelGrid>
 			</p:fieldset>
 
@@ -44,6 +54,7 @@
                  rowKey="#{x.uid}"
                  selection="#{controller.selectedElement}" 
                  selectionMode="single"
+                 rowStyleClass="#{x.date.isAfter(requestController.time) ? 'wex-expense-futur' : 'wex-expense-past'}"
                  >
 				<f:facet name="header">
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />

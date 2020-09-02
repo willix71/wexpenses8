@@ -1,8 +1,10 @@
 package w.expenses8.data.domain.criteria;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,5 +18,13 @@ public class TransactionEntryCriteria extends ExpenseCriteria {
 	private static final long serialVersionUID = 1L;
 
 	private Integer accountingYear;
-	private Collection<Tag> tags;
+	
+	@Builder.Default
+	private List<Tag> tags = new ArrayList<Tag>();
+	
+	public static TransactionEntryCriteria from(int year) {
+		TransactionEntryCriteria criteria = new TransactionEntryCriteria();
+		criteria.setAccountingYear(year);
+		return criteria;
+	}
 }

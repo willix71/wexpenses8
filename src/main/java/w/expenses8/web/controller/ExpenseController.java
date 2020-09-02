@@ -1,5 +1,8 @@
 package w.expenses8.web.controller;
 
+import java.time.Year;
+import java.time.YearMonth;
+
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,13 +30,19 @@ public class ExpenseController extends AbstractListController<Expense> {
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
 	
-	private ExpenseCriteria criteria = ExpenseCriteria.thisYear();
+	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 	
 	private DocumentFile selectedDocumentFile;
 	private TransactionEntry selectedTransactionEntry;
 
-	public void reset() {
-		criteria = ExpenseCriteria.thisYear();
+	public void resetMonth() {
+		criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
+	}
+	public void resetYear() {
+		criteria = ExpenseCriteria.from(Year.now().atDay(1));
+	}
+	public void resetAll() {
+		criteria = ExpenseCriteria.from(null);
 	}
 	
 	@Override

@@ -1,9 +1,10 @@
 package w.expenses8.data.domain.criteria;
 
 import java.io.Serializable;
-import java.time.YearMonth;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,16 +27,15 @@ public class ExpenseCriteria implements Serializable {
 	private Payee payee;
 	private String payeeText;
 	private ExpenseType expenseType;
+	@Builder.Default
 	private RangeLocalDateCriteria localDate = new RangeLocalDateCriteria();
-	private RangeNumberCriteria currencyAmount = new RangeNumberCriteria();
-	private RangeNumberCriteria accountingValue = new RangeNumberCriteria();
+	@Builder.Default
+	private RangeNumberCriteria amountValue = new RangeNumberCriteria();
 	private String currencyCode;
 	
-	public static ExpenseCriteria thisYear() {
+	public static ExpenseCriteria from(LocalDate d) {
 		ExpenseCriteria criteria = new ExpenseCriteria();
-		criteria.localDate = new RangeLocalDateCriteria(YearMonth.now().atDay(1),null);
-		criteria.currencyAmount = new RangeNumberCriteria();
-		criteria.accountingValue = new RangeNumberCriteria();
+		criteria.localDate.setFrom(d);
 		return criteria;
 	}
 }

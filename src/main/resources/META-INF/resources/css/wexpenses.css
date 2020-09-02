@@ -91,3 +91,14 @@
 .wex-tag-FLAG {
 	background-color: green;
 }
+
+.wex-expense-past {
+}
+    
+.wex-expense-futur {
+	opacity: 0.5
+}
+
+.wex-entry-system {
+	opacity: 0.5
+}

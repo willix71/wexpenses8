@@ -40,6 +40,10 @@ public class DropboxController implements Serializable {
 		return expenseTypeService.findBySelectable(prefix);
 	}
 	
+	public List<ExpenseType> getExpenseTypes() {
+		return expenseTypeService.loadAll();
+	}
+	
 	@Inject
 	private IPayeeService payeeService;
 	
