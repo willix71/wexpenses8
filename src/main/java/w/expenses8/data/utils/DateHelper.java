@@ -104,9 +104,13 @@ public class DateHelper {
 	}
 	
 	public static LocalDate toLocalDate(Date d) {
-		return d==null?null:d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		if (d==null) return null;
+		if (d instanceof java.sql.Date) d=new Date(d.getTime());
+		return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 	public static LocalDateTime toLocalDateTime(Date d) {
-		return d==null?null:d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		if (d==null) return null;
+		if (d instanceof java.sql.Date) d=new Date(d.getTime());
+		return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 }
