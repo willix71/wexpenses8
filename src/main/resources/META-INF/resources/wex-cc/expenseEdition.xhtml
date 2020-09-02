@@ -115,7 +115,7 @@
 
 			<p:column headerText="Year" style="max-width:70px; width:70px">
 				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
-				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" />
+				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" thousandSeparator=""/>
 			</p:column>
 
 			<p:column headerText="Factor" style="max-width:120px; width:120px">

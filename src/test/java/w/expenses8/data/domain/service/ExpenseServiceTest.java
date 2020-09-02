@@ -124,7 +124,7 @@ public class ExpenseServiceTest {
 		assertThat(updated2.getTransactions()).hasSize(3);
 		
 		// load using the criteria (loads all in one)
-		List<Expense> loadeds = expenseService.findExpenses(ExpenseCriteria.with().accountingValue(new RangeNumberCriteria(new BigDecimal(100),null)).build());
+		List<Expense> loadeds = expenseService.findExpenses(ExpenseCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(100),null)).build());
 		assertThat(loadeds).hasSize(1);
 		Expense loaded = CollectionHelper.first(loadeds);		
 		assertThat(loaded.getVersion()).isEqualTo(2L);
@@ -147,7 +147,7 @@ public class ExpenseServiceTest {
 	@Test
 	@Order(10)
 	public void test_listByCriteria() {
-		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeNumberCriteria(new BigDecimal(50),new BigDecimal(100))).build());
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(50),new BigDecimal(100))).build());
 		log.info("\n\t===== Criteria Expenses {} ====", all);		
 		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 		assertThat(all).hasSize(1);
@@ -156,7 +156,7 @@ public class ExpenseServiceTest {
 	@Test
 	@Order(10)
 	public void test_listByCriteriaPayeeText() {
-		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().currencyAmount(new RangeNumberCriteria(new BigDecimal(5),null)).payeeText("someone").build());
+		List<Expense> all = expenseService.findExpenses(ExpenseCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(5),null)).payeeText("someone").build());
 		log.info("\n\t===== Someone's Expenses {} ====", all);		
 		all.stream().forEach(e->log.info(ExpenseHelper.toString(e)));
 		assertThat(all).hasSize(2);

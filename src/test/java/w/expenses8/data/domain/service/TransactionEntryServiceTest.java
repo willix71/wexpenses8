@@ -6,7 +6,6 @@ import static w.expenses8.data.utils.DateHelper.toDate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -89,7 +88,7 @@ public class TransactionEntryServiceTest {
 		List<TransactionEntry> chf = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().currencyCode("USD").build());
 		assertThat(chf).hasSize(3);
 		
-		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tags(Collections.singleton(cash)).build());
+		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tags(Arrays.asList(cash)).build());
 		assertThat(cashes).hasSize(3);
 
 		List<TransactionEntry> healthkim = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tags(Arrays.asList(health, kim)).build());
@@ -100,7 +99,7 @@ public class TransactionEntryServiceTest {
 		List<TransactionEntry> bvos = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().expenseType(bvo).build());
 		assertThat(bvos).hasSize(4);
 		
-		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingValue(new RangeNumberCriteria(new BigDecimal(40),new BigDecimal(50))).build());
+		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(40),new BigDecimal(50))).build());
 		assertThat(groceries).hasSize(2);
 	}
 }
