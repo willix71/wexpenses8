@@ -15,7 +15,7 @@ create table WEX_Expense (id bigint not null, createdTS timestamp not null, modi
 create table WEX_ExpenseType (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, primary key (id));
 create table WEX_Payee (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, address1 varchar(255), address2 varchar(255), address3 varchar(255), city varchar(255), countryCode varchar(255), extra varchar(255), iban varchar(255), name varchar(255), postalAccount varchar(255), postalBank varchar(255), prefix varchar(255), zip varchar(255), payeeType_id bigint, primary key (id));
 create table WEX_PayeeType (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, primary key (id));
-create table WEX_Tag (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, number integer, type integer not null, primary key (id));
+create table WEX_Tag (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, number integer, type integer not null, institution_id bigint, primary key (id));
 create table WEX_TransactionEntry (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, accountingBalance decimal(19,2), accountingDate date not null, accountingOrder bigint, accountingValue decimal(19,2) not null, accountingYear integer, currencyAmount decimal(19,2) not null, factor integer not null, systemEntry boolean not null, expense_id bigint, primary key (id));
 create table WEX_TransactionEntry_WEX_Tag (WEX_TransactionEntry_id bigint not null, tags_id bigint not null, primary key (WEX_TransactionEntry_id, tags_id));
 alter table WEX_Document add constraint UK_5yertsmd40asympx4xf6u61n2 unique (uid);
@@ -32,6 +32,20 @@ alter table WEX_Expense add constraint FKrx7dlq1yn4jk3crjrpw5x3uuv foreign key (
 alter table WEX_Expense add constraint FKi3umvcfbpsmi0sxh0bq9qrixq foreign key (expenseType_id) references WEX_ExpenseType;
 alter table WEX_Expense add constraint FK5f6njddmg9b29df6v7sxqjwwr foreign key (payee_id) references WEX_Payee;
 alter table WEX_Payee add constraint FK5dcf210fd8nny12ewen9hi28l foreign key (payeeType_id) references WEX_PayeeType;
+alter table WEX_Tag add constraint FKlqfsdulcen6n436r9ii951699 foreign key (institution_id) references WEX_Payee;
 alter table WEX_TransactionEntry add constraint FKlmnlduq5cyn0r5o6deuwcrseu foreign key (expense_id) references WEX_Expense on delete cascade;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FK8xv4ycc4ihpivm3gvywfe9u9i foreign key (tags_id) references WEX_Tag;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FKdwcj0kkm9qmbip0jmrtnfj7gs foreign key (WEX_TransactionEntry_id) references WEX_TransactionEntry;
+
+drop table if exists WEX_Country CASCADE;
+create table WEX_Country (countryCode varchar(2),countryName varchar(255),currencyCode varchar(3),primary key (countryCode));
+insert into WEX_Country values ('CH','Switzerland','CHF');
+insert into WEX_Country values ('EU','Europe','EUR');
+insert into WEX_Country values ('ES','Spain','EUR');
+insert into WEX_Country values ('DE','Germany','EUR');
+insert into WEX_Country values ('FR','France','EUR');
+insert into WEX_Country values ('IT','Italie','EUR');
+insert into WEX_Country values ('NL','Netherlands','EUR');
+insert into WEX_Country values ('JP','Japan','JPY');
+insert into WEX_Country values ('UK','United Kingdom','GBP');
+insert into WEX_Country values ('US','United States of America','USD');

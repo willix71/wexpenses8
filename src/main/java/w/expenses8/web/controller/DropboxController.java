@@ -8,7 +8,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import w.expenses8.data.config.WexpensesProperties;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
@@ -19,6 +18,7 @@ import w.expenses8.data.domain.service.IExpenseTypeService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.IPayeeTypeService;
 import w.expenses8.data.domain.service.ITagService;
+import w.expenses8.data.domain.service.impl.CountryService;
 
 @Named
 @ApplicationScoped
@@ -71,13 +71,13 @@ public class DropboxController implements Serializable {
 	}
 	
 	@Inject
-	WexpensesProperties wproperties;
+	private CountryService countryService;
 	
 	public List<String> getCountries() {
-		return wproperties.getCountries();
+		return countryService.getCountriesCodes();
 	}
 	
 	public List<String> getCurrencies() {
-		return wproperties.getCurrencies();
+		return countryService.getCurrenciesCodes();
 	}
 }

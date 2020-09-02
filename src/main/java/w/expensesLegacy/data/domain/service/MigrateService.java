@@ -76,7 +76,7 @@ public class MigrateService {
 			}
 			entityManager.persist(newx);
 			entityManager.flush();
-			if (i>100) break;
+			//if (i>100) break;
 			//System.exit(0);
 		}
 	}
@@ -86,13 +86,13 @@ public class MigrateService {
 		if (account != null) {
 			switch(account.getType()) {
 			case ASSET:
-				tags.add(getTag(account.getName(), 1000, TagType.ASSET));
+				tags.add(getTag(account.getName(), 1000, TagType.ASSET, getPayee(account.getOwner())));
 				break;
 			case LIABILITY:
-				tags.add(getTag(account.getName(), 2000, TagType.LIABILITY));
+				tags.add(getTag(account.getName(), 2000, TagType.LIABILITY, getPayee(account.getOwner())));
 				break;
 			case INCOME:
-				tags.add(getTag(account.getName(), 3000, TagType.INCOME));
+				tags.add(getTag(account.getName(), 3000, TagType.INCOME, getPayee(account.getOwner())));
 				break;
 			case EXPENSE:
 				if (account.getParent()!=null) {
@@ -124,8 +124,11 @@ public class MigrateService {
 		return tags;
 	}
 
-
 	protected Tag getTag(String name, Integer number, TagType type) {
+		return getTag(name, number, type, null);
+	}
+	
+	protected Tag getTag(String name, Integer number, TagType type, Payee institution) {
 		try {
 			return entityManager.createQuery("SELECT a from Tag a where a.name = ?1", Tag.class).setParameter(1, name).getSingleResult();
 		} catch(NoResultException noresult) {
@@ -133,6 +136,7 @@ public class MigrateService {
 					.name(name)
 					.number(number)
 					.type(type)
+					.institution(institution)
 					.build();
 			entityManager.persist(newType);
 			entityManager.flush();

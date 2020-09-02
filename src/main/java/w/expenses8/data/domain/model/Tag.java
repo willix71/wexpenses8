@@ -1,6 +1,8 @@
 package w.expenses8.data.domain.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +28,9 @@ public class Tag extends AbstractType<Tag> {
 
 	private Integer number;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Payee institution;
+	
 	@Override
 	public void copy(Tag t) {
 		super.copy(t);

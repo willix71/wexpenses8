@@ -38,20 +38,9 @@ joinfaces:
     PROJECT_STAGE: Development
 
 wexpenses:
-  value:
-    currency: CHF
+  currency-value:
+    code: CHF
     precision: 0.05
-  currencies:
-    CH: CHF
-    DE: EUR
-    ES: EUR
-    FR: EUR
-    NL: EUR
-    IT: EUR
-    EU: EUR
-    JP: JPY
-    US: USD
-    UK: GBP
 
 ---
 spring:
