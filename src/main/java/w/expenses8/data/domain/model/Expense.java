@@ -125,19 +125,30 @@ public class Expense extends DBable<Expense> {
 	}
 	
 	public void updateValues() {
-		transactions.stream().filter(t->t.getAccountingYear()==null).forEach(t->t.setAccountingYear(date.getYear()));
-		transactions.stream().filter(t->t.getAccountingDate()==null).forEach(t->t.setAccountingDate(date.toLocalDate()));
+		updateDate(null);
+		updateAmount(null);
+	}
+	
+	public void updateDate(LocalDateTime previousDate) {
+		transactions.stream().filter(t->t.getAccountingYear()==null || (previousDate!=null && t.getAccountingYear().equals(previousDate.getYear()))).forEach(t->t.setAccountingYear(date.getYear()));
+		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate.toLocalDate()))).forEach(t->t.setAccountingDate(date.toLocalDate()));		
+	}
+	
+	public void updateAmount(BigDecimal previousAmount) {
 		if (exchangeRate == null) {
 			accountingValue = currencyAmount;
 		} else {
 			accountingValue = exchangeRate.apply(currencyAmount);
 		}
-		computeCurrencyAmount(TransactionFactor.IN);
-		computeCurrencyAmount(TransactionFactor.OUT);
+		computeCurrencyAmount(TransactionFactor.IN, previousAmount);
+		computeCurrencyAmount(TransactionFactor.OUT, previousAmount);
 		transactions.stream().forEach(e->e.setAccountingValue(exchangeRate == null?e.getCurrencyAmount():exchangeRate.apply(e.getCurrencyAmount())));
 	}
 	
-	private void computeCurrencyAmount(TransactionFactor factor) {
+	private void computeCurrencyAmount(TransactionFactor factor, BigDecimal previousAmount) {
+		if (previousAmount != null) {
+			transactions.stream().filter(t->t.getCurrencyAmount()!=null && t.getCurrencyAmount().compareTo(previousAmount)==0).forEach(t->t.setCurrencyAmount(currencyAmount));
+		}
 		long numberOfEmpty = transactions.stream().filter(t->t.getFactor()==factor && t.getCurrencyAmount()==null).count();
 		if (numberOfEmpty > 0) {
 			BigDecimal leftOver = currencyAmount;

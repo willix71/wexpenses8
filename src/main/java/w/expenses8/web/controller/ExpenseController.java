@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.DocumentFile;
+import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
@@ -29,6 +30,9 @@ public class ExpenseController extends AbstractListController<Expense> {
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
+
+	@Inject
+	private ExpenseControllerAssistant assistant;
 	
 	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 	
@@ -50,18 +54,25 @@ public class ExpenseController extends AbstractListController<Expense> {
 		log.info("loading expenses with {}", criteria);
 		elements = expenseService.findExpenses(criteria);
 	}
+
+	@Override
+	public void setSelectedElement(Expense selectedElement) {
+		super.setSelectedElement(selectedElement);
+		assistant.setCurrentExpense(selectedElement);
+	}
 	
 	public void newDocumentFile() {
-		selectedElement.addDocumentFile(new DocumentFile());
+		selectedElement.addDocumentFile(new DocumentFile(selectedElement.getDate()==null?null:selectedElement.getDate().toLocalDate(),null));
 		selectedElement.updateDocumentCount();
 	}
 	
 	public void deleteDocumentFile() {
 		if (selectedDocumentFile!=null) {
+			log.info("Deleting document file {} named {}", selectedDocumentFile, selectedDocumentFile.getFileName());
 			selectedElement.getDocumentFiles().remove(selectedDocumentFile);
 			selectedDocumentFile.setExpense(null);
+			selectedElement.updateDocumentCount();
 		}
-		selectedElement.updateDocumentCount();
 	}
 	
 	public void newTransactionEntry() {
@@ -69,7 +80,10 @@ public class ExpenseController extends AbstractListController<Expense> {
 	}
 	
 	public void deleteTransactionEntry() {
-		selectedElement.getTransactions().remove(selectedTransactionEntry);
-		selectedTransactionEntry.setExpense(null);
+		if (selectedTransactionEntry!=null) {
+			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
+			selectedElement.getTransactions().remove(selectedTransactionEntry);
+			selectedTransactionEntry.setExpense(null);
+		}
 	}
 }

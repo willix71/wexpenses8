@@ -45,4 +45,9 @@ public class DocumentFile extends DBable<DocumentFile> {
 		this.documentDate = t.documentDate;
 		this.fileName = t.fileName;
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " " + fileName;
+	}
 }
