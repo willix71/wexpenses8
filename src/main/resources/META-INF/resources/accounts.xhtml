@@ -61,7 +61,9 @@
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
 				</f:facet>
         		
-				<ui:include src="/includes/dbableColumns.xhtml"/>
+				<ui:include src="/includes/dbableColumns.xhtml">
+					<ui:param name="dba" value="#{x}" />
+				</ui:include>
 				
                 <ui:include src="/includes/accountsColumns.xhtml"/>
 			</p:dataTable>

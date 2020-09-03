@@ -6,22 +6,22 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
-	<p:column headerText="Id" sortBy="#{x.id}">
-		<h:outputText value="#{x.fullId}" />
+	<p:column headerText="Id" sortBy="#{dba.id}" style="max-width:60px; width:60px">
+		<h:outputText value="#{dba.fullId}" />
 	</p:column>
 
-	<p:column headerText="Uid" sortBy="#{x.id}" visible="false">
-		<h:outputText value="#{x.uid}" />
+	<p:column headerText="Uid" sortBy="#{dba.id}" visible="false" style="max-width:300px; width:300px">
+		<h:outputText value="#{dba.uid}" />
 	</p:column>
 
-	<p:column headerText="Created" sortBy="#{x.createdTs}" visible="false">
-		<h:outputText value="#{x.createdTs}" >
+	<p:column headerText="Created" sortBy="#{dba.createdTs}" visible="false">
+		<h:outputText value="#{dba.createdTs}" >
 			<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
 		</h:outputText>
 	</p:column>
 
-	<p:column headerText="Modified" sortBy="#{x.modifiedTs}" visible="false">
-		<h:outputText value="#{x.modifiedTs}" >
+	<p:column headerText="Modified" sortBy="#{dba.modifiedTs}" visible="false">
+		<h:outputText value="#{dba.modifiedTs}" >
 			<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
 		</h:outputText>	
 	</p:column>
