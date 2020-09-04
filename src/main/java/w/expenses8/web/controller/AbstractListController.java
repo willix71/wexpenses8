@@ -44,11 +44,11 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	public void initSelectedElement() {
 		String id=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("id");
 		if (id!=null) {
-			selectedElement = elementService.load(Long.valueOf(id));
+			setSelectedElement(elementService.load(Long.valueOf(id)));
 		} else {
 			String uid=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("uid");
 			if (uid!=null) {
-				selectedElement = elementService.loadByUid(uid);
+				setSelectedElement(elementService.loadByUid(uid));
 			}
 		}
 	}

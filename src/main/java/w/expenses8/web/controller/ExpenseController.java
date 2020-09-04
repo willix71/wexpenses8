@@ -13,7 +13,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.DocumentFile;
-import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
@@ -41,12 +40,15 @@ public class ExpenseController extends AbstractListController<Expense> {
 
 	public void resetMonth() {
 		criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
+		loadEntities();
 	}
 	public void resetYear() {
 		criteria = ExpenseCriteria.from(Year.now().atDay(1));
+		loadEntities();
 	}
 	public void resetAll() {
 		criteria = ExpenseCriteria.from(null);
+		loadEntities();
 	}
 	
 	@Override
