@@ -55,10 +55,10 @@
 			</h:panelGroup>
 			<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-edit">
 			    <p:inputNumber id="expenseCurrencyAmountId" value="#{cc.attrs.expense.currencyAmount}" thousandSeparator="'">
-			    	<p:ajax  listener="#{controller.assistant.onAmountChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
+			    	<p:ajax listener="#{controller.assistant.onAmountChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
 			    </p:inputNumber>  
 			    <p:selectOneMenu id="expenseCurrencyCodeId" value="#{cc.attrs.expense.currencyCode}" >
-			    	<p:ajax  listener="#{controller.assistant.onCurrencyChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
+			    	<p:ajax listener="#{controller.assistant.onCurrencyChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
                 	<f:selectItems value="#{dropboxController.currencies}" />
                 	<h:outputText value="#{cc.attrs.expense.accountingValue}"/>
             	</p:selectOneMenu>
@@ -71,11 +71,63 @@
 				<h:outputText  value="exchange rate" styleClass="wex-field-label" />
 			</h:panelGroup>
 			<h:panelGroup id="exchangeRatePanelId" rendered="#{cc.attrs.expense.currencyCode!=requestController.defaultCurrency.code}">
-				<h:panelGroup rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
-					echange rate view
+				<h:panelGroup rendered="#{not cc.attrs.edition}">
+					<div class="p-grid ui-fluid p-field ">
+			        	<div class="p-col">
+							<h:outputText value="#{cc.attrs.expense.exchangeRate.date}" rendered="#{not cc.attrs.edition}">
+								<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+							</h:outputText>
+							<h:outputText value="#{cc.attrs.expense.exchangeRate.institution.prefix}#{cc.attrs.expense.exchangeRate.institution.name} #{cc.attrs.expense.exchangeRate.institution.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			        	</div>
+			        	<div class="p-col">
+							<h:outputFormat value="{0,number, 0.00000}" >
+								<f:param value="#{cc.attrs.expense.exchangeRate.rate}" />
+							</h:outputFormat>							
+							<h:outputFormat value="{0,number, 0.00#}%" rendered="#{cc.attrs.expense.exchangeRate.fee}" >
+								<f:param value="x #{cc.attrs.expense.exchangeRate.fee}" />
+							</h:outputFormat>
+							<h:outputFormat value="{0,number, 0.00} " rendered="#{cc.attrs.expense.exchangeRate.fixFee}" >
+								<f:param value="+ #{cc.attrs.expense.exchangeRate.fixFee}" />
+							</h:outputFormat>
+			        	</div>
+		        	</div>
 				</h:panelGroup>
-				<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-value">
-					rate #{cc.attrs.expense.exchangeRate.rate}
+				
+				<h:panelGroup rendered="#{cc.attrs.edition}">
+					<div class="p-grid ui-fluid p-field ">
+			        	<div class="p-col-12 p-md-4">
+				            <p:outputLabel for="exchangeRateDateId" value="date" />
+							<p:datePicker id="exchangeRateDateId" value="#{cc.attrs.expense.exchangeRate.date}" rendered="#{cc.attrs.edition}"	pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" appendTo="@(body)"/>
+			        	</div>
+			        	
+			        	<div class="p-col-12 p-md-8">
+				            <p:outputLabel for="exchangeRateInstutionId" value="provider" />
+							<p:autoComplete id="exchangeRateInstutionId" value="#{cc.attrs.expense.exchangeRate.institution}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+				 				dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
+		            			var="theme" itemLabel="#{theme.prefix}#{theme.name} #{theme.extra}" itemValue="#{theme}" forceSelection="true" />
+		            		</div>
+		
+			            <div class="p-col-12 p-md-6">
+				            <p:outputLabel for="xrateId" value="rate" />
+							<p:inputNumber id="xrateId" value="#{cc.attrs.expense.exchangeRate.rate}" thousandSeparator="'" decimalPlaces="8" rendered="#{cc.attrs.edition}" >
+						    	<p:ajax listener="#{controller.assistant.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    </p:inputNumber>					    			
+					    </div>
+					    
+			            <div class="p-col-12 p-md-3">
+				            <p:outputLabel for="xfeeId" value="fee" />
+							<p:inputNumber id="xfeeId" value="#{cc.attrs.expense.exchangeRate.fee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol="%" symbolPosition="s" decimalPlaces="3" >
+						    	<p:ajax listener="#{controller.assistant.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    </p:inputNumber>
+					    </div>
+					    
+			            <div class="p-col-12 p-md-3">
+				            <p:outputLabel for="xfixFeeId" value="fix fee" />
+							<p:inputNumber id="xfixFeeId" value="#{cc.attrs.expense.exchangeRate.fixFee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol=" #{cc.attrs.expense.currencyCode}" symbolPosition="s" >
+						    	<p:ajax listener="#{controller.assistant.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    </p:inputNumber>
+					    </div>
+				    </div>
 				</h:panelGroup>
 			</h:panelGroup>
 
@@ -196,7 +248,9 @@
 			</p:column>
 
 			<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
-				<h:outputText value="#{tentry.accountingValue}" />
+				<h:outputFormat value="{0,number, 0.00}">
+					<f:param value="#{tentry.accountingValue}" />
+				</h:outputFormat>
 			</p:column>
 
 			<p:rowExpansion>
