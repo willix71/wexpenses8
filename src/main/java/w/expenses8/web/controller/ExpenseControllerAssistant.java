@@ -81,7 +81,7 @@ public class ExpenseControllerAssistant {
 	
 	public void onAmountChange() {
 		log.info("onAmountChange old {} new {}",currentAmount, currentExpense.getCurrencyAmount());
-		currentExpense.updateAmount(currentAmount);
+		currentExpense.updateAmountValues(currentAmount, currencyValue.getPrecision());
 		currentAmount = currentExpense.getCurrencyAmount();
 	}
 }

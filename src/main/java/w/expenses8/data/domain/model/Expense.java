@@ -5,6 +5,7 @@ import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.REFRESH;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 
@@ -124,9 +126,9 @@ public class Expense extends DBable<Expense> {
 		return transactions.stream().flatMap(t->t.getTags().stream()).distinct().collect(Collectors.toList());
 	}
 	
-	public void updateValues() {
+	public void updateValues(BigDecimal precision) {
 		updateDate(null);
-		updateAmount(null);
+		updateAmountValues(null, precision);
 	}
 	
 	public void updateDate(LocalDateTime previousDate) {
@@ -134,21 +136,34 @@ public class Expense extends DBable<Expense> {
 		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate.toLocalDate()))).forEach(t->t.setAccountingDate(date.toLocalDate()));		
 	}
 	
-	public void updateAmount(BigDecimal previousAmount) {
-		if (exchangeRate == null) {
-			accountingValue = currencyAmount;
-		} else {
-			accountingValue = exchangeRate.apply(currencyAmount);
-		}
-		computeCurrencyAmount(TransactionFactor.IN, previousAmount);
-		computeCurrencyAmount(TransactionFactor.OUT, previousAmount);
-		transactions.stream().forEach(e->e.setAccountingValue(exchangeRate == null?e.getCurrencyAmount():exchangeRate.apply(e.getCurrencyAmount())));
-	}
-	
-	private void computeCurrencyAmount(TransactionFactor factor, BigDecimal previousAmount) {
+	public void updateAmountValues(BigDecimal previousAmount, BigDecimal precision) {
+		// update same currency amount as expense
 		if (previousAmount != null) {
 			transactions.stream().filter(t->t.getCurrencyAmount()!=null && t.getCurrencyAmount().compareTo(previousAmount)==0).forEach(t->t.setCurrencyAmount(currencyAmount));
 		}
+		
+		// update currency amount that are empty
+		fillEmptyCurrencyAmount(TransactionFactor.IN, previousAmount);
+		fillEmptyCurrencyAmount(TransactionFactor.OUT, previousAmount);
+		
+		// apply exchange rate
+		if (exchangeRate == null) {
+			accountingValue = currencyAmount;
+			transactions.stream().forEach(e->e.setAccountingValue(e.getCurrencyAmount()));
+		} else if (currencyAmount != null){
+			accountingValue = exchangeRate.apply(currencyAmount);
+			BigDecimal fullRatio = accountingValue.divide(currencyAmount, 8, RoundingMode.HALF_EVEN);
+			transactions.stream().forEach(e->e.setAccountingValue(e.getCurrencyAmount().equals(currencyAmount)?accountingValue:e.getCurrencyAmount().multiply(fullRatio)));
+		}
+		
+		// apply precision
+		if (precision != null) {
+			accountingValue = CurrencyValue.applyPrecision(accountingValue, precision);
+			transactions.stream().forEach(e->e.setAccountingValue(CurrencyValue.applyPrecision(e.getAccountingValue(), precision)));
+		}
+	}
+	
+	private void fillEmptyCurrencyAmount(TransactionFactor factor, BigDecimal previousAmount) {
 		long numberOfEmpty = transactions.stream().filter(t->t.getFactor()==factor && t.getCurrencyAmount()==null).count();
 		if (numberOfEmpty > 0) {
 			BigDecimal leftOver = currencyAmount;

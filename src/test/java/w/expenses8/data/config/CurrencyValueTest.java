@@ -14,19 +14,23 @@ public class CurrencyValueTest {
 		BigDecimal value = currencyValue.applyPrecision(amount);
 		assertThat(value).isEqualByComparingTo(expected);		
 	}
+	
 	@Test
 	public void testOneThird() {
-		test(new BigDecimal(1.0/3.0), currencyValue, new BigDecimal("0.3"));
+		test(new BigDecimal(1.0/3.0), currencyValue, new BigDecimal("0.35"));
 	}
 	
 	@Test
 	public void test1048() {
-		test(new BigDecimal("10.484"), currencyValue, new BigDecimal("10.45"));
+		test(new BigDecimal("10.484"), currencyValue, new BigDecimal("10.50"));
 	}
 
 	@Test
 	public void test75() {
 		test(new BigDecimal("75.00"), currencyValue, new BigDecimal("75.00"));
+		test(new BigDecimal("75.01"), currencyValue, new BigDecimal("75.00"));
 	}
+	
+	
 	
 }

@@ -117,7 +117,7 @@ public class ExpenseServiceTest {
 		Tag newTag1 = Tag.with().type(TagType.EXPENSE).name("beer").build(); // new tag
 		Tag newTag2 = Tag.with().type(TagType.EXPENSE).name("wine").build(); // new tag
 		updated1.addTransaction(TransactionEntry.in(newTag1,newTag2)); // add new transaction entry
-		updated1.updateValues();
+		updated1.updateValues(null);
 		Expense updated2 = expenseService.save(updated1);
 		log.info("\n\t===== Saved 3 Expense {} ====", updated2);
 		assertThat(updated2.getVersion()).isEqualTo(2L);

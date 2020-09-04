@@ -7,13 +7,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.model.enums.TransactionFactor;
 
 public class ExpenseHelper {
 
@@ -38,6 +41,10 @@ public class ExpenseHelper {
 			}
 			if (o instanceof BigDecimal) {
 				x.setCurrencyAmount((BigDecimal) o);
+				continue;
+			}
+			if (o instanceof ExchangeRate) {
+				x.setExchangeRate((ExchangeRate) o);
 				continue;
 			}
 			if (o instanceof Payee) {
@@ -73,9 +80,21 @@ public class ExpenseHelper {
 			x.addTransaction(TransactionEntry.out());
 			x.addTransaction(TransactionEntry.in());	
 		}
-		x.updateValues();
+		x.updateValues(null);
 		
 		return x;
+	}
+	
+	public static List<TransactionEntry> getTransactionEntry(Expense x, TransactionFactor factor) {
+		return x.getTransactions().stream().filter(t->t.getFactor()==factor).collect(Collectors.toList());
+	}
+	
+	public static List<TransactionEntry> getTransactionIn(Expense x) {
+		return getTransactionEntry(x,TransactionFactor.IN);
+	}
+	
+	public static List<TransactionEntry> getTransactionOut(Expense x) {
+		return getTransactionEntry(x,TransactionFactor.OUT);
 	}
 	
 	public static String toString(Expense x) {

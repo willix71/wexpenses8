@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -13,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
@@ -32,6 +34,9 @@ public class MigrateService {
 
 	@PersistenceContext
 	private EntityManager entityManager;
+
+	@Inject
+	private CurrencyValue currencyValue;
 	
 	@Transactional
 	public void migrate() {
@@ -70,7 +75,7 @@ public class MigrateService {
 				newx.addTransaction(entry);
 			}
 			newx.setExchangeRate(getExchangeRate(rate));
-			newx.updateValues();
+			newx.updateValues(currencyValue.getPrecision());
 			if (legacyExpense.getFileDate()!=null && legacyExpense.getFileName()!=null) {
 				newx.addDocumentFile(new DocumentFile(newx, DateHelper.toLocalDate(legacyExpense.getFileDate()), legacyExpense.getFileName()));
 			}
