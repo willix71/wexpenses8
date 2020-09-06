@@ -14,7 +14,9 @@ import org.hibernate.usertype.EnhancedUserType;
  * 
  * @author gekeysew
  *
+ * @deprecated Using JPA <code>javax.persistence.AttributeConverter</code> instead
  */
+@Deprecated 
 public class TransactionFactorType implements EnhancedUserType {
 
 	@Override
