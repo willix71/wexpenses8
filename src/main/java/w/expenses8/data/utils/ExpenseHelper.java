@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
@@ -23,6 +24,14 @@ public class ExpenseHelper {
 	public static Expense build(Object ...args) {
 		Expense x = new Expense();
 		for(Object o:args) {
+			if (o.getClass().equals(DBable.class)) {
+				DBable<?> db = (DBable<?>) o;
+				x.setId(db.getId());
+				x.setUid(db.getUid());
+				x.setCreatedTs(db.getCreatedTs());
+				x.setModifiedTs(db.getModifiedTs());
+				continue;
+			}
 			if (o instanceof Date) {
 				x.setDate(((Date) o).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 				continue;
