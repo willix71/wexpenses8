@@ -69,22 +69,32 @@
 			</p:dataTable>
 			
 			<p:contextMenu for="wexTable">
-		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()"/>
-		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()"/>
-		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()"/>
-		        <p:menuitem value="Refresh" update="wexTable" icon="pi pi-replay" action="#{controller.refresh}"/>		        
+		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement.expense}" target="#{expenseEditionController.currentExpense}" />
+		        </p:menuitem>
+		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement.expense}" target="#{expenseEditionController.currentExpense}" />
+		        </p:menuitem>
+		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement.expense}" target="#{expenseEditionController.currentExpense}" />
+		        </p:menuitem>
+		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{expenseEditionController.newExpense}" oncomplete="PF('w_wexEditionDialog').show()" />
+		        <p:menuitem value="Refresh" update="@form" icon="pi pi-replay" action="#{controller.refresh}"/>		        
 		    </p:contextMenu>
      
 			<p:outputPanel id="wexDetailPanel">
 	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="UID:#{controller.selectedExpense.uid}" position="top">
-					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="false"/>
+					<wex:expenseEdition edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
 	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="UID:#{controller.selectedExpense.uid}" position="top" modal="true">
-					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="false"/>
-					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" action="#{controller.deleteExpense}" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')"/>
+					<wex:expenseEdition edition="false"/>
+					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
+						<f:actionListener binding="#{expenseEditionController.delete()}" />
+						<f:actionListener binding="#{controller.refresh()}" />
+					</p:commandButton>
 					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
@@ -93,9 +103,12 @@
 		<h:form id="wexEditionForm" >
 			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedExpense.uid}" position="top" modal="true">
 				<p:outputPanel id="wexEditionPanel">
-					<wex:expenseEdition expense="#{controller.selectedExpense}" edition="true"/>
+					<wex:expenseEdition edition="true"/>
 				</p:outputPanel>
-				<p:commandButton id="wexSave" value="Save" action="#{controller.saveExpense}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable"/>
+				<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
+					<f:actionListener binding="#{expenseEditionController.save()}" />
+					<f:actionListener binding="#{controller.refresh()}" />
+				</p:commandButton>
 				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
 			</p:dialog>
 		</h:form>

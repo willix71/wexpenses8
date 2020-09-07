@@ -4,11 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.RowEditEvent;
@@ -38,19 +36,6 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	
 	public AbstractListController(Class<T> clazz) {
 		this.clazz = clazz;
-	}
-
-	@PostConstruct
-	public void initSelectedElement() {
-		String id=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("id");
-		if (id!=null) {
-			setSelectedElement(elementService.load(Long.valueOf(id)));
-		} else {
-			String uid=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("uid");
-			if (uid!=null) {
-				setSelectedElement(elementService.loadByUid(uid));
-			}
-		}
 	}
 	
 	public List<T> getElements() {
