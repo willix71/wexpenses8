@@ -12,6 +12,9 @@ public interface IPayeeDao extends IGenericDao<Payee, Long>, IUidableDao<Payee> 
 
 	Payee findByName(String name);
 
+	@Query("select distinct p from Payee p left join fetch p.payeeType where p.id = ?1")
+	Payee reload(Long id);
+	
 	@Override
 	@Query("select distinct p from Payee p left join fetch p.payeeType")
 	List<Payee> findAll();

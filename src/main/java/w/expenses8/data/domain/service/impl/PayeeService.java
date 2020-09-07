@@ -22,6 +22,11 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 	@PersistenceContext
 	private EntityManager entityManager;
 	
+	@Override
+	public Payee reload(Payee ex) {
+		return getDao().reload(ex.getId());
+	}
+
 	@Autowired
 	public PayeeService(IPayeeDao dao) {
 		super(Payee.class, dao);

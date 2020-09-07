@@ -16,6 +16,7 @@
 			<p:growl id="growl" />
 			
 			<c:set var="controller" value="#{payeeController}" />
+			<c:set var="editionController" value="#{payeeEditionController}" />
 
 			<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
                  paginator="true"
@@ -40,23 +41,32 @@
 			</p:dataTable>
 			
 			<p:contextMenu for="wexTable">
-		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()"/>
-		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()"/>
-		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()"/>
-		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{controller.newElement}" oncomplete="PF('w_wexEditionDialog').show()"/>
-		        <p:menuitem value="Refresh" update="wexTable" icon="pi pi-replay" action="#{controller.refresh}"/>
+		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        </p:menuitem>
+		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        </p:menuitem>
+		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        </p:menuitem>
+		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{editionController.newPayee}" oncomplete="PF('w_wexEditionDialog').show()"/>
+		        <p:menuitem value="Refresh" update="wexTableForm" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
      
 			<p:outputPanel id="wexDetailPanel">
 	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="UID:#{controller.selectedElement.uid}" position="top">
-					<wex:payeeEdition payee="#{controller.selectedElement}" edition="false"/>
+					<wex:payeeEdition edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
 	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
-					<wex:payeeEdition payee="#{controller.selectedElement}" edition="false"/>
-					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" action="#{controller.delete}" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')"/>
+					<wex:payeeEdition edition="false"/>
+					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
+						<f:actionListener binding="#{editionController.delete()}" />
+						<f:actionListener binding="#{controller.refresh()}" />
+					</p:commandButton>
 					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
@@ -65,9 +75,12 @@
 		<h:form id="wexEditionForm" >
 			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
 				<p:outputPanel id="wexEditionPanel">
-					<wex:payeeEdition payee="#{controller.selectedElement}" edition="true"/>
+					<wex:payeeEdition edition="true"/>
 				</p:outputPanel>
-				<p:commandButton id="wexSave" value="Save" action="#{controller.save}" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable"/>
+				<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
+					<f:actionListener binding="#{editionController.save()}" />
+					<f:actionListener binding="#{controller.refresh()}" />
+				</p:commandButton>
 				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
 			</p:dialog>
 		</h:form>

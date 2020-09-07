@@ -1,53 +1,55 @@
 <ui:component xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
 	xmlns:composite="http://java.sun.com/jsf/composite">
    	
 	<composite:interface>
-		<composite:attribute name="payee" type="w.expenses8.data.domain.model.Payee" required="true" />
 		<composite:attribute name="edition" default="false" />
 	</composite:interface>
 	
 	<composite:implementation>
-		<wex:dbableDetails dbable="#{cc.attrs.payee}"/>
+		<c:set var="payee" value="#{payeeEditionController.currentPayee}" />
+			
+		<wex:dbableDetails dbable="#{payee}"/>
 		
-		<h:panelGrid columns="2" rendered="#{not empty cc.attrs.payee}" style="width:100%">
+		<h:panelGrid columns="2" rendered="#{not empty payee}" style="width:100%">
 			<h:outputText value="type" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.payeeType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:autoComplete id="payeeTypeId" value="#{cc.attrs.payee.payeeType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+			<h:outputText value="#{payee.payeeType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:autoComplete id="payeeTypeId" value="#{payee.payeeType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeType}" converter="#{payeeTypeConverter}" 
              	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" />
              	
 			<h:outputText value="prefix" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.prefix}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeePrefixId" value="#{cc.attrs.payee.prefix}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.prefix}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeePrefixId" value="#{payee.prefix}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="name" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeNameId" value="#{cc.attrs.payee.name}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeNameId" value="#{payee.name}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="extra" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeExtraId" value="#{cc.attrs.payee.extra}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeExtraId" value="#{payee.extra}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="address" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.address1}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeAddress1Id" value="#{cc.attrs.payee.address1}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.address1}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeAddress1Id" value="#{payee.address1}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		
 			<h:outputText value="zip" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.zip}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeZipId" value="#{cc.attrs.payee.zip}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.zip}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeZipId" value="#{payee.zip}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="city" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.city}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeCityId" value="#{cc.attrs.payee.city}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.city}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeCityId" value="#{payee.city}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="country" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.countryCode}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:selectOneMenu id="payeeCountryId" value="#{cc.attrs.payee.countryCode}" rendered="#{cc.attrs.edition}">
+			<h:outputText value="#{payee.countryCode}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:selectOneMenu id="payeeCountryId" value="#{payee.countryCode}" rendered="#{cc.attrs.edition}">
                 <f:selectItem itemLabel="--" itemValue="" noSelectionOption="true" />
                 <f:selectItems value="#{dropboxController.countries}" />
             </p:selectOneMenu>
@@ -55,16 +57,16 @@
 			<h:panelGroup><br/></h:panelGroup><h:panelGroup><br/></h:panelGroup>
 
 			<h:outputText value="CCP" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.postalAccount}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeePostalAccountId" value="#{cc.attrs.payee.postalAccount}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.postalAccount}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeePostalAccountId" value="#{payee.postalAccount}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 
 			<h:outputText value="Bank" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.postalBank}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeePostalBankId" value="#{cc.attrs.payee.postalBank}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.postalBank}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeePostalBankId" value="#{payee.postalBank}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 
 			<h:outputText value="Iban" styleClass="wex-field-label"/>
-			<h:outputText value="#{cc.attrs.payee.iban}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="payeeIbanId" value="#{cc.attrs.payee.iban}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{payee.iban}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeIbanId" value="#{payee.iban}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		</h:panelGrid>
    	</composite:implementation>
 </ui:component>
