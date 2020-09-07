@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Import;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
-import w.expenses8.data.config.WexpensesProperties;
+import w.expenses8.data.domain.criteria.ExpenseCriteria;
+import w.expenses8.data.domain.service.IExpenseService;
 
 @Slf4j
 @Import(DataConfig.class)
@@ -20,9 +21,9 @@ public class Wexpenses8Application {
 	}
 	
 	  @Bean
-	  public CommandLineRunner demo(WexpensesProperties props) {
+	  public CommandLineRunner demo(IExpenseService service) {
 	    return (args) -> {
-	    	log.info("Started up");
+	    	log.info("Started up with {} expenses",service.findExpenses(ExpenseCriteria.with().build()).size());
 	    };
 	  }
 }

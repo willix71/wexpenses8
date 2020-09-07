@@ -75,6 +75,7 @@ public class ExpenseServiceTest {
 		
 		Expense reloaded =expenseService.reload(saved);
 		assertThat(reloaded.getDocumentFiles()).isEmpty();
+		assertThat(reloaded.getPayee().getName()).isEqualTo("Someone");
 	}
 	
 	@Test
