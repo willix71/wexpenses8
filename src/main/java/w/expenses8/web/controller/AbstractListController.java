@@ -56,6 +56,7 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 
 	public void refresh() {
 		loadEntities();
+		log.info("{} refreshed", clazz.getSimpleName());
 		showMessage(nameOf(null) + " refreshed");
 	}
 	
