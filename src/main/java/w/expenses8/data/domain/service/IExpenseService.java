@@ -11,7 +11,7 @@ import w.expenses8.data.domain.model.Expense;
 public interface IExpenseService extends IGenericService<Expense, Long> {
 	
 	@Transactional
-	Expense reload(Expense ex);
+	Expense reload(Object o);
 	
 	List<Expense> findExpenses(ExpenseCriteria criteria);
 }

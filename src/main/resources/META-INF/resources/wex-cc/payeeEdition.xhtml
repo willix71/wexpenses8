@@ -12,7 +12,7 @@
 	</composite:interface>
 	
 	<composite:implementation>
-		<c:set var="payee" value="#{payeeEditionController.currentPayee}" />
+		<c:set var="payee" value="#{payeeEditionController.currentElement}" />
 			
 		<wex:dbableDetails dbable="#{payee}"/>
 		

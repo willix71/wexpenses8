@@ -23,8 +23,17 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 	private EntityManager entityManager;
 	
 	@Override
-	public Payee reload(Payee ex) {
-		return getDao().reload(ex.getId());
+	public Payee reload(Object o) {
+		if (o == null) return new Payee();
+		Long id;
+		if (o instanceof Payee) {
+			id = ((Payee)o).getId();
+		} else if (o instanceof Long) {
+			id = (Long)o;
+		} else {			
+			id = loadByUid((String) o).getId();
+		}
+		return  getDao().reload(id);
 	}
 
 	@Autowired

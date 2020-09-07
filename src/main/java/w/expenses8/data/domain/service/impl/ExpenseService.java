@@ -23,6 +23,7 @@ import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
+import w.expenses8.data.utils.ExpenseHelper;
 
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
@@ -42,9 +43,17 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	}
 	
 	@Override
-	public Expense reload(Expense expense) {
-		if (expense==null) return null;
-		var query = baseQuery().where(QExpense.expense.id.eq(expense.getId()));
+	public Expense reload(Object o) {
+		if (o == null) return ExpenseHelper.build();
+		Long id;
+		if (o instanceof Expense) {
+			id = ((Expense)o).getId();
+		} else if (o instanceof Long) {
+			id = (Long)o;
+		} else {			
+			id = loadByUid((String) o).getId();
+		}
+		var query = baseQuery().where(QExpense.expense.id.eq(id));
 		Expense x = query.fetchOne();
 		return x;
 	}

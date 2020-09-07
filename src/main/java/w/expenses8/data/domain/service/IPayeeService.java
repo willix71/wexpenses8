@@ -11,7 +11,7 @@ import w.expenses8.data.domain.model.Payee;
 public interface IPayeeService extends IGenericService<Payee, Long> {
 
 	@Transactional
-	Payee reload(Payee ex);
+	Payee reload(Object o);
 	
 	Payee findByName(String name);
 

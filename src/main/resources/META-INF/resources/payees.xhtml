@@ -42,15 +42,17 @@
 			
 			<p:contextMenu for="wexTable">
 		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()">
-		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
 		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()">
-		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
 		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()">
-		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentPayee}" />
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
-		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{editionController.newPayee}" oncomplete="PF('w_wexEditionDialog').show()"/>
+		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{editionController.newElement}" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{null}" target="#{editionController.currentElement}" />
+		        </p:menuitem>
 		        <p:menuitem value="Refresh" update="wexTableForm" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
      
