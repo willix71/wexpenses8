@@ -111,7 +111,7 @@ public class MigrateService {
 						}
 					}
 				}
-				tags.add(getTag(account.getName(), 4000, TagType.EXPENSE));
+				tags.add(getTag(account.getName(), 4000, TagType.EXPENSE, getPayee(account.getOwner())));
 				break;
 			default:
 			}

@@ -26,11 +26,11 @@ import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.model.enums.TransactionFactorType;
 
 @Entity
-@TypeDefs({ 
+//@TypeDefs({ 
 		//@TypeDef(name = "amountValueType", typeClass = w.wexpense.persistence.type.AmountValueType.class),
 		//@TypeDef(name = "accountPeriodType", typeClass = w.wexpense.persistence.type.AccountPeriodType.class),
-		@TypeDef(name = "transactionLineEnumType", typeClass = TransactionFactorType.class) 
-		})
+		//@TypeDef(name = "transactionLineEnumType", typeClass = TransactionFactorType.class) 
+		//})
 public class TransactionLine extends DBable<TransactionLine> implements Closable {
 
 	private static final long serialVersionUID = 2482940442245899869L;
@@ -49,7 +49,7 @@ public class TransactionLine extends DBable<TransactionLine> implements Closable
 	private Account account;
 
 	@NotNull
-	@Type(type = "transactionLineEnumType")
+	//@Type(type = "transactionLineEnumType")
 	private TransactionFactor factor = TransactionFactor.OUT;
 
 	@NotNull
