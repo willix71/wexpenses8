@@ -37,10 +37,10 @@
 			<h:panelGrid columns="3" rendered="#{cc.attrs.edition}" >
 				<p:inputText id="expenseDateText" value="#{expense.date}">
 				 	<f:converter converterId="localDateTimeCustomConverter"/> 
-				 	<p:ajax listener="#{expenseEditionController.onDateChange}" update="expenseDateText expenseDateError expenseDatePicker transactionEntriesTableId"  />
+				 	<p:ajax listener="#{expenseEditionController.onDateChange}" update="expenseDateText expenseDateError expenseDatePicker @(.js-date-related)"  />
 				</p:inputText>
 				<p:datePicker id="expenseDatePicker" value="#{expense.date}" showIcon="true" showButtonBar="true" readonlyInput="true" showTime="true" styleClass="wex-datepicker" >
-				 	<p:ajax event="dateSelect" listener="#{expenseEditionController.handleDateChange}" update="expenseDateText expenseDateError transactionEntriesTableId"  />
+				 	<p:ajax event="dateSelect" listener="#{expenseEditionController.handleDateChange}" update="expenseDateText expenseDateError @(.js-date-related)"  />
 				</p:datePicker>
 				<h:panelGrid columns="2" id="expenseDateError">
 					<p:message for="expenseDateText" display="icon" showDetail="true" />
@@ -60,14 +60,14 @@
 			</h:panelGroup>
 			<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-edit">
 			    <p:inputNumber id="expenseCurrencyAmountId" value="#{expense.currencyAmount}" thousandSeparator="'">
-			    	<p:ajax listener="#{expenseEditionController.onAmountChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
+			    	<p:ajax listener="#{expenseEditionController.onAmountChange}"  update="expenseFieldsPanelId @(.js-value-related)" />
 			    </p:inputNumber>  
 			    <p:selectOneMenu id="expenseCurrencyCodeId" value="#{expense.currencyCode}" >
-			    	<p:ajax listener="#{expenseEditionController.onCurrencyChange}"  update="expenseFieldsPanelId transactionEntriesTableId" />
+			    	<p:ajax listener="#{expenseEditionController.onCurrencyChange}"  update="expenseFieldsPanelId @(.js-value-related)" />
                 	<f:selectItems value="#{dropboxController.currencies}" />
                 	<h:outputText value="#{expense.accountingValue}"/>
             	</p:selectOneMenu>
-				<h:outputFormat value="{0,number, ###0.00} #{requestController.defaultCurrency.code}" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code}">
+				<h:outputFormat value="{0,number, ###0.00} #{requestController.defaultCurrency.code}" rendered="#{not empty expense.accountingValue &amp;&amp; expense.currencyCode!=requestController.defaultCurrency.code}">
 					<f:param value="#{expense.accountingValue}" />
 				</h:outputFormat>
 			</h:panelGroup>
@@ -115,21 +115,21 @@
 			            <div class="p-col-12 p-md-6">
 				            <p:outputLabel for="xrateId" value="rate" />
 							<p:inputNumber id="xrateId" value="#{expense.exchangeRate.rate}" thousandSeparator="'" decimalPlaces="8" rendered="#{cc.attrs.edition}" >
-						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>					    			
 					    </div>
 					    
 			            <div class="p-col-12 p-md-3">
 				            <p:outputLabel for="xfeeId" value="fee" />
 							<p:inputNumber id="xfeeId" value="#{expense.exchangeRate.fee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol="%" symbolPosition="s" decimalPlaces="3" >
-						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>
 					    </div>
 					    
 			            <div class="p-col-12 p-md-3">
 				            <p:outputLabel for="xfixFeeId" value="fix fee" />
 							<p:inputNumber id="xfixFeeId" value="#{expense.exchangeRate.fixFee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s" >
-						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId transactionEntriesTableId" />
+						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>
 					    </div>
 				    </div>
@@ -215,7 +215,7 @@
 				<ui:param name="dba" value="#{tentry}" />
 			</ui:include>
 			
-            <p:column headerText="Date" style="max-width:70px; width:70px">
+            <p:column headerText="Date" style="max-width:70px; width:70px" >
             	<h:outputText value="#{tentry.accountingDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 				</h:outputText>
@@ -224,12 +224,13 @@
 					showIcon="true"
 					showButtonBar="true"
 					appendTo="@(body)"
+					styleClass="js-date-related"
 			 	/>
        		</p:column>
        					
 			<p:column headerText="Year" style="max-width:70px; width:70px">
 				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
-				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" thousandSeparator=""/>
+				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="js-date-related wex-input-70" thousandSeparator=""/>
 			</p:column>
 
 			<p:column headerText="Factor" style="max-width:120px; width:120px">
@@ -249,13 +250,15 @@
 			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
 				<h:outputText value="#{tentry.currencyAmount} #{expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
 				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s"
-					thousandSeparator="'" styleClass="wex-input-right wex-input-150" />
+					thousandSeparator="'" styleClass="wex-input-right wex-input-150 js-value-related" />
 			</p:column>
 
 			<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
-				<h:outputFormat value="{0,number, 0.00}">
-					<f:param value="#{tentry.accountingValue}" />
-				</h:outputFormat>
+				<p:outputPanel id="typeDeletePanel" styleClass="js-value-related">
+					<h:outputFormat value="{0,number, 0.00}" >
+						<f:param value="#{tentry.accountingValue}" />
+					</h:outputFormat>
+				</p:outputPanel>
 			</p:column>
 
 			<p:rowExpansion>
