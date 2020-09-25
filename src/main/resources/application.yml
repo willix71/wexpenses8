@@ -38,6 +38,8 @@ joinfaces:
     PROJECT_STAGE: Development
 
 wexpenses:
+  documents:
+    root: /somewhere/{0,date,yyyy}/{1}
   currency-value:
     code: CHF
     precision: 0.05

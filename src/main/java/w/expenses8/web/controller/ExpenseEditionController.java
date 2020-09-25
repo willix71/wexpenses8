@@ -25,6 +25,7 @@ import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.utils.TransactionsSums;
@@ -46,6 +47,11 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IPayeeService payeeService;
+
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private IDocumentFileService documentFileService;
 	
 	@Inject
 	private CurrencyValue currencyValue;
@@ -159,6 +165,18 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		transactionsSums.compute(currentElement.getTransactions());
 	}
 	
+	public void newTransactionEntry() {
+		currentElement.addTransaction(new TransactionEntry());
+	}
+	
+	public void deleteTransactionEntry() {
+		if (selectedTransactionEntry!=null) {
+			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
+			currentElement.getTransactions().remove(selectedTransactionEntry);
+			selectedTransactionEntry.setExpense(null);
+		}
+	}
+	
 	public void newDocumentFile() {
 		currentElement.addDocumentFile(new DocumentFile(currentElement.getDate()==null?null:currentElement.getDate().toLocalDate(),null));
 		currentElement.updateDocumentCount();
@@ -173,15 +191,15 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 	}
 	
-	public void newTransactionEntry() {
-		currentElement.addTransaction(new TransactionEntry());
+	public void onDocumentFileDateChange(DocumentFile f) {
+		if (f.getFileName()==null) {
+			// generate new filename
+			String fileName = documentFileService.generateFilename(f.getDocumentDate(), currentElement);
+			f.setFileName(fileName);
+		}		
 	}
 	
-	public void deleteTransactionEntry() {
-		if (selectedTransactionEntry!=null) {
-			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
-			currentElement.getTransactions().remove(selectedTransactionEntry);
-			selectedTransactionEntry.setExpense(null);
-		}
+	public String getDocumentFileUrl(DocumentFile docFile) {
+		return documentFileService.getUrl(docFile);
 	}
 }

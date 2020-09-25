@@ -179,16 +179,18 @@
 					showIcon="true"
 					showButtonBar="true"
 					appendTo="@(body)"
-			 	/>
+			 	>
+			 		<p:ajax event="dateSelect" listener="#{expenseEditionController.onDocumentFileDateChange(docFile)}" update="@(.js-docdate-related)"  />
+			 	</p:datePicker>
        		</p:column>
             
             <p:column headerText="Filename (#{expense.documentCount})" style="max-width:120px; width:120px">
            		<h:outputText value="#{docFile.fileName}" rendered="#{not cc.attrs.edition}" />
-          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit js-docdate-related"/>
        		</p:column>
        		
        		<p:column headerText="View" style="max-width:10px; width:10px" width="5" >
-       			<p:button href="http://www.stackoverflow.com" icon="pi pi-search" target="_blank"/>
+       			<p:button href="#{expenseEditionController.getDocumentFileUrl(docFile)}" icon="pi pi-search" target="_blank" styleClass="js-docdate-related"/>
        		</p:column>
 		</p:dataTable>        		
        
