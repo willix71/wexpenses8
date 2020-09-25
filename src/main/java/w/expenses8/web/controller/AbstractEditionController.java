@@ -31,6 +31,8 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 
 	protected T currentElement;
 
+	private boolean edition = true;
+	
 	@SuppressWarnings("unchecked")
 	public AbstractEditionController() {
 		ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -50,6 +52,17 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 		}
 	}
 	
+	public void setEdition(boolean edit) {
+		if (this.edition && !edit) {
+			// reset the 'error' fields			
+			PrimeFaces.current().resetInputs("wexEditionForm");
+			// reload the element
+			setCurrentElement(currentElement); // force reload
+		}
+		
+		this.edition = edit;
+	}
+	
 	public void newElement() throws Exception {
 		setCurrentElementId(null);
 	}
@@ -57,6 +70,7 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	public void save() {
 		currentElement = elementService.save(currentElement);
 		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
+		edition=false; // switch back to view mode after save
 	}
 	
 	public void delete() {

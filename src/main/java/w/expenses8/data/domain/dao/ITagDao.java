@@ -11,8 +11,12 @@ import w.expenses8.data.domain.model.enums.TagType;
 
 public interface ITagDao extends IGenericDao<Tag, Long>, IUidableDao<Tag> {
 
+	@Override
+	@Query("from Tag t left join fetch t.institution")
+	List<Tag> findAll();
+	
 	Tag findByName(String name);
-
+	
 	@Query("from Tag t where t.name like ?1 or t.number like ?1")
 	List<Tag> findByText(String like);
 	

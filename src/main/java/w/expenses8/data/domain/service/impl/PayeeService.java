@@ -12,6 +12,7 @@ import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.PayeeCriteria;
 import w.expenses8.data.domain.dao.IPayeeDao;
 import w.expenses8.data.domain.model.Payee;
+import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.utils.CriteriaHelper;
 import w.expenses8.data.utils.StringHelper;
@@ -46,6 +47,21 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 		return getDao().findByName(name);
 	}
 
+	@Override
+	public List<Payee> findByText(String text, PayeeDisplayer displayer) {
+		if (displayer!=null) {
+			switch(displayer) {
+			case CCP:
+				return getDao().findByTextAndPostalAccount(CriteriaHelper.like(text.toLowerCase()));
+			case IBAN:
+				return getDao().findByTextAndIban(CriteriaHelper.like(text.toLowerCase()));
+			default:
+				// default behavior
+			}
+		}
+		return findByText(text);
+	}
+	
 	@Override
 	public List<Payee> findByText(String text) {
 		return getDao().findByText(CriteriaHelper.like(text.toLowerCase()));

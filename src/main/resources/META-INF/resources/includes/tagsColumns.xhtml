@@ -56,6 +56,17 @@
 		</p:cellEditor>
 	</p:column>
 
+	<p:column headerText="Institution" sortBy="#{x.institution.name}" filterBy="#{x.institution.name}" filterMatchMode="contains">
+		<p:cellEditor>
+			<f:facet name="output">
+				<wex:payeeSelector payee="#{x.institution}" edition="false" />
+			</f:facet>
+			<f:facet name="input">
+				<wex:payeeSelector payee="#{x.institution}" edition="true" />
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+	
 	<p:column headerText="Selectable" sortBy="#{x.selectable}" styleClass="wex-cell-centered" filterBy="#{x.selectable}" filterMatchMode="equals">
 		<f:facet name="filter">
 			<p:selectOneButton onchange="PF('w_typesTable').filter()" styleClass="custom-filter">

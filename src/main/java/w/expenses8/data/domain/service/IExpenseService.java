@@ -13,5 +13,7 @@ public interface IExpenseService extends IGenericService<Expense, Long> {
 	@Transactional
 	Expense reload(Object o);
 	
+	List<Expense> findSimiliarExpenses(Expense x);
+
 	List<Expense> findExpenses(ExpenseCriteria criteria);
 }

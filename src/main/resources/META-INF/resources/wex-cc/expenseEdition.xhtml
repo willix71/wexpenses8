@@ -16,20 +16,24 @@
 		<c:set var="expense" value="#{expenseEditionController.currentElement}" />
 		
 		<wex:dbableDetails dbable="#{expense}"/>
-		
+
 		<h:panelGrid id="expenseFieldsPanelId" columns="2" rendered="#{not empty expense}" style="width:100%">
+			<h:outputText value=""/>
+			<p:messages for="ValidationErrors" showDetail="true" showSummary="true" />
+			
 			<h:outputText value="type" styleClass="wex-field-label"/>
 			<h:outputText value="#{expense.expenseType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:autoComplete id="expenseTypeId" value="#{expense.expenseType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
-             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" />
-             	
+             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" >
+             	<p:ajax event="itemSelect" update="payeeSelector" />
+             </p:autoComplete>
+ 			
 			<h:outputText value="payee" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.payee.prefix}#{expense.payee.name} #{expense.payee.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:autoComplete id="expensePayeeId" value="#{expense.payee}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
-			 	dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{theme.prefix}#{theme.name} #{theme.extra}" itemValue="#{theme}" forceSelection="true" />
-			
+			<p:outputPanel id="payeeSelector">
+				<wex:payeeSelector payee="#{expense.payee}" payeeDisplayer="#{expense.expenseType.displayer}" edition="#{cc.attrs.edition}" />
+			</p:outputPanel>			
+             	
 			<h:outputText value="date" styleClass="wex-field-label"/>
 			<h:outputText value="#{expense.date}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 				<f:converter converterId="localDateTimeCustomConverter" />
@@ -194,7 +198,7 @@
     	</p:contextMenu>
 		
 		<p/>		
-		<p:dataTable id="transactionEntriesTableId" var="tentry" value="#{expense.transactions}" 
+		<p:dataTable id="transactions" var="tentry" value="#{expense.transactions}" 
 				styleClass="js-transactionEntryTable" resizableColumns="true" 
                 selection="#{expenseEditionController.selectedTransactionEntry}" 
                 selectionMode="single"				
@@ -207,7 +211,7 @@
 			<f:facet name="header">
 				Transactions
 				<p:commandButton id="transactionEntriesTableToggler" type="button" style="float:left" icon="pi pi-align-justify" />
-				<p:columnToggler datasource="transactionEntriesTableId" trigger="transactionEntriesTableToggler" />
+				<p:columnToggler datasource="transactions" trigger="transactionEntriesTableToggler" />
 			</f:facet>
 			-->
 			
@@ -276,9 +280,9 @@
 			</p:rowExpansion>
 		</p:dataTable>
 		
-		<p:contextMenu for="transactionEntriesTableId">
-        	<p:menuitem value="Add" update="transactionEntriesTableId" icon="pi pi-plus" action="#{expenseEditionController.newTransactionEntry}"/>
-        	<p:menuitem value="Delete" update="transactionEntriesTableId" icon="pi pi-trash" action="#{expenseEditionController.deleteTransactionEntry}"/>
+		<p:contextMenu for="transactions">
+        	<p:menuitem value="Add" update="transactions" icon="pi pi-plus" action="#{expenseEditionController.newTransactionEntry}"/>
+        	<p:menuitem value="Delete" update="transactions" icon="pi pi-trash" action="#{expenseEditionController.deleteTransactionEntry}"/>
     	</p:contextMenu>
 
    	</composite:implementation>

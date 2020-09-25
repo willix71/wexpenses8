@@ -12,6 +12,7 @@ import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
 import w.expenses8.data.domain.model.Tag;
+import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IExpenseTypeService;
@@ -48,7 +49,19 @@ public class DropboxController implements Serializable {
 	private IPayeeService payeeService;
 	
 	public List<Payee> completePayee(String text) {
-		return payeeService.findByText(text);
+		return payeeService.findByText(text, PayeeDisplayer.DEFAULT);
+	}
+	public List<Payee> completePayeeAndCcp(String text) {
+		return payeeService.findByText(text, PayeeDisplayer.CCP);
+	}
+	public List<Payee> completePayeeAndIban(String text) {
+		return payeeService.findByText(text, PayeeDisplayer.IBAN);
+	}
+	
+	List<PayeeDisplayer> payeeDisplayers = Arrays.asList(PayeeDisplayer.values());
+	
+	public List<PayeeDisplayer> getPayeeDisplayers() {
+		return payeeDisplayers;
 	}
 	
 	@Inject

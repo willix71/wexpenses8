@@ -29,13 +29,11 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
-//import w.expenses8.data.domain.model.enums.TransactionFactorType;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "WEX_TransactionEntry")
-//@TypeDefs({@TypeDef(name = "transactionFactorType", typeClass = TransactionFactorType.class) })
 public class TransactionEntry extends DBable<TransactionEntry> {
 
 	private static final long serialVersionUID = 1L;
@@ -47,7 +45,6 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private boolean systemEntry = false;
 	
 	@NotNull
-	//@Type(type = "transactionFactorType")
 	private TransactionFactor factor;
 	
 	@NotNull

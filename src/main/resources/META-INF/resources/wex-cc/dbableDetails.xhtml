@@ -10,23 +10,30 @@
 	</composite:interface>
 	
 	<composite:implementation>
-		<h:panelGrid columns="3" rendered="#{not empty cc.attrs.dbable}">
-			<h:panelGroup>
-				id: #{cc.attrs.dbable.fullId} 
-			</h:panelGroup>
-			<h:panelGroup>
-				created:
+		<h:panelGroup rendered="#{not empty cc.attrs.dbable}" style="display: flex;justify-content:space-between;align-items:center">
+			<span>
+				<p:outputLabel for="fullId"  value="id " styleClass="wex-field-label"/>
+				<h:outputText id="fullId" value="#{cc.attrs.dbable.fullId}" /> 
+			</span>
+			<span>
+				<p:outputLabel value="uid " styleClass="wex-field-label"/>
+				<h:outputText value="#{cc.attrs.dbable.uid}" /> 
+			</span>
+			<span>
+				<p:outputLabel value="created " styleClass="wex-field-label"/>
 				<h:outputText value="#{cc.attrs.dbable.createdTs}" >
 					<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
 				</h:outputText>
-			</h:panelGroup>
+			</span>
 			<h:panelGroup rendered="#{not empty cc.attrs.dbable.modifiedTs}">	
-				modified:
-				<h:outputText value="#{cc.attrs.dbable.modifiedTs}" >
-					<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
-				</h:outputText>
+				<span>
+					<p:outputLabel value="modified " styleClass="wex-field-label"/>
+					<h:outputText value="#{cc.attrs.dbable.modifiedTs}" >
+						<f:convertDateTime type="date" pattern="dd/MM/yyyy HH:mm:ss" />
+					</h:outputText>
+				</span>
 			</h:panelGroup>
-		</h:panelGrid>
+		</h:panelGroup>
 		<h:panelGrid rendered="#{empty cc.attrs.dbable}">
 			Nothing to display
 		</h:panelGrid>

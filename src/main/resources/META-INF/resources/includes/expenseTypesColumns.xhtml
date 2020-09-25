@@ -1,0 +1,30 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
+
+	<ui:include src="/includes/typesColumns.xhtml" />
+			
+	<p:column headerText="Displayer" sortBy="#{x.displayer}" filterBy="#{x.displayer}" filterMatchMode="equals">
+		<f:facet name="filter">
+			<p:selectOneMenu onchange="PF('w_typesTable').filter()" styleClass="custom-filter" converter="#{payeeDisplayerConverter}">
+				<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+				<f:selectItems value="#{dropboxController.payeeDisplayers}" />
+			</p:selectOneMenu>
+		</f:facet>
+		<p:cellEditor>
+			<f:facet name="output">
+				<h:outputText value="#{x.displayer}" />
+			</f:facet>
+			<f:facet name="input">
+				<p:selectOneMenu value="#{x.displayer}" converter="#{payeeDisplayerConverter}">
+					<f:selectItems value="#{dropboxController.payeeDisplayers}" />
+				</p:selectOneMenu>					
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+	
+</ui:composition>

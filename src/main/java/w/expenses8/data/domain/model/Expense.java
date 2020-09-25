@@ -35,11 +35,14 @@ import lombok.experimental.SuperBuilder;
 import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
+import w.expenses8.data.domain.validation.Expensenized;
+import w.expenses8.data.domain.validation.Transactionsized;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "WEX_Expense")
+@Expensenized
 public class Expense extends DBable<Expense> {
 
 	private static final long serialVersionUID = 1L;
@@ -75,6 +78,7 @@ public class Expense extends DBable<Expense> {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@OrderBy("factor, accountingValue")
+	@Transactionsized
 	private Set<TransactionEntry> transactions;
 	
 	private Integer documentCount;
@@ -133,7 +137,7 @@ public class Expense extends DBable<Expense> {
 	
 	public void updateDate(LocalDateTime previousDate) {
 		if (date==null) return;
-		if (exchangeRate!=null && exchangeRate.getDate()!=null && exchangeRate.getDate().equals(previousDate.toLocalDate())) exchangeRate.setDate(date.toLocalDate());
+		if (exchangeRate!=null && exchangeRate.getDate()!=null && previousDate!=null && exchangeRate.getDate().equals(previousDate.toLocalDate())) exchangeRate.setDate(date.toLocalDate());
 		transactions.stream().filter(t->t.getAccountingYear()==null || (previousDate!=null && t.getAccountingYear().equals(previousDate.getYear()))).forEach(t->t.setAccountingYear(date.getYear()));
 		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate.toLocalDate()))).forEach(t->t.setAccountingDate(date.toLocalDate()));
 	}

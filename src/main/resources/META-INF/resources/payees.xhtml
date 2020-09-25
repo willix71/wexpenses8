@@ -46,12 +46,14 @@
 		        </p:menuitem>
 		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()">
 		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
+		        	<p:resetInput target="wexEditionForm" />
 		        </p:menuitem>
 		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()">
 		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
 		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{editionController.newElement}" oncomplete="PF('w_wexEditionDialog').show()">
 		        	<f:setPropertyActionListener value="#{null}" target="#{editionController.currentElement}" />
+		        	<p:resetInput target="wexEditionForm" />
 		        </p:menuitem>
 		        <p:menuitem value="Refresh" update="wexTableForm" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
@@ -79,11 +81,14 @@
 				<p:outputPanel id="wexEditionPanel">
 					<wex:payeeEdition edition="true"/>
 				</p:outputPanel>
-				<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
-					<f:actionListener binding="#{editionController.save()}" />
-					<f:actionListener binding="#{controller.refresh()}" />
-				</p:commandButton>
-				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
+				
+				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />				
+					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
+						<f:actionListener binding="#{editionController.save()}" />
+						<f:actionListener binding="#{controller.refresh()}" />
+					</p:commandButton>
+				</h:panelGroup>
 			</p:dialog>
 		</h:form>
 	</ui:define>

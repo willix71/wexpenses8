@@ -23,6 +23,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.utils.DateHelper;
 import w.expensesLegacy.data.domain.model.Account;
@@ -157,6 +158,14 @@ public class MigrateService {
 		} catch(NoResultException noresult) {
 			ExpenseType newType = ExpenseType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs())
 					.name(legacy.getName()).selectable(legacy.isSelectable()).build();
+			switch(legacy.getName()) {
+			case "BVO":
+				newType.setDisplayer(PayeeDisplayer.CCP);
+				break;
+			case "BVI":
+				newType.setDisplayer(PayeeDisplayer.IBAN);
+				break;
+			}
 			entityManager.persist(newType);
 			entityManager.flush();
 			return newType;

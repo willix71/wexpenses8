@@ -13,6 +13,7 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
+import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
@@ -24,6 +25,7 @@ import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
 import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.data.utils.ValidationHelper;
 
 @Service
 public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDao> implements IExpenseService {
@@ -60,6 +62,9 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 
 	@Override
 	public Expense save(Expense x) {
+		// force the validation because if only the transactions have changed, the expense itself is not validated
+		ValidationHelper.validate(x); 
+		
 		persist(x.getExpenseType());
 		persist(x.getPayee());
 		persist(x.getExchangeRate());
@@ -99,6 +104,21 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		return query.fetch();
 		
 	}
+	
+	@Override
+    public List<Expense> findSimiliarExpenses(Expense x) {
+		QExpense ex = QExpense.expense;
+		
+		BooleanBuilder predicate = new BooleanBuilder().and(ex.currencyAmount.eq(x.getCurrencyAmount())).and(ex.currencyCode.eq(x.getCurrencyCode()));
+		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(x.getDate().toLocalDate(),x.getDate().toLocalDate().plusDays(1)), ex.date);
+		if (!x.isNew()) {
+			predicate = predicate.and(ex.id.ne(x.getId()));
+		}
+		
+		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		return query.fetch();
+    }
+	
 	private JPAQuery<Expense> baseQuery() {
 		QExpense ex = QExpense.expense;
 		var query = new JPAQuery<Expense>(entityManager);

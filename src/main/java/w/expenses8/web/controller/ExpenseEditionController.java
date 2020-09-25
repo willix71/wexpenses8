@@ -5,9 +5,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 import org.primefaces.event.SelectEvent;
 
@@ -22,6 +26,7 @@ import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
+import w.expenses8.data.domain.service.IPayeeService;
 
 @Slf4j
 @Named
@@ -35,6 +40,11 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private IPayeeService payeeService;
 	
 	@Inject
 	private CurrencyValue currencyValue;
@@ -71,6 +81,22 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}	
 	}
 	
+	@Override
+	public void save() {
+		// check for similar expense
+		if (expenseService.findSimiliarExpenses(getCurrentElement()).size() != 0) {
+			
+		}
+		try {
+			super.save();
+		} catch(ConstraintViolationException ex) {
+			for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
+				log.warn("ConstraintViolation for {} : {}", viol.getPropertyPath(), viol.getMessage());
+				FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
+			}
+		}
+	}
+	
 	public void handleDateChange(SelectEvent<LocalDateTime> event) {
 		LocalDateTime newdate = event.getObject();
 		log.info("handleDateChange old {} new {}",currentDate, newdate);
@@ -94,7 +120,9 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 			if (potentialExchangeRate!=null) {
 				currentElement.setExchangeRate(potentialExchangeRate);
 			} else {
-				Payee institution = null; // lookup institution
+				Long institutionId = currentElement.getTransactions().stream().flatMap(f->f.getTags().stream()).filter(f->f.getInstitution().getId()!=null).map(f->f.getInstitution().getId()).findFirst().orElse(null);
+				Payee institution = institutionId==null?null:payeeService.load(institutionId);
+				
 				// new expense rate
 				ExchangeRate newExchangeRate = ExchangeRate.with()
 						.institution(institution)
