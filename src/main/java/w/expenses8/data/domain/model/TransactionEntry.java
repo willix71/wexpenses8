@@ -1,6 +1,7 @@
 package w.expenses8.data.domain.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 
@@ -93,6 +95,24 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 		}
 	}
 	
+	public void updateValue(BigDecimal precision) {
+		updateValue(expense==null?null:expense.getExchangeRate(), precision);
+	}
+	
+	public void updateValue(ExchangeRate exchangeRate, BigDecimal precision) {
+		// apply exchange rate
+		if (exchangeRate == null) {
+			accountingValue = currencyAmount;
+		} else if (currencyAmount != null){
+			accountingValue = exchangeRate.apply(currencyAmount);
+		}
+		
+		// apply precision
+		if (precision != null) {
+			accountingValue = CurrencyValue.applyPrecision(accountingValue, precision);
+		}
+	}
+	
 	@Override
 	public void copy(TransactionEntry t) {
 		super.copy(t);
@@ -115,6 +135,7 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	public static TransactionEntry in(Tag...tags) {
 		return new TransactionEntry(TransactionFactor.IN, tags);
 	}
+	
 	public static TransactionEntry out(Tag...tags) {
 		return new TransactionEntry(TransactionFactor.OUT, tags);
 	}

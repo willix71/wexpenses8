@@ -107,6 +107,10 @@
 	display: none
 }
 
+.wex-small-datepicker>input {
+	width: 90px;
+}
+
 .ui-datepicker-calendar .ui-state-active {
 	background-color: #c4c4c4 !important;
 	border-radius: 5px;

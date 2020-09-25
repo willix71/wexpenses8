@@ -27,6 +27,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.IPayeeService;
+import w.expenses8.data.utils.TransactionsSums;
 
 @Slf4j
 @Named
@@ -56,6 +57,8 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	private DocumentFile selectedDocumentFile;
 	private TransactionEntry selectedTransactionEntry;
 	
+	private TransactionsSums transactionsSums = new TransactionsSums();
+	
 	@Override
 	public void setCurrentElementId(Object o) {
 		this.currentElement = expenseService.reload(o);
@@ -78,6 +81,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 			if (currentElement.getExchangeRate()!=null) {
 				this.potentialExchangeRates.put(currentElement.getExchangeRate().getFromCurrencyCode(), currentElement.getExchangeRate());
 			}
+			transactionsSums.compute(currentElement.getTransactions());
 		}	
 	}
 	
@@ -141,7 +145,18 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	public void onAmountChange() {
 		log.info("onAmountChange old {} new {}",currentAmount, currentElement.getCurrencyAmount());
 		currentElement.updateAmountValues(currentAmount, currencyValue.getPrecision());
+		transactionsSums.compute(currentElement.getTransactions());
 		currentAmount = currentElement.getCurrencyAmount();
+	}
+	
+	public void onTransactionsAmountChange() {
+		currentElement.getTransactions().stream().forEach(t->t.updateValue(currencyValue.getPrecision()));
+		transactionsSums.compute(currentElement.getTransactions());
+	}
+	
+	public void onTransactionAmountChange(TransactionEntry entry) {
+		entry.updateValue(currencyValue.getPrecision());
+		transactionsSums.compute(currentElement.getTransactions());
 	}
 	
 	public void newDocumentFile() {
