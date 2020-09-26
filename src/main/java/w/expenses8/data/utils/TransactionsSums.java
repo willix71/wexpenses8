@@ -12,9 +12,9 @@ public class TransactionsSums {
 	public class TransactionsSum {
 		private final Function<TransactionEntry, BigDecimal> mapper;
 
-		private BigDecimal delta;		
-		private BigDecimal sumIn;
-		private BigDecimal sumOut;
+		private BigDecimal delta = BigDecimal.ZERO;		
+		private BigDecimal sumIn = BigDecimal.ZERO;
+		private BigDecimal sumOut = BigDecimal.ZERO;
 		
 		public TransactionsSum(Function<TransactionEntry, BigDecimal> mapper) {
 			this.mapper = mapper;
