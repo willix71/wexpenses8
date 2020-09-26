@@ -2,17 +2,24 @@ package w.expenses8.web.controller;
 
 import java.time.Year;
 import java.time.YearMonth;
+import java.util.Collection;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuModel;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
+import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.Expense;
+import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.domain.service.IExpenseService;
 
 @Slf4j
@@ -27,6 +34,11 @@ public class ExpenseController extends AbstractListController<Expense> {
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private IDocumentFileService documentFileService;
 	
 	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 
@@ -47,5 +59,21 @@ public class ExpenseController extends AbstractListController<Expense> {
 	protected void loadEntities() {
 		log.info("loading expenses with {}", criteria);
 		elements = expenseService.findExpenses(criteria);
+	}
+	
+	public  MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {
+		MenuModel model= new DefaultMenuModel();
+	
+		for(DocumentFile file:files) {
+			model.getElements().add(DefaultMenuItem.builder()
+					//.label(file.getFileName())
+					.value(file.getFileName())
+					.icon("pi pi-circle-on")
+					.url(documentFileService.getUrl(file))
+					.target("_blank")
+					.build());
+		}
+		
+		return model;
 	}
 }

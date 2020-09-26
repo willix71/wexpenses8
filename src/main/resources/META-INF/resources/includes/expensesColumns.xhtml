@@ -29,7 +29,8 @@
 	</p:column>
 
 	<p:column headerText="Docs" style="width:15%;">
-		<h:outputText value="#{x.documentCount}" />
+		<p:commandButton id="dynaButton" value="#{x.documentCount} " type="button" icon="pi pi-file-o" iconPos="right"  rendered="#{x.documentCount>0}"/>
+		<p:menu model="#{expenseController.getDocumentFileMenu(x.documentFiles)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>
 	</p:column>
 
 	<p:rowExpansion>
