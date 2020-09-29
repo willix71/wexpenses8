@@ -1,0 +1,112 @@
+<html lang="en" 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+	<title>
+		<ui:insert name="title">Next Wexpense Payments</ui:insert>
+	</title>
+	
+	<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+	<h:outputStylesheet name="primeflex.css" library="css"/>
+	<h:outputStylesheet name="wexpenses.css" library="css"/>
+	
+	<h:outputScript name="wexpenses.js" library="js"/>
+</h:head>
+
+<h:body>
+	<f:view>
+		<h:form id="form" >
+			<p:carousel id="item" value="#{nextPaymentsController.expensesToPay}" dropdownTemplate="{page}" headerText="Payments" var="expense" numVisible="1" itemStyle="text-align:center" style="width:380px" circular="false">
+				<h:panelGrid columns="2" style="width:100%" columnClasses="label,value">
+							 
+					<h:outputText value="ccp" styleClass="wex-field-label" rendered="#{not empty expense.payee.postalAccount}"/>
+					<h:panelGroup rendered="#{not empty expense.payee.postalAccount}">
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+							<h:outputText value="#{expense.payee.postalAccount}" />
+						</a>
+					</h:panelGroup>
+					
+					<h:outputText value="iban" styleClass="wex-field-label" rendered="#{not empty expense.payee.iban}"/>
+					<h:panelGroup rendered="#{not empty expense.payee.iban}">
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+							<h:outputText value="#{not empty expense.payee.iban}" />
+						</a>
+					</h:panelGroup>
+						
+					<h:outputText value="to" styleClass="wex-field-label"/>
+					<h:panelGrid columns="1" style="width:100%">
+						<h:panelGroup>
+							<a onclick="copyInnerTextToClipboard(this);return false;" >
+								<h:outputText value="#{expense.payee.prefix}#{expense.payee.name}" />
+							</a>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{not empty expense.payee.address1}">
+							<a onclick="copyInnerTextToClipboard(this);return false;" >
+								<h:outputText value="#{expense.payee.address1}" />
+							</a>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{not empty expense.payee.address2}">
+							<a onclick="copyInnerTextToClipboard(this);return false;" >
+								<h:outputText value="#{expense.payee.address2}" />
+							</a>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{not empty expense.payee.address3}">
+							<a onclick="copyInnerTextToClipboard(this);return false;" >
+								<h:outputText value="#{expense.payee.address3}" />
+							</a>
+						</h:panelGroup>
+						<h:panelGroup>
+							<a onclick="copyInnerTextToClipboard(this);return false;" >
+								<h:outputText value="#{expense.payee.zip} #{expense.payee.city}"/>
+							</a> 
+							<h:outputText value=" (#{expense.payee.countryCode})"/>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:outputText value="date" styleClass="wex-field-label"/>
+					<h:panelGroup>
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+				            <h:outputText value="#{expense.date}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value" >
+								<f:converter converterId="localDateTimeCustomConverter" />
+							</h:outputText>
+						</a>
+					</h:panelGroup>
+		 
+			        <h:outputText value="value" styleClass="wex-field-label"/>
+					<h:panelGroup>
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+					        <h:outputFormat value="{0,number, ###0.00}">
+								<f:param value="#{expense.currencyAmount}" />
+							</h:outputFormat>
+						</a> #{expense.currencyCode}
+					</h:panelGroup>
+			 
+					<h:outputText value="ref." styleClass="wex-field-label" rendered="#{not empty expense.externalReference}"/>
+					<h:panelGroup rendered="#{not empty expense.externalReference}">
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+							<h:outputText value="#{expense.externalReference}" />
+						</a>
+					</h:panelGroup>
+									
+					<h:outputText value="text" styleClass="wex-field-label" rendered="#{not empty expense.description}"/>
+					<h:panelGroup>
+						<a onclick="copyInnerTextToClipboard(this);return false;" >
+							<h:outputText value="#{expense.description}"/>
+						</a>
+					</h:panelGroup>
+					
+		            <f:facet name="footer">
+		                <p:commandButton value="done" action="#{nextPaymentsController.payed(expense)}" update="form" style="width:100%">
+		                </p:commandButton>
+		            </f:facet>
+		        </h:panelGrid>
+		    </p:carousel>
+		</h:form>
+	</f:view>
+</h:body>
+</html>

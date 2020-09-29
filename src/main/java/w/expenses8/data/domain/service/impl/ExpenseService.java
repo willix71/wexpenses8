@@ -1,5 +1,6 @@
 package w.expenses8.data.domain.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -119,6 +120,17 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		return query.fetch();
     }
 	
+	@Override
+	public List<Expense> findExpensesToPay() {
+		QExpense ex = QExpense.expense;
+		
+		BooleanBuilder predicate = new BooleanBuilder().and(ex.payedDate.isNull());
+		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(LocalDateTime.now().toLocalDate(),null), ex.date);
+		
+		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		return query.fetch();
+	}
+
 	private JPAQuery<Expense> baseQuery() {
 		QExpense ex = QExpense.expense;
 		var query = new JPAQuery<Expense>(entityManager);
