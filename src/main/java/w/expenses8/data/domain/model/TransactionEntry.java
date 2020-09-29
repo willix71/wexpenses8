@@ -1,7 +1,6 @@
 package w.expenses8.data.domain.model;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -61,6 +60,9 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private LocalDate accountingDate;
 
 	private Long accountingOrder;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private DocumentFile consolidationFile;
 	
 	private BigDecimal accountingBalance;
 	

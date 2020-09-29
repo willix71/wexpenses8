@@ -6,6 +6,7 @@ import static javax.persistence.CascadeType.REFRESH;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +53,8 @@ public class Expense extends DBable<Expense> {
 	
 	@NotNull
 	private LocalDateTime date;
+
+	private LocalDate payedDate;
 
 	@NotNull
 	private BigDecimal currencyAmount;
