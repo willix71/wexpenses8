@@ -21,9 +21,12 @@ public class TransactionsSums {
 		}
 		
 		public TransactionsSum compute(Collection<TransactionEntry> lines) {
-			delta = lines.stream().filter(l->!l.isSystemEntry()).map(l->mapper.apply(l).multiply(new BigDecimal(l.getFactor().getFactor()))).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
-			sumIn = lines.stream().filter(l->!l.isSystemEntry() && l.getFactor()==TransactionFactor.IN).map(mapper).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
-			sumOut = lines.stream().filter(l->!l.isSystemEntry() && l.getFactor()==TransactionFactor.OUT).map(mapper).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
+			delta = lines.stream().filter(l->!l.isSystemEntry()).map(l->{
+				BigDecimal d = mapper.apply(l);
+				return d==null?BigDecimal.ZERO:d.multiply(new BigDecimal(l.getFactor().getFactor()));
+			}).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
+			sumIn = lines.stream().filter(l->!l.isSystemEntry() && l.getFactor()==TransactionFactor.IN).map(mapper).filter(d->d!=null).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
+			sumOut = lines.stream().filter(l->!l.isSystemEntry() && l.getFactor()==TransactionFactor.OUT).map(mapper).filter(d->d!=null).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
 			return this;
 		}
 

@@ -20,22 +20,22 @@
 
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
 		        <h:panelGrid columns="3" cellpadding="2">
-		        	<p:datePicker value="#{expenseController.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
-		        	<p:datePicker value="#{expenseController.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
-		        	<p:selectOneMenu id="expenseTypeId" value="#{expenseController.criteria.expenseType}" converter="#{expenseTypeConverter}">
+		        	<p:datePicker value="#{controller.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
+		        	<p:datePicker value="#{controller.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
+		        	<p:selectOneMenu id="expenseTypeId" value="#{controller.criteria.expenseType}" converter="#{expenseTypeConverter}">
 		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
                 		<f:selectItems value="#{dropboxController.expenseTypes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
             		</p:selectOneMenu>
 		        	
-		        	<p:inputNumber value="#{expenseController.criteria.amountValue.from}" />
-		        	<p:inputNumber value="#{expenseController.criteria.amountValue.to}" />
-		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{expenseController.criteria.currencyCode}" >
+		        	<p:inputNumber value="#{controller.criteria.amountValue.from}" />
+		        	<p:inputNumber value="#{controller.criteria.amountValue.to}" />
+		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{controller.criteria.currencyCode}" >
 		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
 		        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
                 		<f:selectItems value="#{dropboxController.currencies}" />
             		</p:selectOneMenu>
             	
-            		<p:inputText id="expensePayeeTextId" value="#{expenseController.criteria.payeeText}" />
+            		<p:inputText id="expensePayeeTextId" value="#{controller.criteria.payeeText}" />
 					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
 					<p:splitButton id="clearFilterBtn" value="Clear" icon="pi pi-times">
             			<p:menuitem value="Month" action="#{controller.resetMonth}" update="criteriaFields wexTable" />
@@ -110,18 +110,19 @@
 		</h:form>
 		
 		<h:form id="wexEditionForm" >
-			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true" width="50%">
+			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
 				<p:outputPanel id="wexEditionPanel">
 					<wex:expenseEdition edition="true"/>
 				</p:outputPanel>
 				
 				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
 					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
-					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
+					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel">
 						<f:actionListener binding="#{editionController.save()}" />
-						<f:actionListener binding="#{controller.refresh()}" />
 					</p:commandButton>
-				</h:panelGroup>					
+				</h:panelGroup>
+				
+				<p:ajax event="close" listener="#{controller.refresh()}" update="wexTableForm:wexTable wexTableForm:growl" />
 			</p:dialog>
 		</h:form>
 	</ui:define>

@@ -83,12 +83,13 @@
 				</p:outputPanel>
 				
 				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
-					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />				
-					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel :wexTableForm:wexTable">
+					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
+					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel">
 						<f:actionListener binding="#{editionController.save()}" />
-						<f:actionListener binding="#{controller.refresh()}" />
 					</p:commandButton>
 				</h:panelGroup>
+				
+				<p:ajax event="close" listener="#{controller.refresh()}" update="wexTableForm:wexTable wexTableForm:growl" />
 			</p:dialog>
 		</h:form>
 	</ui:define>

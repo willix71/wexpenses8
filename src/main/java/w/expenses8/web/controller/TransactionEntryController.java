@@ -47,7 +47,9 @@ public class TransactionEntryController extends AbstractListController<Transacti
 	@Override
 	public void setSelectedElement(TransactionEntry selectedElement) {
 		super.setSelectedElement(selectedElement);
-		selectedExpense = expenseService.reload(selectedElement.getExpense());
+		if (selectedElement!=null) {
+			selectedExpense = expenseService.reload(selectedElement.getExpense());
+		}
 	}
 	
 	@Override
