@@ -2,6 +2,7 @@ package w.expenses8.web.converter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 import javax.faces.application.FacesMessage;
@@ -24,6 +25,11 @@ public class LocalDateTimeCustomConverter implements Converter<LocalDateTime> {
 		log.info("Converting [{}] to LocalDate", value);
 		if (value==null || value.length()==0) return null;
 
+		if ("t".equals(value)) {
+			// tomorrow start of day
+			return LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS);
+		}
+		
 		int hour = 0;
 		int minute = 0;
 		int second = 0;
