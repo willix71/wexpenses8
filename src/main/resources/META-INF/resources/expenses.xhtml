@@ -71,6 +71,10 @@
 				</ui:include>
 				
                 <ui:include src="/includes/expensesColumns.xhtml"/>
+	     
+	     		<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
+		        	<p:resetInput target="wexEditionForm" />
+	     		</p:ajax>
 			</p:dataTable>
 			
 			<p:contextMenu for="wexTable">
@@ -90,15 +94,15 @@
 		        </p:menuitem>
 		        <p:menuitem value="Refresh" update="wexTableForm" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
-     
+     		
 			<p:outputPanel id="wexDetailPanel">
-	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="UID:#{controller.selectedElement.uid}" position="top">
+	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top">
 					<wex:expenseEdition edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
-	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
+	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Expense" position="top" modal="true">
 					<wex:expenseEdition edition="false"/>
 					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
 						<f:actionListener binding="#{editionController.delete()}" />
@@ -110,7 +114,7 @@
 		</h:form>
 		
 		<h:form id="wexEditionForm" >
-			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="UID:#{controller.selectedElement.uid}" position="top" modal="true">
+			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="Expense" position="top" modal="true">
 				<p:outputPanel id="wexEditionPanel">
 					<wex:expenseEdition edition="true"/>
 				</p:outputPanel>

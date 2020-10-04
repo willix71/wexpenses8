@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,6 +38,11 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	public AbstractEditionController() {
 		ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
 		clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
+	}
+		
+	public void onRowDoubleClick(final SelectEvent<T> event) {
+		T t = event.getObject();
+		setCurrentElement(t);
 	}
 	
 	@PostConstruct
