@@ -61,7 +61,7 @@ public class ExpenseController extends AbstractListController<Expense> {
 		elements = expenseService.findExpenses(criteria);
 	}
 	
-	public  MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {
+	public MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {
 		MenuModel model= new DefaultMenuModel();
 	
 		for(DocumentFile file:files) {
