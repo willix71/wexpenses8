@@ -6,13 +6,13 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
-	<p:column headerText="Date" style="width:15%;text-align: right">
+	<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px">
 		<h:outputText value="#{x.date}" >
 			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
 		</h:outputText>
 	</p:column>
 
-	<p:column headerText="Type" style="width:10%;text-align: center">
+	<p:column headerText="Type" style="width:10%">
 		<h:outputText value="#{x.expenseType.name}" />
 	</p:column>
 
@@ -20,17 +20,17 @@
 		<h:outputText value="#{x.payee.prefix}#{x.payee.name} #{x.payee.extra}" />
 	</p:column>
 
-	<p:column headerText="Amount" style="width:15%;text-align: right">
+	<p:column headerText="Docs" style="width:60px;">
+		<p:commandButton id="dynaButton" value="#{x.documentCount} " type="button" icon="pi pi-file-o" iconPos="right"  rendered="#{x.documentCount>0}"/>
+		<p:menu model="#{expenseController.getDocumentFileMenu(x.documentFiles)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>
+	</p:column>
+
+	<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:15%">
 		<h:outputText value="#{x.currencyAmount}" />
 	</p:column>
 
-	<p:column headerText="Currency" style="width:15%;">
+	<p:column headerText="Currency" style="width:60px">
 		<h:outputText value="#{x.currencyCode}" />
-	</p:column>
-
-	<p:column headerText="Docs" style="width:15%;">
-		<p:commandButton id="dynaButton" value="#{x.documentCount} " type="button" icon="pi pi-file-o" iconPos="right"  rendered="#{x.documentCount>0}"/>
-		<p:menu model="#{expenseController.getDocumentFileMenu(x.documentFiles)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>
 	</p:column>
 
 	<p:rowExpansion>

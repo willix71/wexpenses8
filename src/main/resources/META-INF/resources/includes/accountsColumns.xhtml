@@ -6,11 +6,11 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
-	<p:column headerText="Year" style="max-width:70px; width:70px">
+	<p:column headerText="Year" style="width:40px">
 		<h:outputText value="#{x.accountingYear}" />
 	</p:column>
 
-	<p:column headerText="Date" style="text-align: right">
+	<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px" >
 		<h:outputText value="#{x.accountingDate}" >
 			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
 		</h:outputText>
@@ -24,15 +24,15 @@
 		<h:outputText value="#{x.expense.description}" />
 	</p:column>
 
-	<p:column headerText="Amount" styleClass="wex-cell-righted" >
+	<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:120px" >
 		<h:outputText value="#{x.currencyAmount} #{x.expense.currencyCode}" />
 	</p:column>
 
-	<p:column headerText="IN" styleClass="wex-cell-righted" >
+	<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px" >
 		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='IN'}"/>
 	</p:column>
 
-	<p:column headerText="OUT" styleClass="wex-cell-righted" >
+	<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
 		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='OUT'}"/>
 	</p:column>
 
