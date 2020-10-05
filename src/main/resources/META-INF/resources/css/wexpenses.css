@@ -54,6 +54,9 @@
 .wex-input-right>input {
 	text-align: right;
 }
+.wex-input-left>input {
+	text-align: left;
+}
 
 .wex-tags .ui-autocomplete-multiple-container {
 	width:100%
@@ -116,7 +119,16 @@
 	border-radius: 5px;
 } 
 
+.wex-criteria-form .p-field > label {
+	font-size:small;
+	margin:0
+}
 
+.wex-criteria-form .ui-selectonemenu-label.ui-selectonemenu-label-placeholder { color: gray; font-style: italic; font-size: small}
+::-webkit-input-placeholder { color: gray; font-style: italic; font-size: small}
+::-moz-placeholder {color: gray; font-style: italic; font-size: small}
+:-ms-input-placeholder { color: gray; font-style: italic; font-size: small} 
+:-o-input-placeholder { color: gray; font-style: italic; font-size: small} 
 
 /* toggleswitch is not visible @see https://forum.primefaces.org/viewtopic.php?t=57511 */
 

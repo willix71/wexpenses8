@@ -22,6 +22,7 @@ import w.expenses8.data.domain.dao.IExpenseDao;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.QExpense;
 import w.expenses8.data.domain.model.QTransactionEntry;
+import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
@@ -99,6 +100,15 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		Predicate payeeTextPredicate = CriteriaHelper.getPayeeTextCriteria(ex.payee, criteria.getPayeeText());
 		if (payeeTextPredicate!=null) {
 			predicate = predicate.and(payeeTextPredicate);
+		}
+		
+		if (criteria.getAccountingYear()!=null) {
+			predicate = predicate.and(QTransactionEntry.transactionEntry.accountingYear.eq(criteria.getAccountingYear()));
+		}
+		if (!CollectionHelper.isEmpty(criteria.getTags())) {
+			for(Tag t:criteria.getTags()) {
+				predicate = predicate.and(QTransactionEntry.transactionEntry.tags.contains(t));
+			}
 		}
 		
 		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());

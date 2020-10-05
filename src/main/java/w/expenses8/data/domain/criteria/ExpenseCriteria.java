@@ -2,6 +2,8 @@ package w.expenses8.data.domain.criteria;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +17,7 @@ import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.criteria.RangeNumberCriteria;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
+import w.expenses8.data.domain.model.Tag;
 
 @SuperBuilder(builderMethodName = "with")
 @ToString
@@ -27,12 +30,16 @@ public class ExpenseCriteria implements Serializable {
 	private Payee payee;
 	private String payeeText;
 	private ExpenseType expenseType;
+	private String currencyCode;
+
+	private Integer accountingYear;
 	@Builder.Default
 	private RangeLocalDateCriteria localDate = new RangeLocalDateCriteria();
 	@Builder.Default
 	private RangeNumberCriteria amountValue = new RangeNumberCriteria();
-	private String currencyCode;
-	
+	@Builder.Default
+	private List<Tag> tags = new ArrayList<Tag>();
+
 	public static ExpenseCriteria from(LocalDate d) {
 		ExpenseCriteria criteria = new ExpenseCriteria();
 		criteria.localDate.setFrom(d);
