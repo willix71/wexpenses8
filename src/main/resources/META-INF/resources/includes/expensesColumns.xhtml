@@ -6,6 +6,15 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
+				
+	<p:column headerText="Expand" style="width:8px">
+	    <p:rowToggler />
+    </p:column>
+
+	<ui:include src="/includes/dbableColumns.xhtml">
+		<ui:param name="dba" value="#{x}" />
+	</ui:include>
+	
 	<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px">
 		<h:outputText value="#{x.date}" >
 			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
@@ -20,6 +29,20 @@
 		<h:outputText value="#{x.payee.prefix}#{x.payee.name} #{x.payee.extra}" />
 	</p:column>
 
+	<p:column headerText="Description" visible="false">
+		<h:outputText value="#{x.description}" />
+	</p:column>
+	
+	<p:column headerText="External Reference" visible="false">
+		<h:outputText value="#{x.externalReference}" />
+	</p:column>
+
+	<p:column headerText="Accounts" visible="false">
+		<ui:repeat var="t" value="#{x.tags}">
+			<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+		</ui:repeat>
+	</p:column>
+	
 	<p:column headerText="Docs" style="width:60px;">
 		<p:commandButton id="dynaButton" value="#{x.documentCount} " type="button" icon="pi pi-file-o" iconPos="right"  rendered="#{x.documentCount>0}"/>
 		<p:menu model="#{expenseController.getDocumentFileMenu(x.documentFiles)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>

@@ -19,29 +19,10 @@
 			<c:set var="editionController" value="#{expenseEditionController}" />
 
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
-		        <h:panelGrid columns="1" cellpadding="2">
-					<p:autoComplete multiple="true" value="#{controller.criteria.tags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
-						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
-						<p:column>
-							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
-						</p:column>
-					</p:autoComplete>
-				</h:panelGrid>
-		        <h:panelGrid columns="3" cellpadding="2">
-		        	<p:datePicker value="#{controller.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
-		        	<p:datePicker value="#{controller.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
-					<p:spinner value="#{controller.criteria.accountingYear}" styleClass="wex-input-70" thousandSeparator=""/>
-		        	
-		        	<p:inputNumber value="#{controller.criteria.amountValue.from}" />
-		        	<p:inputNumber value="#{controller.criteria.amountValue.to}" />
-		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{controller.criteria.currencyCode}" >
-		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
-		        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
-                		<f:selectItems value="#{dropboxController.currencies}" />
-            		</p:selectOneMenu>
-            	
-            		<p:inputText id="expensePayeeTextId" value="#{controller.criteria.payeeText}" />
-					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" action="#{controller.refresh}" update="wexTable" />
+				 <wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="wexTableForm:wexTable"/>
+				 
+				 <h:panelGrid columns="2" cellpadding="2">
+					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
 					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" action="#{controller.reset}" update="criteriaFields wexTable" />
 				</h:panelGrid>
 			</p:fieldset>
@@ -61,13 +42,9 @@
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
 				</f:facet>
-        		
-				<ui:include src="/includes/dbableColumns.xhtml">
-					<ui:param name="dba" value="#{x}" />
-				</ui:include>
 				
                 <ui:include src="/includes/accountsColumns.xhtml"/>
-                	     
+               	
 	     		<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
 		        	<p:resetInput target="wexEditionForm" />
 	     		</p:ajax>

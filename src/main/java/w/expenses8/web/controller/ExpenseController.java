@@ -42,6 +42,8 @@ public class ExpenseController extends AbstractListController<Expense> {
 	
 	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 
+	private boolean expandAll = false;
+	
 	public void resetMonth() {
 		criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 		loadEntities();

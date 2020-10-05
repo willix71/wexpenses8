@@ -1,0 +1,92 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="criteria" type="w.expenses8.data.domain.criteria.ExpenseCriteria" required="true" />
+		<composite:attribute name="action" method-signature="java.lang.Void action()"/>
+		<composite:attribute name="update" />
+	</composite:interface>
+	
+	<composite:implementation>
+		<div class="ui-fluid p-formgrid p-grid wex-criteria-form">
+	        <div class="p-field p-col-12 p-md-10">
+	            <p:outputLabel for="critra_expensePayeeTextId" value="Payee" style="display:none"/>
+	            <p:inputText id="critra_expensePayeeTextId" value="#{cc.attrs.criteria.payeeText}" placeholder="payee" >
+	            	<p:ajax event="valueChange" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+	            </p:inputText>
+	        </div>
+	        <div class="p-field p-col-12 p-md-2">
+	            <p:outputLabel for="critra_expenseTypeId" value="Type" style="display:none"/>
+	            <p:selectOneMenu id="critra_expenseTypeId" value="#{cc.attrs.criteria.expenseType}" converter="#{expenseTypeConverter}" placeholder="type">
+        			<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+              		<f:selectItems value="#{dropboxController.expenseTypes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
+              		<p:ajax event="valueChange" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+          		</p:selectOneMenu>
+	        </div>	        
+	        
+	        <div class="p-field p-col-12 p-md-10">
+	            <p:outputLabel for="critra_dateFromId" value="Date" style="display:none"/>
+	            <div class="p-formgrid p-grid">
+		            <div class="p-col-12 p-md-6">
+		        		<p:datePicker id="critra_dateFromId" value="#{cc.attrs.criteria.localDate.from}" showIcon="true" showButtonBar="true" placeholder="from">
+		        			<p:ajax event="dateSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+		        		</p:datePicker>
+		        	</div>
+		            <div class="p-col-12 p-md-6">
+        				<p:datePicker id="critra_dateToId" value="#{cc.attrs.criteria.localDate.to}"  showIcon="true" showButtonBar="true" placeholder="to" >
+			        		<p:ajax event="dateSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+			        	</p:datePicker>
+		        	</div>
+	            </div>
+	        </div>
+	        <div class="p-field p-col-12 p-md-2">
+	            <p:outputLabel for="critra_accountingYeatId" value="Year" style="display:none"/>
+		        <p:spinner id="critra_accountingYeatId" value="#{controller.criteria.accountingYear}" thousandSeparator="" placeholder="year" styleClass="wex-input-left">
+		        	<p:ajax listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+				</p:spinner>		        		
+	        </div>
+	        
+	        <div class="p-field p-col-12 p-md-10">
+	            <p:outputLabel for="critra_amountFrom" value="Amount/Value" style="display:none"/>
+	            <div class="p-formgrid p-grid">
+		            <div class="p-col-12 p-md-6">
+		        		<p:inputNumber id="critra_amountFrom" value="#{cc.attrs.criteria.amountValue.from}" placeholder="amount from">
+			        		<p:ajax event="valueChange" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+			        	</p:inputNumber>
+	    		    </div>
+		            <div class="p-col-12 p-md-6">
+		        		<p:inputNumber id="critra_amountTo" value="#{cc.attrs.criteria.amountValue.to}" placeholder="amount to">
+			        		<p:ajax event="valueChange" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+			        	</p:inputNumber>
+		        	</div>
+		        </div>
+	        </div>
+	        <div class="p-field p-col-12 p-md-2">
+	            <p:outputLabel for="critra_currencyCodeId" value="Currency" style="display:none"/>
+	        	<p:selectOneMenu id="critra_currencyCodeId" value="#{cc.attrs.criteria.currencyCode}" placeholder="currency">
+	        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+	        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
+              		<f:selectItems value="#{dropboxController.currencies}" />
+              		<p:ajax event="valueChange" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+          		</p:selectOneMenu>
+	        </div>
+	        
+	        <div class="p-field p-col-12">
+	            <p:outputLabel for="critra_tagsId" value="Accounts" style="display:none"/>
+				<p:autoComplete id="critra_tagsId" multiple="true" value="#{controller.criteria.tags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+					itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags" placeholder="accounts">
+					<p:column>
+						<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+					</p:column>
+              		<p:ajax event="itemSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+              		<p:ajax event="itemUnselect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
+				</p:autoComplete>
+			</div>	
+	    </div>
+   	</composite:implementation>
+</ui:component>

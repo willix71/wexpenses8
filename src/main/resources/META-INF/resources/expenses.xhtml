@@ -19,23 +19,9 @@
 			<c:set var="editionController" value="#{expenseEditionController}" />
 
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
-		        <h:panelGrid columns="3" cellpadding="2">
-		        	<p:datePicker value="#{controller.criteria.localDate.from}"  showIcon="true" showButtonBar="true" />
-		        	<p:datePicker value="#{controller.criteria.localDate.to}"  showIcon="true" showButtonBar="true" />
-		        	<p:selectOneMenu id="expenseTypeId" value="#{controller.criteria.expenseType}" converter="#{expenseTypeConverter}">
-		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
-                		<f:selectItems value="#{dropboxController.expenseTypes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
-            		</p:selectOneMenu>
-		        	
-		        	<p:inputNumber value="#{controller.criteria.amountValue.from}" />
-		        	<p:inputNumber value="#{controller.criteria.amountValue.to}" />
-		        	<p:selectOneMenu id="expenseCurrencyCodeId" value="#{controller.criteria.currencyCode}" >
-		        		<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
-		        		<f:selectItem itemLabel="Value" itemValue="value" noSelectionOption="true" />
-                		<f:selectItems value="#{dropboxController.currencies}" />
-            		</p:selectOneMenu>
-            	
-            		<p:inputText id="expensePayeeTextId" value="#{controller.criteria.payeeText}" />
+				<wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="wexTableForm:wexTable"/>
+				
+		        <h:panelGrid columns="2" cellpadding="2">
 					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="wexTable" />
 					<p:splitButton id="clearFilterBtn" value="Clear" icon="pi pi-times">
             			<p:menuitem value="Month" action="#{controller.resetMonth}" update="criteriaFields wexTable" />
@@ -46,7 +32,6 @@
 			</p:fieldset>
 
 			<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
-                 expandedRow="true"
                  paginator="true"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
@@ -55,23 +40,19 @@
                  rowKey="#{x.uid}"
                  selection="#{controller.selectedElement}" 
                  selectionMode="single"
+                 expandedRow="#{controller.expandAll}"
                  rowStyleClass="#{x.date.isAfter(requestController.time) ? 'wex-expense-futur' : 'wex-expense-past'}"
                  >
 				<f:facet name="header">
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
+					<p:selectBooleanCheckbox itemLabel="Expand All" value="#{controller.expandAll}" style="float:right" >
+						<p:ajax update="wexTable" />
+					</p:selectBooleanCheckbox>
 				</f:facet>
-				
-				<p:column headerText="Tags" style="width:16px">
-        		    <p:rowToggler />
-        		</p:column>
-        
-				<ui:include src="/includes/dbableColumns.xhtml">
-					<ui:param name="dba" value="#{x}" />
-				</ui:include>
-				
+			
                 <ui:include src="/includes/expensesColumns.xhtml"/>
-	     
+	     		
 	     		<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
 		        	<p:resetInput target="wexEditionForm" />
 	     		</p:ajax>

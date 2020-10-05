@@ -6,6 +6,10 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
+	<ui:include src="/includes/dbableColumns.xhtml">
+		<ui:param name="dba" value="#{x}" />
+	</ui:include>
+				
 	<p:column headerText="Year" style="width:40px">
 		<h:outputText value="#{x.accountingYear}" />
 	</p:column>
