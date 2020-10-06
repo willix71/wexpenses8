@@ -107,6 +107,11 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 	}
 	
+	public void onAccountRowDoubleClick(final SelectEvent<TransactionEntry> event) {
+		TransactionEntry t = event.getObject();
+		setCurrentElement(t.getExpense());
+	}
+	
 	public void handleDateChange(SelectEvent<LocalDateTime> event) {
 		LocalDateTime newdate = event.getObject();
 		log.info("handleDateChange old {} new {}",currentDate, newdate);

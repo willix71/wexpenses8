@@ -45,7 +45,7 @@
 				
                 <ui:include src="/includes/accountsColumns.xhtml"/>
                	
-	     		<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
+	     		<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onAccountRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
 		        	<p:resetInput target="wexEditionForm" />
 	     		</p:ajax>
 			</p:dataTable>
