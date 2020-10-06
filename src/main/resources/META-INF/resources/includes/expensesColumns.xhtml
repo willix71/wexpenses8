@@ -21,6 +21,12 @@
 		</h:outputText>
 	</p:column>
 
+	<p:column headerText="Payed" styleClass="wex-cell-righted" style="width:90px">
+		<h:outputText value="#{x.payedDate}" >
+			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+		</h:outputText>
+	</p:column>
+
 	<p:column headerText="Type" style="width:10%">
 		<h:outputText value="#{x.expenseType.name}" />
 	</p:column>

@@ -33,12 +33,12 @@
 	            <p:outputLabel for="critra_dateFromId" value="Date" style="display:none"/>
 	            <div class="p-formgrid p-grid">
 		            <div class="p-col-12 p-md-6">
-		        		<p:datePicker id="critra_dateFromId" value="#{cc.attrs.criteria.localDate.from}" showIcon="true" showButtonBar="true" placeholder="from">
+		        		<p:datePicker id="critra_dateFromId" value="#{cc.attrs.criteria.localDate.from}" showIcon="true" showButtonBar="true" placeholder="from" pattern="dd/MM/yyyy">
 		        			<p:ajax event="dateSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
 		        		</p:datePicker>
 		        	</div>
 		            <div class="p-col-12 p-md-6">
-        				<p:datePicker id="critra_dateToId" value="#{cc.attrs.criteria.localDate.to}"  showIcon="true" showButtonBar="true" placeholder="to" >
+        				<p:datePicker id="critra_dateToId" value="#{cc.attrs.criteria.localDate.to}"  showIcon="true" showButtonBar="true" placeholder="to" pattern="dd/MM/yyyy">
 			        		<p:ajax event="dateSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
 			        	</p:datePicker>
 		        	</div>

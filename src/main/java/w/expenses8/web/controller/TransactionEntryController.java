@@ -1,5 +1,6 @@
 package w.expenses8.web.controller;
 
+import java.math.BigDecimal;
 import java.time.Year;
 
 import javax.faces.view.ViewScoped;
@@ -56,6 +57,23 @@ public class TransactionEntryController extends AbstractListController<Transacti
 	protected void loadEntities() {
 		log.info("loading transaction entries with {}", criteria);
 		elements = transactionEntryService.findTransactionEntrys(criteria);
+		
+		BigDecimal liveBalance = BigDecimal.ZERO;
+		BigDecimal opposite = BigDecimal.valueOf(-1);
+		for(TransactionEntry e:elements) {
+			switch(e.getFactor()) {
+			case IN:
+				liveBalance = liveBalance.add(e.getAccountingValue());
+				break;
+			case OUT:
+				liveBalance = liveBalance.add(opposite.multiply(e.getAccountingValue()));
+				break;
+			case SUM:
+				liveBalance = e.getAccountingValue();
+				break;
+			}
+			e.setLiveBalance(liveBalance);
+		}
 	}
 	
 	public void deleteExpense() {

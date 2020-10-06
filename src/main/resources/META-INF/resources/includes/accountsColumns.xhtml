@@ -20,6 +20,12 @@
 		</h:outputText>
 	</p:column>
 
+	<p:column headerText="Consolidated" styleClass="wex-cell-righted" style="width:90px" >
+		<h:outputText value="#{x.consolidationFile.documentDate}" >
+			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+		</h:outputText>
+	</p:column>
+
 	<p:column headerText="Payee">
 		<h:outputText value="#{x.expense.payee.prefix}#{x.expense.payee.name} #{x.expense.payee.extra}" />
 	</p:column>
@@ -38,6 +44,10 @@
 
 	<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
 		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='OUT'}"/>
+	</p:column>
+
+	<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px" >
+		<h:outputText value="#{x.liveBalance}" />
 	</p:column>
 
 	<p:column headerText="Accounts" styleClass="wex-cell-righted" >
