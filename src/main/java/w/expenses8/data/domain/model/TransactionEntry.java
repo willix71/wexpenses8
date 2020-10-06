@@ -10,6 +10,8 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
@@ -70,7 +72,8 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private BigDecimal liveBalance;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@OrderBy("number")
+	@JoinTable(name = "WEX_TransactionEntry_WEX_Tag", joinColumns = @JoinColumn(name = "WEX_TransactionEntry_id"), inverseJoinColumns = @JoinColumn(name = "tags_id"))
+	@OrderBy("number,name")
 	private Set<Tag> tags;
 	
 	public TransactionEntry addTag(Tag tag) {

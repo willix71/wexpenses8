@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -89,6 +91,7 @@ public class Expense extends DBable<Expense> {
 	
 	@Valid
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@JoinTable(name = "WEX_Expense_WEX_Document", joinColumns = @JoinColumn(name = "WEX_Expense_id"), inverseJoinColumns = @JoinColumn(name = "documentFiles_id"))
 	@OrderBy("documentDate, fileName")
 	private Set<DocumentFile> documentFiles;
 	
