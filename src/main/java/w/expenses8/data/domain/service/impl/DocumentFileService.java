@@ -27,6 +27,11 @@ public class DocumentFileService extends GenericServiceImpl<DocumentFile, Long, 
 	}
 
 	@Override
+	public DocumentFile findByFileName(String name) {
+		return getDao().findByFileName(name);
+	}
+		
+	@Override
 	public String generateFilename(LocalDate fileDate, Expense x) {
 		String payeeText = x.getPayee()==null?"unknown":(x.getPayee().getPrefix()==null?x.getPayee().getName():x.getPayee().getPrefix()+x.getPayee().getName()).replaceAll("\\s+", "_");
 		String fileName = MessageFormat.format(

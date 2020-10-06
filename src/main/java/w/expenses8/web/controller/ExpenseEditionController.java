@@ -172,8 +172,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	public void deleteTransactionEntry() {
 		if (selectedTransactionEntry!=null) {
 			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
-			currentElement.getTransactions().remove(selectedTransactionEntry);
-			selectedTransactionEntry.setExpense(null);
+			currentElement.removeTransaction(selectedTransactionEntry);
 		}
 	}
 	
@@ -185,8 +184,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	public void deleteDocumentFile() {
 		if (selectedDocumentFile!=null) {
 			log.info("Deleting document file {} named {}", selectedDocumentFile, selectedDocumentFile.getFileName());
-			currentElement.getDocumentFiles().remove(selectedDocumentFile);
-			selectedDocumentFile.setExpense(null);
+			currentElement.removeDocumentFile(selectedDocumentFile);
 			currentElement.updateDocumentCount();
 		}
 	}

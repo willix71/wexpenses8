@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -87,8 +88,7 @@ public class Expense extends DBable<Expense> {
 	private Integer documentCount;
 	
 	@Valid
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	@OrderBy("documentDate, fileName")
 	private Set<DocumentFile> documentFiles;
 	
@@ -101,14 +101,12 @@ public class Expense extends DBable<Expense> {
 			documentFiles = new HashSet<DocumentFile>();
 		}
 		documentFiles.add(document);
-		document.setExpense(this);
 		updateDocumentCount();
 		return this;
 	}
 
 	public Expense removeDocumentFile(DocumentFile document) {
 		if (documentFiles != null) documentFiles.remove(document);
-		document.setExpense(null);
 		updateDocumentCount();
 		return this;
 	}
