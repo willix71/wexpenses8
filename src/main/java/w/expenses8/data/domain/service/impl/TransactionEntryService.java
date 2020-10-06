@@ -77,6 +77,7 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 			.leftJoin(entry.expense, QExpense.expense).fetchJoin()
 			.leftJoin(QExpense.expense.payee).fetchJoin()
 			.leftJoin(QExpense.expense.expenseType).fetchJoin()
+			.leftJoin(QExpense.expense.documentFiles).fetchJoin()
 			.leftJoin(entry.tags).fetchJoin()
 			.where(predicate)
 			.orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());
