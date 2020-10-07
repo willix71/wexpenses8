@@ -1,0 +1,70 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
+
+	<p:column headerText="Name" sortBy="#{x.name}" filterBy="#{x.name}" filterMatchMode="contains">
+		<p:cellEditor>
+			<f:facet name="output">
+				<h:outputText value="#{x.name}" />
+			</f:facet>
+			<f:facet name="input">
+				<p:inputText value="#{x.name}" style="width:100%" label="name" />
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+
+	<p:column headerText="Description" sortBy="#{x.description}" filterBy="#{x.description}" filterMatchMode="contains">
+		<p:cellEditor>
+			<f:facet name="output">
+				<h:outputText value="#{x.description}" />
+			</f:facet>
+			<f:facet name="input">
+				<p:inputText value="#{x.description}" style="width:100%" label="name" />
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+
+	<p:column headerText="Tags" >
+		<p:cellEditor>
+			<f:facet name="output">
+				<ui:repeat var="t" value="#{x.tags}">
+					<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+				</ui:repeat>
+			</f:facet>
+			<f:facet name="input">
+				<p:autoComplete multiple="true" value="#{x.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+					itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags" placeholder="accounts">
+					<p:column>
+						<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+					</p:column>
+				</p:autoComplete>
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+	
+	<p:column headerText="Selectable" sortBy="#{x.selectable}" styleClass="wex-cell-centered" filterBy="#{x.selectable}" filterMatchMode="equals">
+		<f:facet name="filter">
+			<p:selectOneButton onchange="PF('w_typesTable').filter()" styleClass="custom-filter">
+				<f:converter converterId="javax.faces.Boolean" />
+				<f:selectItem itemLabel="all" itemValue="" />
+				<f:selectItem itemLabel="yes" itemValue="true" />
+				<f:selectItem itemLabel="no" itemValue="false" />
+			</p:selectOneButton>
+		</f:facet>
+		<p:cellEditor>
+			<f:facet name="output">
+				<h:panelGroup rendered="#{x.selectable}">
+					<i class="pi pi-check"></i>
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="input">
+				<p:selectBooleanCheckbox value="#{x.selectable}" />
+			</f:facet>
+		</p:cellEditor>
+	</p:column>
+
+</ui:composition>

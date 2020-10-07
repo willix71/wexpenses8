@@ -1,0 +1,20 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Tag Groups</ui:define>
+
+	<ui:define name="content">
+		<h:form id="typesTableForm">
+			<p:growl id="growl" />
+			
+			<wex:typeEditableTable controller="#{tagGroupController}" columsDefinition="/includes/tagGroupsColumns.xhtml"/>
+		</h:form>
+	</ui:define>
+</ui:composition>	
