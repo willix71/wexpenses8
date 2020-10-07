@@ -27,7 +27,7 @@ public class TagService extends GenericServiceImpl<Tag, Long, ITagDao> implement
 
 	@Override
 	public List<Tag> findByText(String text) {
-		return getDao().findByText(CriteriaHelper.like(text));
+		return getDao().findByText(CriteriaHelper.safeLowerLike(text));
 	}
 	
 	@Override

@@ -52,9 +52,9 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 		if (displayer!=null) {
 			switch(displayer) {
 			case CCP:
-				return getDao().findByTextAndPostalAccount(CriteriaHelper.like(text.toLowerCase()));
+				return getDao().findByTextAndPostalAccount(CriteriaHelper.safeLowerLike(text));
 			case IBAN:
-				return getDao().findByTextAndIban(CriteriaHelper.like(text.toLowerCase()));
+				return getDao().findByTextAndIban(CriteriaHelper.safeLowerLike(text));
 			default:
 				// default behavior
 			}
@@ -64,7 +64,7 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 	
 	@Override
 	public List<Payee> findByText(String text) {
-		return getDao().findByText(CriteriaHelper.like(text.toLowerCase()));
+		return getDao().findByText(CriteriaHelper.safeLowerLike(text));
 	}
 
 	@Override

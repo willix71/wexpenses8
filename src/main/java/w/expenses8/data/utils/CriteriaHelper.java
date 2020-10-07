@@ -81,10 +81,16 @@ public class CriteriaHelper {
 		}
 		return p;
 	}
+	
 	public static String like(String txt) {
 		if (txt.contains("*")) 
 			return txt.replace('*', '%');
 		else 
 			return "%" + txt + "%";
 	}
+	
+	public static String safeLowerLike(String txt) {
+		return txt==null?"*":like(txt.toLowerCase());
+	}
+	
 }
