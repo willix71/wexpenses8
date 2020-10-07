@@ -12,13 +12,14 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.AbstractType;
+import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.model.enums.TagType;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter  @NoArgsConstructor @AllArgsConstructor
 @Entity
 @Table(name = "WEX_Tag")
-public class Tag extends AbstractType<Tag> {
+public class Tag extends AbstractType<Tag> implements TagCriteria {
 
 	private static final long serialVersionUID = 1L;
 
@@ -32,9 +33,15 @@ public class Tag extends AbstractType<Tag> {
 	private Payee institution;
 	
 	@Override
+	public Object getCriteriaType() {
+		return type;
+	}
+
+	@Override
 	public void copy(Tag t) {
 		super.copy(t);
 		this.number = t.number;
 		this.type = t.type;
 	}
+
 }

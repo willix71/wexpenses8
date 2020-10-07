@@ -78,10 +78,10 @@
 	        
 	        <div class="p-field p-col-12">
 	            <p:outputLabel for="critra_tagsId" value="Accounts" style="display:none"/>
-				<p:autoComplete id="critra_tagsId" multiple="true" value="#{controller.criteria.tags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
-					itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags" placeholder="accounts">
+				<p:autoComplete id="critra_tagsId" multiple="true" value="#{controller.criteria.tagCriterias}" completeMethod="#{dropboxController.completeTagGroup}" unique="true" var="theme"
+					itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagCriteriaConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags" placeholder="accounts">
 					<p:column>
-						<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.criteriaType}" />
 					</p:column>
               		<p:ajax event="itemSelect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />
               		<p:ajax event="itemUnselect" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" />

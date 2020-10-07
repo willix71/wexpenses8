@@ -11,16 +11,22 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
 import w.expenses8.data.core.service.GenericServiceImpl;
+import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.dao.ITransactionEntryDao;
 import w.expenses8.data.domain.model.QExpense;
+import w.expenses8.data.domain.model.QTag;
 import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.model.Tag;
+import w.expenses8.data.domain.model.TagGroup;
 import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CriteriaHelper;
 
@@ -65,10 +71,22 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 
 		if (criteria.getAccountingYear()!=null) {
 			predicate = predicate.and(entry.accountingYear.eq(criteria.getAccountingYear()));
-		}
-		if (!CollectionHelper.isEmpty(criteria.getTags())) {
-			for(Tag t: criteria.getTags()) {
-				predicate = predicate.and(entry.tags.contains(t));
+		}	
+		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+			for(TagCriteria t:criteria.getTagCriterias()) {
+				if (t instanceof Tag) {
+					predicate = predicate.and(entry.tags.contains((Tag) t));
+				} else if (t instanceof TagGroup) {
+					BooleanBuilder tagpredicate = new BooleanBuilder();
+					for(Tag tt: ((TagGroup) t).getTags()) {
+						predicate = tagpredicate.or(entry.tags.contains(tt));
+					}
+					predicate = predicate.and(tagpredicate);
+				} else if (t instanceof TagType) {
+					QTag ttag = new QTag("tt");
+					SubQueryExpression<Tag> e= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
+					predicate = predicate.and(entry.tags.any().in(e));
+				}
 			}
 		}
 

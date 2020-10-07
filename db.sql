@@ -6,6 +6,8 @@ drop table if exists WEX_ExpenseType CASCADE;
 drop table if exists WEX_Payee CASCADE;
 drop table if exists WEX_PayeeType CASCADE;
 drop table if exists WEX_Tag CASCADE;
+drop table if exists WEX_TagGroup CASCADE;
+drop table if exists WEX_TagGroup_WEX_Tag CASCADE;
 drop table if exists WEX_TransactionEntry CASCADE;
 drop table if exists WEX_TransactionEntry_WEX_Tag CASCADE;
 drop sequence if exists hibernate_sequence;
@@ -18,6 +20,8 @@ create table WEX_ExpenseType (id bigint not null, createdTS timestamp not null, 
 create table WEX_Payee (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, address1 varchar(255), address2 varchar(255), address3 varchar(255), city varchar(255), countryCode varchar(255), extra varchar(255), iban varchar(255), name varchar(255), postalAccount varchar(255), postalBank varchar(255), prefix varchar(255), zip varchar(255), payeeType_id bigint, primary key (id));
 create table WEX_PayeeType (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, primary key (id));
 create table WEX_Tag (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, number integer, type integer not null, institution_id bigint, primary key (id));
+create table WEX_TagGroup (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, primary key (id));
+create table WEX_TagGroup_WEX_Tag (WEX_TagGroup_id bigint not null, tag_id bigint not null, primary key (WEX_TagGroup_id, tag_id));
 create table WEX_TransactionEntry (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, accountingBalance decimal(19,2), accountingDate date not null, accountingOrder bigint, accountingValue decimal(19,2) not null, accountingYear integer, currencyAmount decimal(19,2) not null, factor integer not null, systemEntry boolean not null, consolidationFile_id bigint, expense_id bigint, primary key (id));
 create table WEX_TransactionEntry_WEX_Tag (WEX_TransactionEntry_id bigint not null, tags_id bigint not null, primary key (WEX_TransactionEntry_id, tags_id));
 alter table WEX_Document add constraint UK_5yertsmd40asympx4xf6u61n2 unique (uid);
@@ -28,6 +32,7 @@ alter table WEX_ExpenseType add constraint UK_4j93kwomo5830tkcghtdt6641 unique (
 alter table WEX_Payee add constraint UK_9ce2vywn504fhc3733ii308jj unique (uid);
 alter table WEX_PayeeType add constraint UK_3ox14v12khxi30fvhvlo8iitr unique (uid);
 alter table WEX_Tag add constraint UK_tmab68c4ew3iyhlwc8rjaw21x unique (uid);
+alter table WEX_TagGroup add constraint UK_59omfoixlo8cq78yr2vamddbk unique (uid);
 alter table WEX_TransactionEntry add constraint UK_fuy123o2g19m1rx3fyec8fxy8 unique (uid);
 alter table WEX_ExchangeRate add constraint FKfmj5ob8cqpi0fgxgmw98lblip foreign key (institution_id) references WEX_Payee;
 alter table WEX_Expense add constraint FKrx7dlq1yn4jk3crjrpw5x3uuv foreign key (exchangeRate_id) references WEX_ExchangeRate;
@@ -37,6 +42,8 @@ alter table WEX_Expense_WEX_Document add constraint FKru62r8qgt4m42tpm0vsuql1tj 
 alter table WEX_Expense_WEX_Document add constraint FKchitvt7rr0gy7es1sonicxq42 foreign key (WEX_Expense_id) references WEX_Expense;
 alter table WEX_Payee add constraint FK5dcf210fd8nny12ewen9hi28l foreign key (payeeType_id) references WEX_PayeeType;
 alter table WEX_Tag add constraint FKlqfsdulcen6n436r9ii951699 foreign key (institution_id) references WEX_Payee;
+alter table WEX_TagGroup_WEX_Tag add constraint FK99e2vsbpyx7418ghxxf70nxto foreign key (tag_id) references WEX_Tag
+alter table WEX_TagGroup_WEX_Tag add constraint FKpvx2los11ygd73s1fdjep4lww foreign key (WEX_TagGroup_id) references WEX_TagGroup
 alter table WEX_TransactionEntry add constraint FKael397xfdjn39qyw8n7vf8ud1 foreign key (consolidationFile_id) references WEX_Document;
 alter table WEX_TransactionEntry add constraint FKlmnlduq5cyn0r5o6deuwcrseu foreign key (expense_id) references WEX_Expense on delete cascade;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FK8xv4ycc4ihpivm3gvywfe9u9i foreign key (tags_id) references WEX_Tag;

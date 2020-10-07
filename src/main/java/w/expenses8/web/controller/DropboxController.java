@@ -1,6 +1,7 @@
 package w.expenses8.web.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
@@ -18,6 +20,7 @@ import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IExpenseTypeService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.IPayeeTypeService;
+import w.expenses8.data.domain.service.ITagGroupService;
 import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.domain.service.impl.CountryService;
 
@@ -67,8 +70,20 @@ public class DropboxController implements Serializable {
 	@Inject
 	private ITagService tagService;
 	
+	@Inject
+	private ITagGroupService tagGroupService;
+	
 	public List<Tag> completeTag(String text) {
 		return tagService.findByText(text);
+	}
+
+	@SuppressWarnings({"unchecked","rawtypes"})
+	public List<? extends TagCriteria> completeTagGroup(String text) {
+		List tagCriterias = new ArrayList();
+		tagCriterias.addAll(tagService.findByText(text));
+		tagCriterias.addAll(tagGroupService.findByText(text));
+		Arrays.stream(TagType.values()).filter(tt->tt.getName().contains(text.toUpperCase())).forEach(tagCriterias::add);
+		return tagCriterias;
 	}
 	
 	List<TagType> tagTypes = Arrays.asList(TagType.values());

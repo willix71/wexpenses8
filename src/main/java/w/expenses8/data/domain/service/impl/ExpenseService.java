@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
@@ -18,11 +20,15 @@ import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
+import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.dao.IExpenseDao;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.QExpense;
+import w.expenses8.data.domain.model.QTag;
 import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.model.Tag;
+import w.expenses8.data.domain.model.TagGroup;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
@@ -105,9 +111,21 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		if (criteria.getAccountingYear()!=null) {
 			predicate = predicate.and(QTransactionEntry.transactionEntry.accountingYear.eq(criteria.getAccountingYear()));
 		}
-		if (!CollectionHelper.isEmpty(criteria.getTags())) {
-			for(Tag t:criteria.getTags()) {
-				predicate = predicate.and(QTransactionEntry.transactionEntry.tags.contains(t));
+		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+			for(TagCriteria t:criteria.getTagCriterias()) {
+				if (t instanceof Tag) {
+					predicate = predicate.and(QTransactionEntry.transactionEntry.tags.contains((Tag) t));
+				} else if (t instanceof TagGroup) {
+					BooleanBuilder tagpredicate = new BooleanBuilder();
+					for(Tag tt: ((TagGroup) t).getTags()) {
+						predicate = tagpredicate.or(QTransactionEntry.transactionEntry.tags.contains(tt));
+					}
+					predicate = predicate.and(tagpredicate);
+				} else if (t instanceof TagType) {
+					QTag ttag = new QTag("tt");
+					SubQueryExpression<Tag> e= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
+					predicate = predicate.and(QTransactionEntry.transactionEntry.tags.any().in(e));
+				}
 			}
 		}
 		

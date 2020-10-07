@@ -17,7 +17,6 @@ import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.criteria.RangeNumberCriteria;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
-import w.expenses8.data.domain.model.Tag;
 
 @SuperBuilder(builderMethodName = "with")
 @ToString
@@ -38,7 +37,7 @@ public class ExpenseCriteria implements Serializable {
 	@Builder.Default
 	private RangeNumberCriteria amountValue = new RangeNumberCriteria();
 	@Builder.Default
-	private List<Tag> tags = new ArrayList<Tag>();
+	private List<TagCriteria> tagCriterias = new ArrayList<TagCriteria>();
 
 	public static ExpenseCriteria from(LocalDate d) {
 		ExpenseCriteria criteria = new ExpenseCriteria();

@@ -88,10 +88,10 @@ public class TransactionEntryServiceTest {
 		List<TransactionEntry> chf = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().currencyCode("USD").build());
 		assertThat(chf).hasSize(3);
 		
-		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tags(Arrays.asList(cash)).build());
+		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(cash)).build());
 		assertThat(cashes).hasSize(3);
 
-		List<TransactionEntry> healthkim = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tags(Arrays.asList(health, kim)).build());
+		List<TransactionEntry> healthkim = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(health, kim)).build());
 		assertThat(healthkim).hasSize(1);
 		assertThat(healthkim.get(0).getExpense().getPayee().getName()).isEqualTo("Doctor");
 		assertThat(healthkim.get(0).getExpense().getExpenseType().getName()).isEqualTo("BVO");
