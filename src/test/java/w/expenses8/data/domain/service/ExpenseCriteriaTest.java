@@ -24,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
+import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.Tag;
@@ -52,6 +53,7 @@ public class ExpenseCriteriaTest {
 	static Tag wife;
 	static Tag salary;
 	static TagGroup healths;
+	static TagCriteria not = TagCriteria.NOT;
 	
 	@Autowired
 	private StoreService storeService;
@@ -115,6 +117,13 @@ public class ExpenseCriteriaTest {
 	
 	@Test
 	@Order(2)
+	public void test_not_salary() {
+		//assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(not,salary)).build())).hasSize(3);
+		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(not,salary)).build())).hasSize(8);
+	}
+	
+	@Test
+	@Order(2)
 	public void test_cash() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(cash)).build())).hasSize(2).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("1000.00"));
 		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(cash)).build())).hasSize(2).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("71.00"));
@@ -125,6 +134,13 @@ public class ExpenseCriteriaTest {
 	public void test_me() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
 		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
+	}
+
+	@Test
+	@Order(3)
+	public void test_not_me() {
+		//assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
+		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(not, me)).build())).hasSize(7);
 	}
 	
 	@Test

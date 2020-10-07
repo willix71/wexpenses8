@@ -83,6 +83,7 @@ public class DropboxController implements Serializable {
 		tagCriterias.addAll(tagService.findByText(text));
 		tagCriterias.addAll(tagGroupService.findByText(text));
 		Arrays.stream(TagType.values()).filter(tt->tt.getName().contains(text.toUpperCase())).forEach(tagCriterias::add);
+		tagCriterias.add(TagCriteria.NOT);
 		return tagCriterias;
 	}
 	

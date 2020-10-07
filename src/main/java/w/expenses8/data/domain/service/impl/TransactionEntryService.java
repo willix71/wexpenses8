@@ -74,29 +74,42 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 			predicate = predicate.and(entry.accountingYear.eq(criteria.getAccountingYear()));
 		}	
 		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+			boolean not = false;
 			for(TagCriteria t:criteria.getTagCriterias()) {
 				if (t instanceof Tag) {
-					predicate = predicate.and(entry.tags.contains((Tag) t));
+					predicate = not?
+							predicate.andNot(entry.tags.contains((Tag) t)):
+							predicate.and(entry.tags.contains((Tag) t));
 				} else if (t instanceof TagGroup) {
 					TagGroup group = (TagGroup) t;
 					if (!group.isNew()) {
 						QTag tt = new QTag("tt");
 						QTagGroup tg = new QTagGroup("tg");
 						SubQueryExpression<Tag> e= JPAExpressions.select(tt).from(tg).join(tg.tags, tt).where(tg.eq((TagGroup) t));
-						predicate = predicate.and(entry.tags.any().in(e));
+						predicate = not?
+								predicate.andNot(entry.tags.any().in(e)):
+								predicate.and(entry.tags.any().in(e));
 					} else {
 						// just in case, this code works for a new TagGroup but is sql is longer
 						BooleanBuilder tagpredicate = new BooleanBuilder();
 						for(Tag tt: ((TagGroup) t).getTags()) {
 							predicate = tagpredicate.or(entry.tags.contains(tt));
 						}
-						predicate = predicate.and(tagpredicate);
+						predicate = not?
+								predicate.andNot(tagpredicate):
+								predicate.and(tagpredicate);
 					}
 				} else if (t instanceof TagType) {
 					QTag qtag = new QTag("tt");
 					SubQueryExpression<Tag> e= JPAExpressions.select(qtag).from(qtag).where(qtag.type.eq((TagType) t));
-					predicate = predicate.and(entry.tags.any().in(e));
+					predicate = not?
+							predicate.andNot(entry.tags.any().in(e)):
+							predicate.and(entry.tags.any().in(e));
+				} else if (t==TagCriteria.NOT) {
+					not = true;
+					continue;
 				}
+				not = false;
 			}
 		}
 
