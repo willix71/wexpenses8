@@ -22,6 +22,7 @@ import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.dao.ITransactionEntryDao;
 import w.expenses8.data.domain.model.QExpense;
 import w.expenses8.data.domain.model.QTag;
+import w.expenses8.data.domain.model.QTagGroup;
 import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TagGroup;
@@ -77,14 +78,23 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 				if (t instanceof Tag) {
 					predicate = predicate.and(entry.tags.contains((Tag) t));
 				} else if (t instanceof TagGroup) {
-					BooleanBuilder tagpredicate = new BooleanBuilder();
-					for(Tag tt: ((TagGroup) t).getTags()) {
-						predicate = tagpredicate.or(entry.tags.contains(tt));
+					TagGroup group = (TagGroup) t;
+					if (!group.isNew()) {
+						QTag tt = new QTag("tt");
+						QTagGroup tg = new QTagGroup("tg");
+						SubQueryExpression<Tag> e= JPAExpressions.select(tt).from(tg).join(tg.tags, tt).where(tg.eq((TagGroup) t));
+						predicate = predicate.and(entry.tags.any().in(e));
+					} else {
+						// just in case, this code works for a new TagGroup but is sql is longer
+						BooleanBuilder tagpredicate = new BooleanBuilder();
+						for(Tag tt: ((TagGroup) t).getTags()) {
+							predicate = tagpredicate.or(entry.tags.contains(tt));
+						}
+						predicate = predicate.and(tagpredicate);
 					}
-					predicate = predicate.and(tagpredicate);
 				} else if (t instanceof TagType) {
-					QTag ttag = new QTag("tt");
-					SubQueryExpression<Tag> e= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
+					QTag qtag = new QTag("tt");
+					SubQueryExpression<Tag> e= JPAExpressions.select(qtag).from(qtag).where(qtag.type.eq((TagType) t));
 					predicate = predicate.and(entry.tags.any().in(e));
 				}
 			}

@@ -85,7 +85,7 @@ public class ExpenseCriteriaTest {
 					TransactionEntry.with().factor(TransactionFactor.IN).accountingValue(new BigDecimal("180.00")).tags(new HashSet<>(asList(pills,wife))).build()
 					));
 	
-			healths = TagGroup.with().name("healths").tags(new HashSet<>(asList(doctor, pills))).build();
+			healths = storeService.save(TagGroup.with().name("healths").tags(new HashSet<>(asList(doctor, pills))).build());
 			
 			salary = Tag.with().type(INCOME).name("salary").build();
 			expenseService.save(ExpenseHelper.build(LocalDate.of(2020,2,20), new BigDecimal("1000.00"),"CHF",someone,salary,cash));
