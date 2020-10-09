@@ -58,7 +58,11 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		if (o == null) return ExpenseHelper.build();
 		Long id;
 		if (o instanceof Expense) {
-			id = ((Expense)o).getId();
+			Expense x=(Expense)o;
+			if (x.isNew()) {
+				return x;
+			}
+			id = x.getId();
 		} else if (o instanceof Long) {
 			id = (Long)o;
 		} else {			

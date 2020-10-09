@@ -28,7 +28,11 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 		if (o == null) return new Payee();
 		Long id;
 		if (o instanceof Payee) {
-			id = ((Payee)o).getId();
+			Payee p = (Payee)o;
+			if (p.isNew()) {
+				return p;
+			}
+			id = p.getId();
 		} else if (o instanceof Long) {
 			id = (Long)o;
 		} else {			
