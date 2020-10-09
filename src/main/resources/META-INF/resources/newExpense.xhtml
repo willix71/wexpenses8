@@ -1,0 +1,77 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses PayeeTypes</ui:define>
+
+	<ui:define name="content">
+		<h:form id="wexEditionForm" styleClass="wex-single-element">
+		
+			<p:outputPanel id="payeeSelector" rendered="#{empty newExpenseController.newExpense}">
+				<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
+				 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
+	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" >
+	             	<p:ajax event="itemSelect" update="wexEditionForm" />
+	             </p:autoComplete>
+             
+				<wex:payeeSelector payee="#{newExpenseController.payee}" payeeDisplayer="#{newExpenseController.expenseType.displayer}" edition="true"	update="wexEditionForm"/>
+			
+	        	<p:outputPanel id="payeeLastExpenseId" rendered="#{not empty newExpenseController.payee}">
+			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{expenseConverter}" var="x" style="width:100%">
+			            <f:selectItems value="#{newExpenseController.lastPayeeExpenses}"/>
+			 			<p:ajax update="wexEditionForm" />
+			            <p:column>
+			                <h:outputText value="#{x.expenseType.name}" />
+			            </p:column>
+
+						<p:column>
+							<h:outputText value="#{x.date}">
+								<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{x.currencyAmount}" /><h:outputText value="#{x.currencyCode}" />
+						</p:column>
+
+						<p:column>
+							<ui:repeat var="t" value="#{x.tags}">
+								<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+							</ui:repeat>
+						</p:column>
+					</p:selectOneListbox>
+	
+					<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-center" >
+			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.createNewExpense}" update="wexEditionForm" />
+			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.copyNewExpense}" update="wexEditionForm" disabled="#{empty newExpenseController.baseExpense}"/>
+		        	</h:panelGroup>	
+	        	</p:outputPanel>
+			</p:outputPanel>	
+        	
+			<p:outputPanel rendered="#{not empty newExpenseController.newExpense}">
+				<wex:expenseEdition edition="true"/>
+			
+				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+		     		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" >
+						<f:actionListener binding="#{expenseEditionController.save()}" />
+						<f:actionListener binding="#{newExpenseController.reset()}" />
+					</p:commandButton>
+		     		<p:commandButton id="wexReset" value="Reset" update="wexEditionForm" immediate="true" >
+						<f:actionListener binding="#{newExpenseController.reset()}" />
+					</p:commandButton>
+		     		<p:commandButton id="wexReselect" value="Reselect" update="wexEditionForm" immediate="true" >
+						<f:actionListener binding="#{newExpenseController.reselect()}" />
+					</p:commandButton>
+	        	</h:panelGroup>				
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>	
+ 

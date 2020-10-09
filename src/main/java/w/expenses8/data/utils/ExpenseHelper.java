@@ -6,11 +6,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import w.expenses8.data.core.model.DBable;
+import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
@@ -24,6 +27,7 @@ public class ExpenseHelper {
 	public static Expense build(Object ...args) {
 		Expense x = new Expense();
 		for(Object o:args) {
+			if (o==null) continue;
 			if (o.getClass().equals(DBable.class)) {
 				DBable<?> db = (DBable<?>) o;
 				x.setId(db.getId());
@@ -64,6 +68,21 @@ public class ExpenseHelper {
 				x.addTransaction((TransactionEntry) o);
 				continue;
 			}
+			if (o instanceof DocumentFile) {
+				x.addDocumentFile((DocumentFile) o);
+				continue;
+			}
+			if (o instanceof Collection) {
+				Object first = CollectionHelper.first((Collection) o);
+				if (first != null) {
+					if (first instanceof TransactionEntry) {
+						x.setTransactions(new HashSet<>((Collection<TransactionEntry>) o));
+					} else if (first instanceof DocumentFile) {
+						x.setDocumentFiles(new HashSet<>((Collection<DocumentFile>) o));
+					}
+				}
+				continue;
+			}			
 			if (o instanceof Tag) {
 				Tag t = (Tag) o;
 				if (x.getTransactions()==null || x.getTransactions().isEmpty()) {
@@ -91,6 +110,68 @@ public class ExpenseHelper {
 		}
 		x.updateValues(null);
 		
+		return x;
+	}
+	
+	public static TransactionEntry buildTransactionEntry(Object ...args) {
+		TransactionEntry x = new TransactionEntry();
+		for(Object o:args) {
+			if (o==null) continue;
+			if (o.getClass().equals(DBable.class)) {
+				DBable<?> db = (DBable<?>) o;
+				x.setId(db.getId());
+				x.setUid(db.getUid());
+				x.setCreatedTs(db.getCreatedTs());
+				x.setModifiedTs(db.getModifiedTs());
+				continue;
+			}
+			if (o instanceof Date) {
+				x.setAccountingDate(((Date) o).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+				continue;
+			}
+			if (o instanceof LocalDate) {
+				x.setAccountingDate((LocalDate) o);
+				continue;
+			}
+			if (o instanceof LocalDateTime) {
+				x.setAccountingDate(((LocalDateTime) o).toLocalDate());
+				continue;
+			}
+			if (o instanceof Integer) {
+				x.setAccountingYear((Integer) o);
+				continue;
+			}
+			if (o instanceof Expense) {
+				x.setExpense((Expense) o);
+				continue;
+			}
+			if (o instanceof DocumentFile) {
+				x.setConsolidationFile((DocumentFile) o);
+				continue;
+			}
+			if (o instanceof BigDecimal) {
+				x.setCurrencyAmount((BigDecimal) o);
+				continue;
+			}
+			if (o instanceof TransactionFactor) {
+				x.setFactor((TransactionFactor) o);
+				continue;
+			}			
+			if (o instanceof Tag) {
+				x.addTag((Tag) o);
+				continue;
+			}			
+			if (o instanceof Collection) {
+				Object first = CollectionHelper.first((Collection) o);
+				if (first != null) {
+					if (first instanceof Tag) {
+						x.setTags(new HashSet<>((Collection<Tag>) o));
+					}
+				}				
+				continue;
+			}			
+			throw new IllegalArgumentException("Don't know what to do with " + o.getClass().getName());
+		}
 		return x;
 	}
 	

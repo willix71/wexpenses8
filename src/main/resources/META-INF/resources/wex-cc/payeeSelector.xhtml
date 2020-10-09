@@ -12,6 +12,7 @@
 		<composite:attribute name="edition" default="false" />
 		<composite:attribute name="payee" type="w.expenses8.data.domain.model.Payee" />
 		<composite:attribute name="payeeDisplayer" type="w.expenses8.data.domain.model.enums.PayeeDisplayer" />
+		<composite:attribute name="update" />
 	</composite:interface>
 
 	<composite:implementation>
@@ -23,16 +24,24 @@
 		<h:panelGroup rendered="#{cc.attrs.edition}">
 			<p:autoComplete id="ccpPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='CCP'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndCcp}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" />
+             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" > 
+             	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+            </p:autoComplete>
 
 			<p:autoComplete id="ibanPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndIban}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" />
+             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" >
+             	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+            </p:autoComplete>
 
 			<p:autoComplete id="defaultPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer!='CCP' and cc.attrs.payeeDisplayer!='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{requestController.displayPayee(theme)}" itemValue="#{theme}" forceSelection="true" />
-
+             	var="theme" itemLabel="#{requestController.displayPayee(theme)}" itemValue="#{theme}" forceSelection="true" >
+              	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+            </p:autoComplete>
 		</h:panelGroup>
 	</composite:implementation>
 	
