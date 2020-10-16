@@ -30,13 +30,6 @@ public class DocumentFile extends DBable<DocumentFile> {
 	private String fileName;
 	
 	@Override
-	public void copy(DocumentFile t) {
-		super.copy(t);
-		this.documentDate = t.documentDate;
-		this.fileName = t.fileName;
-	}
-	
-	@Override
 	public String toString() {
 		return super.toString() + " " + fileName;
 	}

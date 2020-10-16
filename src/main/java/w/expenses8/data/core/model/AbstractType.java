@@ -26,15 +26,6 @@ public abstract class AbstractType<T extends AbstractType<T>> extends DBable<T> 
 	private boolean selectable = true;
 
 	@Override
-	public void copy(T t) {
-		super.copy(t);
-		AbstractType<?> a = (AbstractType<?>) t;
-		this.name = a.name;
-		this.description = a.description;
-		this.selectable = a.selectable;
-	}
-
-	@Override
 	public String toString() {
 		return super.toString() + " " + name;
 	}

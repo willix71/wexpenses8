@@ -67,10 +67,4 @@ public class TagGroup extends AbstractType<TagGroup> implements TagCriteria {
 	public Object getCriteriaType() {
 		return "GROUP";
 	}
-
-	@Override
-	public void copy(TagGroup t) {
-		super.copy(t);
-		this.tags = new HashSet<Tag>(t.tags);
-	}
 }

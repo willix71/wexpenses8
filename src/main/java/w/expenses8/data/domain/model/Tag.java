@@ -36,12 +36,4 @@ public class Tag extends AbstractType<Tag> implements TagCriteria {
 	public Object getCriteriaType() {
 		return type;
 	}
-
-	@Override
-	public void copy(Tag t) {
-		super.copy(t);
-		this.number = t.number;
-		this.type = t.type;
-	}
-
 }

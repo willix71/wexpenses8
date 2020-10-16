@@ -117,20 +117,6 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 			accountingValue = CurrencyValue.applyPrecision(accountingValue, precision);
 		}
 	}
-	
-	@Override
-	public void copy(TransactionEntry t) {
-		super.copy(t);
-		this.expense = t.expense;
-		this.systemEntry = t.systemEntry;
-		this.factor = t.factor;
-		this.currencyAmount = t.currencyAmount;
-		this.accountingValue = t.accountingValue;
-		this.accountingYear = t.accountingYear;
-		this.accountingOrder = t.accountingOrder;
-		this.accountingBalance = t.accountingBalance;
-		this.tags = t.getTags()==null?null:new HashSet<Tag>(t.getTags());
-	}	
 
 	private TransactionEntry(TransactionFactor factor, Tag... tags) {
 		this.factor = factor;

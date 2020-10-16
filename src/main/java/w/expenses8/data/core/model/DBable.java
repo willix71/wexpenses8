@@ -79,7 +79,7 @@ public class DBable<T extends DBable<T>> implements Serializable, Cloneable {
 		return MessageFormat.format("{0}[{1} {2}]", this.getClass().getSimpleName(), getFullId(), uid);
 	}
 
-	public void copy(T t) {
+	public void copyTo(T t) {
 		this.id = ((DBable<T>) t).id;
 		this.version = ((DBable<T>) t).version;
 		this.createdTs = ((DBable<T>) t).createdTs;

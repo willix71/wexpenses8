@@ -141,7 +141,7 @@ public class Expense extends DBable<Expense> {
 	
 	public void updateDate(LocalDateTime previousDate) {
 		if (date==null) return;
-		if (exchangeRate!=null && exchangeRate.getDate()!=null && previousDate!=null && exchangeRate.getDate().equals(previousDate.toLocalDate())) exchangeRate.setDate(date.toLocalDate());
+		if (exchangeRate!=null && (exchangeRate.getDate()==null || (previousDate!=null && exchangeRate.getDate().equals(previousDate.toLocalDate())))) exchangeRate.setDate(date.toLocalDate());
 		transactions.stream().filter(t->t.getAccountingYear()==null || (previousDate!=null && t.getAccountingYear().equals(previousDate.getYear()))).forEach(t->t.setAccountingYear(date.getYear()));
 		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate.toLocalDate()))).forEach(t->t.setAccountingDate(date.toLocalDate()));
 	}
@@ -186,24 +186,6 @@ public class Expense extends DBable<Expense> {
 			}
 			BigDecimal perEach = leftOver.divide(BigDecimal.valueOf(numberOfEmpty));
 			transactions.stream().filter(t->t.getFactor()==factor && t.getCurrencyAmount()==null).forEach(t->t.setCurrencyAmount(perEach));
-		}
-	}
-	
-	@Override
-	public void copy(Expense x) {
-		super.copy(x);
-		this.date = x.date;
-		this.currencyAmount = x.currencyAmount;
-		this.currencyCode = x.currencyCode;
-		this.accountingValue = x.accountingValue;
-		this.exchangeRate = x.exchangeRate;
-		this.payee = x.payee;
-		if (transactions != null) {
-			for(TransactionEntry e: x.transactions) {
-				TransactionEntry e2 = new TransactionEntry();
-				e2.copy(e);
-				addTransaction(e2);
-			}
 		}
 	}
 }

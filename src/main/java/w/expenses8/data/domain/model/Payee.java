@@ -49,18 +49,4 @@ public class Payee extends DBable<Payee> {
     
     @Ibanized
     private String iban;
-
-	@Override
-	public void copy(Payee t) {
-		super.copy(t);
-		this.payeeType = t.payeeType;
-		this.name = t.name;
-		this.prefix = t.prefix;
-		this.extra = t.extra;
-		this.address1 = t.address1;
-		this.address2 = t.address2;
-		this.address3 = t.address3;
-		this.zip = t.zip;
-		this.countryCode = t.countryCode;
-	}
 }

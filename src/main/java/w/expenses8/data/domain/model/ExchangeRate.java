@@ -60,16 +60,16 @@ public class ExchangeRate extends DBable<ExchangeRate> {
 		return value;
 	}
 
-	@Override
-	public void copy(ExchangeRate t) {
-		super.copy(t);
-		this.institution = t.institution;
-		this.date = t.date;
-		this.toCurrencyCode = t.toCurrencyCode;
-		this.fromCurrencyCode = t.fromCurrencyCode;
-		this.rate = t.rate;
-		this.fee = t.fee;
-		this.fixFee = t.fixFee;
+	public ExchangeRate duplicate() {
+		ExchangeRate d=new ExchangeRate();
+		d.institution = this.institution;
+		d.date = this.date;
+		d.toCurrencyCode = this.toCurrencyCode;
+		d.fromCurrencyCode = this.fromCurrencyCode;
+		d.rate = this.rate;
+		d.fee = this.fee;
+		d.fixFee = this.fixFee;
+		return d;
 	}
 
 }
