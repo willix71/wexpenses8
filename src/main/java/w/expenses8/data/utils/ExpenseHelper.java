@@ -24,6 +24,7 @@ import w.expenses8.data.domain.model.enums.TransactionFactor;
 
 public class ExpenseHelper {
 
+	@SuppressWarnings({ "unchecked"})
 	public static Expense build(Object ...args) {
 		Expense x = new Expense();
 		for(Object o:args) {
@@ -73,7 +74,7 @@ public class ExpenseHelper {
 				continue;
 			}
 			if (o instanceof Collection) {
-				Object first = CollectionHelper.first((Collection) o);
+				Object first = CollectionHelper.first((Collection<?>) o);
 				if (first != null) {
 					if (first instanceof TransactionEntry) {
 						x.setTransactions(new HashSet<>((Collection<TransactionEntry>) o));
@@ -113,6 +114,7 @@ public class ExpenseHelper {
 		return x;
 	}
 	
+	@SuppressWarnings({ "unchecked"})
 	public static TransactionEntry buildTransactionEntry(Object ...args) {
 		TransactionEntry x = new TransactionEntry();
 		for(Object o:args) {
@@ -145,10 +147,6 @@ public class ExpenseHelper {
 				x.setExpense((Expense) o);
 				continue;
 			}
-			if (o instanceof DocumentFile) {
-				x.setConsolidationFile((DocumentFile) o);
-				continue;
-			}
 			if (o instanceof BigDecimal) {
 				x.setCurrencyAmount((BigDecimal) o);
 				continue;
@@ -162,14 +160,16 @@ public class ExpenseHelper {
 				continue;
 			}			
 			if (o instanceof Collection) {
-				Object first = CollectionHelper.first((Collection) o);
-				if (first != null) {
-					if (first instanceof Tag) {
-						x.setTags(new HashSet<>((Collection<Tag>) o));
-					}
+				Object first = CollectionHelper.first((Collection<?>) o);
+				if (first != null && first instanceof Tag) {
+					x.setTags(new HashSet<>((Collection<Tag>) o));
 				}				
 				continue;
 			}			
+			if (o instanceof DocumentFile) {
+				x.setConsolidationFile((DocumentFile) o);
+				continue;
+			}
 			throw new IllegalArgumentException("Don't know what to do with " + o.getClass().getName());
 		}
 		return x;

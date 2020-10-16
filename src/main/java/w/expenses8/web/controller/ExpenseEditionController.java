@@ -135,13 +135,13 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 			if (potentialExchangeRate!=null) {
 				currentElement.setExchangeRate(potentialExchangeRate);
 			} else {
-				Long institutionId = currentElement.getTransactions().stream().flatMap(f->f.getTags().stream()).filter(f->f.getInstitution().getId()!=null).map(f->f.getInstitution().getId()).findFirst().orElse(null);
+				Long institutionId = currentElement.getTransactions().stream().flatMap(f->f.getTags().stream()).filter(f->f.getInstitution()!=null && f.getInstitution().getId()!=null).map(f->f.getInstitution().getId()).findFirst().orElse(null);
 				Payee institution = institutionId==null?null:payeeService.load(institutionId);
 				
 				// new expense rate
 				ExchangeRate newExchangeRate = ExchangeRate.with()
 						.institution(institution)
-						.date(currentElement.getDate().toLocalDate())
+						.date(currentElement.getDate()==null?null:currentElement.getDate().toLocalDate())
 						.fromCurrencyCode(newCurrencyCode)
 						.toCurrencyCode(currencyValue.getCode())
 						.rate(1.2)

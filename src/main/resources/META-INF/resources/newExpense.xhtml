@@ -15,18 +15,18 @@
 		<h:form id="wexEditionForm" styleClass="wex-single-element">
 		
 			<p:outputPanel id="payeeSelector" rendered="#{empty newExpenseController.newExpense}">
+				<wex:payeeSelector payee="#{newExpenseController.payee}" payeeDisplayer="#{newExpenseController.expenseType.displayer}" edition="true" update="wexEditionForm"/>
+
 				<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
 				 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
 	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" >
 	             	<p:ajax event="itemSelect" update="wexEditionForm" />
-	             </p:autoComplete>
-             
-				<wex:payeeSelector payee="#{newExpenseController.payee}" payeeDisplayer="#{newExpenseController.expenseType.displayer}" edition="true"	update="wexEditionForm"/>
+	            </p:autoComplete>
 			
 	        	<p:outputPanel id="payeeLastExpenseId" rendered="#{not empty newExpenseController.payee}">
 			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{expenseConverter}" var="x" style="width:100%">
 			            <f:selectItems value="#{newExpenseController.lastPayeeExpenses}"/>
-			 			<p:ajax update="wexEditionForm" />
+			 			<p:ajax listener="#{newExpenseController.baseExpenseSelected}" update="wexEditionForm" />
 			            <p:column>
 			                <h:outputText value="#{x.expenseType.name}" />
 			            </p:column>
@@ -46,11 +46,21 @@
 								<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
 							</ui:repeat>
 						</p:column>
+
+						<p:column>
+							<h:outputText value="#{x.externalReference}" />
+						</p:column>
 					</p:selectOneListbox>
 	
 					<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-center" >
 			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.createNewExpense}" update="wexEditionForm" />
 			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.copyNewExpense}" update="wexEditionForm" disabled="#{empty newExpenseController.baseExpense}"/>
+						<p:selectManyCheckbox value="#{newExpenseController.copyOptions}" disabled="#{empty newExpenseController.baseExpense}">
+					        <f:selectItem itemLabel="Date" itemValue="date" />
+					        <f:selectItem itemLabel="Reference" itemValue="reference" itemDisabled="#{empty newExpenseController.baseExpense.externalReference}"/>
+					        <f:selectItem itemLabel="Documents" itemValue="documents" itemDisabled="#{empty newExpenseController.baseExpense.documentFiles}"/>
+					        <f:selectItem itemLabel="Exchange Rate" itemValue="rate" itemDisabled="#{empty newExpenseController.baseExpense.exchangeRate}"/>
+					    </p:selectManyCheckbox>
 		        	</h:panelGroup>	
 	        	</p:outputPanel>
 			</p:outputPanel>	
