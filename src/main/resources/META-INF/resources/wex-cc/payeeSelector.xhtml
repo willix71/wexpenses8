@@ -21,28 +21,67 @@
 			<h:outputText value="#{requestController.displayPayee(cc.attrs.payee)}" rendered="#{empty cc.attrs.payeeDisplayer}"/>
 		</h:panelGroup>
 
-		<h:panelGroup rendered="#{cc.attrs.edition}">
+		<h:panelGroup id="wexPayeeeSelectorPanel" rendered="#{cc.attrs.edition}">
 			<p:autoComplete id="ccpPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='CCP'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndCcp}" converter="#{payeeConverter}" 
              	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" > 
-             	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
-             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+             	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
+            <p:contextMenu for="ccpPayeeSelectorId">
+       			<p:menuitem value="Edit" update="wexPayeeEditionPanel" icon="pi pi-pencil" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{cc.attrs.payee}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       			<p:menuitem value="New" update="wexPayeeEditionPanel" icon="pi pi-plus" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{null}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       		</p:contextMenu>
 
 			<p:autoComplete id="ibanPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndIban}" converter="#{payeeConverter}" 
              	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" >
-             	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
-             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+             	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
+            <p:contextMenu for="ibanPayeeSelectorId">
+       			<p:menuitem value="Edit" update="wexPayeeEditionPanel" icon="pi pi-pencil" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{cc.attrs.payee}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       			<p:menuitem value="New" update="wexPayeeEditionPanel" icon="pi pi-plus" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{null}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       		</p:contextMenu>
 
 			<p:autoComplete id="defaultPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer!='CCP' and cc.attrs.payeeDisplayer!='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
              	var="theme" itemLabel="#{requestController.displayPayee(theme)}" itemValue="#{theme}" forceSelection="true" >
-              	<p:ajax event="itemSelect" update="#{cc.attrs.update}" />
-             	<p:ajax event="itemUnselect" update="#{cc.attrs.update}" />
+              	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
+             	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
+            <p:contextMenu for="defaultPayeeSelectorId">
+       			<p:menuitem value="Edit" update="wexPayeeEditionPanel" icon="pi pi-pencil" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{cc.attrs.payee}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       			<p:menuitem value="New" update="wexPayeeEditionPanel" icon="pi pi-plus" oncomplete="PF('w_wexPayeeEditionDialog').show()">
+       				<f:setPropertyActionListener value="#{null}" target="#{payeeEditionController.currentElement}" />
+       			</p:menuitem>
+       		</p:contextMenu>
+       		
 		</h:panelGroup>
+		
+		<p:outputPanel id="wexPayeeEditionPanel">
+ 			<p:dialog id="wexPayeeEditionDialog" widgetVar="w_wexPayeeEditionDialog" header="Payee" position="top">
+				<wex:payeeEdition edition="true"/>
+								
+				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
+					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexPayeeEditionDialog').hide()" update="wexPayeeeSelectorPanel">
+						<f:actionListener binding="#{payeeEditionController.save()}" />
+						<f:setPropertyActionListener value="#{payeeEditionController.currentElement}" target="#{cc.attrs.payee}"/>
+					</p:commandButton>
+				</h:panelGroup>
+			</p:dialog>
+		</p:outputPanel>
 	</composite:implementation>
 	
 </ui:component>
