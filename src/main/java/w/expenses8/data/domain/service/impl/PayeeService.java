@@ -38,7 +38,7 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 		} else {			
 			id = loadByUid((String) o).getId();
 		}
-		return  getDao().reload(id);
+		return getDao().reload(id);
 	}
 
 	@Autowired
