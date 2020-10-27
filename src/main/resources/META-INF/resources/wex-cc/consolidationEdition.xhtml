@@ -1,0 +1,116 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="rows" default="1000" />
+	</composite:interface>
+	
+	<composite:implementation>
+		<c:set var="conso" value="#{consolidationEditionController.currentElement}" />
+			
+		<wex:dbableDetails dbable="#{conso}"/>
+		
+		<h:panelGrid columns="2" rendered="#{not empty conso}" style="width:100%">
+			<h:outputText value=""/>
+			<p:messages for="ValidationErrors" showDetail="true" showSummary="true" />
+			
+			<h:outputText value="date" styleClass="wex-field-label"/>
+			<p:datePicker value="#{conso.date}"  view="month"  
+				pattern="MMM yyyy"
+				showIcon="true"
+				showButtonBar="true"
+				appendTo="@(body)"
+				styleClass="wex-small-datepicker js-date-related"
+		 	/>
+		
+			<h:outputText value="institution" styleClass="wex-field-label"/>
+			<p:outputPanel id="payeeSelector">
+				<wex:payeeSelector payee="#{conso.institution}" edition="true" />
+			</p:outputPanel>
+			
+			<h:outputText value="document date" styleClass="wex-field-label"/>
+			<h:outputText value="#{conso.documentFile.documentDate}" >
+				<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+			</h:outputText>
+
+			<h:outputText value="document file" styleClass="wex-field-label"/>
+			<h:outputText value="#{conso.documentFile.fileName}" />
+
+			<h:outputText value="opening value" styleClass="wex-field-label"/>
+		    <p:inputNumber value="#{conso.openingValue}" thousandSeparator="'">
+		    
+		    </p:inputNumber>
+			    
+			<h:outputText value="closing value" styleClass="wex-field-label"/>
+		    <p:inputNumber value="#{conso.closingValue}" thousandSeparator="'">
+		    
+		    </p:inputNumber>
+
+			<h:outputText value="delta value" styleClass="wex-field-label"/>
+			<h:outputText value="#{conso.deltaValue}" />										
+		</h:panelGrid>
+		
+		<p:dataTable id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{conso.transactions}" resizableColumns="true"
+		paginator="true" 
+		rowsPerPageTemplate="10,50,100,1000"
+		rows="#{cc.attrs.rows}"
+		currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+				<f:facet name="header">
+					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
+					<p:columnToggler datasource="consoTransactionEntries" trigger="toggler" />
+				</f:facet>
+
+				<ui:include src="/includes/dbableColumns.xhtml">
+					<ui:param name="dba" value="#{xct}" />
+				</ui:include>
+			
+				<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px" >
+					<h:outputText value="#{xct.accountingDate}" >
+						<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+			
+				<p:column headerText="Consolidated" styleClass="wex-cell-righted" style="width:90px" >
+					<h:outputText value="#{xct.consolidation.date}" >
+						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
+					</h:outputText>
+				</p:column>
+			
+				<p:column headerText="Payee">
+					<h:outputText value="#{xct.expense.payee.prefix}#{xct.expense.payee.name} #{xct.expense.payee.extra}" />
+				</p:column>
+			
+				<p:column headerText="Description" visible="false">
+					<h:outputText value="#{xct.expense.description}" />
+				</p:column>
+			
+				<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:120px" >
+					<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" />
+				</p:column>
+			
+				<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px" >
+					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='IN'}"/>
+				</p:column>
+			
+				<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
+					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='OUT'}"/>
+				</p:column>
+			
+				<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px" >
+					<h:outputText value="#{xct.liveBalance}" />
+				</p:column>
+			
+				<p:column headerText="Accounts" styleClass="wex-cell-righted" >
+					<ui:repeat var="t" value="#{xct.tags}">
+						<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+					</ui:repeat>
+				</p:column>	
+		</p:dataTable>	
+   	</composite:implementation>
+</ui:component>
