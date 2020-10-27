@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import w.expenses8.data.core.model.DBable;
+import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
@@ -166,8 +167,8 @@ public class ExpenseHelper {
 				}				
 				continue;
 			}			
-			if (o instanceof DocumentFile) {
-				x.setConsolidationFile((DocumentFile) o);
+			if (o instanceof Consolidation) {
+				x.setConsolidation((Consolidation) o);
 				continue;
 			}
 			throw new IllegalArgumentException("Don't know what to do with " + o.getClass().getName());

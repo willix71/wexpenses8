@@ -11,11 +11,13 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-@Entity
+@Entity(name = "ConsolidationOld")
+@Table(name = "Consolidation")
 public class Consolidation extends DBable<Consolidation> implements Closable {
 
 	private static final long serialVersionUID = 2482940442245899869L;

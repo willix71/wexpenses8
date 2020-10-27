@@ -1,5 +1,6 @@
 package w.expensesLegacy.data.domain.service;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import w.expenses8.data.config.CurrencyValue;
+import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
@@ -32,10 +34,9 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
+import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.impl.DocumentFileService;
 import w.expenses8.data.utils.DateHelper;
-import w.expensesLegacy.data.domain.model.Account;
-import w.expensesLegacy.data.domain.model.Consolidation;
 import w.expensesLegacy.data.domain.model.Discriminator;
 
 @Service
@@ -101,9 +102,10 @@ public class MigrateService {
 				TransactionEntry entry = TransactionEntry.with().version(line.getVersion()).createdTs(line.getCreatedTs()).modifiedTs(line.getModifiedTs())
 						.factor(line.getFactor())
 						.currencyAmount(line.getAmount())
+						// TODO
 						//.accountingDate(line.getDate())
 						//.description(line.getDescription())
-						.tags(getTags(legacyExpense.getDate(),line.getAccount(),line.getDiscriminator(),line.getConsolidation()))
+						.tags(getTags(line.getAccount(),line.getDiscriminator(),line.getConsolidation()))
 						.build();
 				if (line.getExchangeRate() != null && "CHF".equals(line.getExchangeRate().getToCurrency().getCode())) {
 					if (rate == null) {
@@ -113,12 +115,7 @@ public class MigrateService {
 						throw new RuntimeException("two different rates for same expense " + legacyExpense.getUid());
 					}
 				}
-				if (line.getConsolidation()!=null) {
-					DocumentFile file = consolidationsDocument.get(line.getConsolidation().getId());
-					if (file != null) {
-						entry.setConsolidationFile(getDocumentFile(file.getDocumentDate(), file.getFileName()));
-					}
-				}
+				entry.setConsolidation(getConsolidation(line.getConsolidation(), consolidationsDocument));
 				newx.addTransaction(entry);
 			}
 			newx.setExchangeRate(getExchangeRate(rate));
@@ -136,7 +133,7 @@ public class MigrateService {
 		}
 	}
 	
-	protected Set<Tag> getTags(Date d, Account account, Discriminator discriminator, Consolidation consolidation) {
+	protected Set<Tag> getTags(w.expensesLegacy.data.domain.model.Account account, Discriminator discriminator, w.expensesLegacy.data.domain.model.Consolidation consolidation) {
 		Set<Tag> tags = new HashSet<>();
 		if (account != null) {
 			switch(account.getType()) {
@@ -170,11 +167,7 @@ public class MigrateService {
 			tags.add(getTag(discriminator.getName(), 5000, TagType.DISCRIMINATOR));
 		}
 		if (consolidation != null) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(consolidation.getDate());
-			String name = MessageFormat.format("{0,number,00}/{1,number,0000}", c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
-			int number = c.get(Calendar.YEAR) * 100 + c.get(Calendar.MONTH)+1;
-			tags.add(getTag(name, number, TagType.CONSOLIDATION));
+			tags.add(buildConsolidationTag(consolidation.getDate()));
 		}
 		return tags;
 	}
@@ -198,6 +191,14 @@ public class MigrateService {
 			return newType;
 		}
 			
+	}
+	
+	protected Tag buildConsolidationTag(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		String name = MessageFormat.format("{0,number,00}/{1,number,0000}", c.get(Calendar.MONTH)+1, c.get(Calendar.YEAR));
+		int number = c.get(Calendar.YEAR) * 100 + c.get(Calendar.MONTH)+1;
+		return getTag(name, number, TagType.CONSOLIDATION);
 	}
 	
 	protected ExpenseType getExpenseType(w.expensesLegacy.data.domain.model.ExpenseType legacy) {
@@ -285,4 +286,61 @@ public class MigrateService {
 		}
 		return docfile;
 	}
+	
+	protected Consolidation getConsolidation(w.expensesLegacy.data.domain.model.Consolidation legacy, HashMap<Long, DocumentFile> consolidationsDocument) {
+		if (legacy == null) return null;
+		try {
+			return entityManager.createQuery("SELECT a from Consolidation a where a.uid = ?1", Consolidation.class).setParameter(1, legacy.getUid()).getSingleResult();
+		} catch(NoResultException noresult) {
+			
+			Consolidation newType = Consolidation.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs())
+					.date(DateHelper.toLocalDate(legacy.getDate()))
+					.institution(getPayee(legacy.getInstitution()))
+					.build();
+
+			DocumentFile file = consolidationsDocument.get(legacy.getId());
+			if (file != null) {
+				newType.setDocumentFile(getDocumentFile(file.getDocumentDate(), file.getFileName()));
+			}
+			if (legacy.getOpeningBalance()!=null && legacy.getClosingBalance()!=null) {
+				Set<Tag> tags = getTags(legacy.getInstitution().getFirstAccount(), null, legacy);
+				newType.setOpeningValue(legacy.getOpeningBalance());
+				newType.setClosingValue(legacy.getClosingBalance());
+				newType.setOpeningEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.IN,  legacy.getOpeningBalance()));
+				newType.setClosingEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.OUT,  legacy.getClosingBalance()));
+				newType.setDeltaValue(legacy.getDeltaBalance());
+			}
+			entityManager.persist(newType);
+			entityManager.flush();
+			return newType;
+		}
+		
+	}
+	
+	protected TransactionEntry getConsolidatinEntry(Consolidation conso, Date date, Set<Tag> tags, TransactionFactor factor, BigDecimal value) {
+		long accountingOrder = ((conso.getDate().getYear() * 100 ) + conso.getDate().getMonthValue()) * 10000;
+		if (factor == TransactionFactor.OUT) 
+			accountingOrder +=9999;
+		
+		LocalDate accountingDate = conso.getDate();
+		if (factor == TransactionFactor.OUT) 
+			accountingDate = accountingDate.plusMonths(1).minusDays(1);
+		
+		TransactionEntry entry = TransactionEntry.with()
+				.consolidation(conso)
+				.accountingDate(accountingDate)
+				.accountingYear(accountingDate.getYear())
+				.accountingOrder(accountingOrder)
+				.systemEntry(true)
+				.factor(factor)
+				.currencyAmount(value)
+				.accountingValue(value)
+				.accountingBalance(factor == TransactionFactor.OUT?BigDecimal.ZERO:value)
+				.tags(tags)
+				.build();
+		
+		entityManager.persist(entry);
+		return entry;		
+	}
 }
+ 

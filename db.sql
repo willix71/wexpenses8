@@ -1,7 +1,9 @@
+drop table if exists WEX_Consolidation CASCADE;
+drop table if exists WEX_Country CASCADE;
 drop table if exists WEX_Document CASCADE;
-drop table if exists WEX_Expense_WEX_Document CASCADE; 
-drop table if exists WEX_ExchangeRate CASCADE; 
+drop table if exists WEX_ExchangeRate CASCADE;
 drop table if exists WEX_Expense CASCADE;
+drop table if exists WEX_Expense_WEX_Document CASCADE;
 drop table if exists WEX_ExpenseType CASCADE;
 drop table if exists WEX_Payee CASCADE;
 drop table if exists WEX_PayeeType CASCADE;
@@ -12,6 +14,8 @@ drop table if exists WEX_TransactionEntry CASCADE;
 drop table if exists WEX_TransactionEntry_WEX_Tag CASCADE;
 drop sequence if exists hibernate_sequence;
 create sequence hibernate_sequence start with 1 increment by 1;
+create table WEX_Consolidation (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, closingValue decimal(19,2), date date not null, deltaValue decimal(19,2), openingValue decimal(19,2), closingEntry_id bigint, documentFile_id bigint, institution_id bigint, openingEntry_id bigint, primary key (id));
+create table WEX_Country (countryCode varchar(2) not null, countryName varchar(255), currencyCode varchar(3), primary key (countryCode));
 create table WEX_Document (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, documentDate date not null, fileName varchar(255) not null, primary key (id));
 create table WEX_ExchangeRate (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, date date, fee double, fixFee double, fromCurrencyCode varchar(3), rate double not null, toCurrencyCode varchar(3), institution_id bigint, primary key (id));
 create table WEX_Expense (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, accountingValue decimal(19,2) not null, currencyAmount decimal(19,2) not null, currencyCode varchar(3), date timestamp not null, description varchar(255), documentCount integer, externalReference varchar(255), payedDate date, exchangeRate_id bigint, expenseType_id bigint, payee_id bigint, primary key (id));
@@ -22,8 +26,9 @@ create table WEX_PayeeType (id bigint not null, createdTS timestamp not null, mo
 create table WEX_Tag (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, number integer, type integer not null, institution_id bigint, primary key (id));
 create table WEX_TagGroup (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, description varchar(255), name varchar(255), selectable boolean not null, primary key (id));
 create table WEX_TagGroup_WEX_Tag (WEX_TagGroup_id bigint not null, tag_id bigint not null, primary key (WEX_TagGroup_id, tag_id));
-create table WEX_TransactionEntry (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, accountingBalance decimal(19,2), accountingDate date not null, accountingOrder bigint, accountingValue decimal(19,2) not null, accountingYear integer, currencyAmount decimal(19,2) not null, factor integer not null, systemEntry boolean not null, consolidationFile_id bigint, expense_id bigint, primary key (id));
+create table WEX_TransactionEntry (id bigint not null, createdTS timestamp not null, modifiedTs timestamp, uid varchar(255) not null, version bigint, accountingBalance decimal(19,2), accountingDate date not null, accountingOrder bigint, accountingValue decimal(19,2) not null, accountingYear integer, currencyAmount decimal(19,2) not null, factor integer not null, systemEntry boolean not null, consolidation_id bigint, expense_id bigint, primary key (id));
 create table WEX_TransactionEntry_WEX_Tag (WEX_TransactionEntry_id bigint not null, tags_id bigint not null, primary key (WEX_TransactionEntry_id, tags_id));
+alter table WEX_Consolidation add constraint UK_3t8qiyq7ve3y129yj6rwryilg unique (uid);
 alter table WEX_Document add constraint UK_5yertsmd40asympx4xf6u61n2 unique (uid);
 alter table WEX_Document add constraint UK_i8rw1hr01t285rh09fqbiijxj unique (fileName);
 alter table WEX_ExchangeRate add constraint UK_4mrj6ivnyhq91p0qvdls90ko9 unique (uid);
@@ -34,6 +39,11 @@ alter table WEX_PayeeType add constraint UK_3ox14v12khxi30fvhvlo8iitr unique (ui
 alter table WEX_Tag add constraint UK_tmab68c4ew3iyhlwc8rjaw21x unique (uid);
 alter table WEX_TagGroup add constraint UK_59omfoixlo8cq78yr2vamddbk unique (uid);
 alter table WEX_TransactionEntry add constraint UK_fuy123o2g19m1rx3fyec8fxy8 unique (uid);
+alter table WEX_Consolidation add constraint FKr66beccmweovyy61xi8jwwtps foreign key (accounts_id) references WEX_TagGroup;
+alter table WEX_Consolidation add constraint FK5if1o5fl0amj156kx5oe1p1ax foreign key (closingEntry_id) references WEX_TransactionEntry;
+alter table WEX_Consolidation add constraint FKaa6rw4tf9k3ypn9hlhu1auvpa foreign key (documentFile_id) references WEX_Document;
+alter table WEX_Consolidation add constraint FKdsp4ibc8kch4ywc8q3w3oatvg foreign key (institution_id) references WEX_Payee;
+alter table WEX_Consolidation add constraint FK5pak3hiyempakh998m9xeu0at foreign key (openingEntry_id) references WEX_TransactionEntry;
 alter table WEX_ExchangeRate add constraint FKfmj5ob8cqpi0fgxgmw98lblip foreign key (institution_id) references WEX_Payee;
 alter table WEX_Expense add constraint FKrx7dlq1yn4jk3crjrpw5x3uuv foreign key (exchangeRate_id) references WEX_ExchangeRate;
 alter table WEX_Expense add constraint FKi3umvcfbpsmi0sxh0bq9qrixq foreign key (expenseType_id) references WEX_ExpenseType;
@@ -42,12 +52,13 @@ alter table WEX_Expense_WEX_Document add constraint FKru62r8qgt4m42tpm0vsuql1tj 
 alter table WEX_Expense_WEX_Document add constraint FKchitvt7rr0gy7es1sonicxq42 foreign key (WEX_Expense_id) references WEX_Expense;
 alter table WEX_Payee add constraint FK5dcf210fd8nny12ewen9hi28l foreign key (payeeType_id) references WEX_PayeeType;
 alter table WEX_Tag add constraint FKlqfsdulcen6n436r9ii951699 foreign key (institution_id) references WEX_Payee;
-alter table WEX_TagGroup_WEX_Tag add constraint FK99e2vsbpyx7418ghxxf70nxto foreign key (tag_id) references WEX_Tag
-alter table WEX_TagGroup_WEX_Tag add constraint FKpvx2los11ygd73s1fdjep4lww foreign key (WEX_TagGroup_id) references WEX_TagGroup
-alter table WEX_TransactionEntry add constraint FKael397xfdjn39qyw8n7vf8ud1 foreign key (consolidationFile_id) references WEX_Document;
+alter table WEX_TagGroup_WEX_Tag add constraint FK99e2vsbpyx7418ghxxf70nxto foreign key (tag_id) references WEX_Tag;
+alter table WEX_TagGroup_WEX_Tag add constraint FKpvx2los11ygd73s1fdjep4lww foreign key (WEX_TagGroup_id) references WEX_TagGroup;
+alter table WEX_TransactionEntry add constraint FKhpbdedn7oje5tfkyl6axf1opd foreign key (consolidation_id) references WEX_Consolidation;
 alter table WEX_TransactionEntry add constraint FKlmnlduq5cyn0r5o6deuwcrseu foreign key (expense_id) references WEX_Expense on delete cascade;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FK8xv4ycc4ihpivm3gvywfe9u9i foreign key (tags_id) references WEX_Tag;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FKdwcj0kkm9qmbip0jmrtnfj7gs foreign key (WEX_TransactionEntry_id) references WEX_TransactionEntry;
+
 drop table if exists WEX_Country CASCADE;
 create table WEX_Country (countryCode varchar(2),countryName varchar(255),currencyCode varchar(3),primary key (countryCode));
 insert into WEX_Country values ('CH','Switzerland','CHF');

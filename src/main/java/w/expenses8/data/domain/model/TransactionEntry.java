@@ -64,7 +64,7 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private Long accountingOrder;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	private DocumentFile consolidationFile;
+	private Consolidation consolidation;
 	
 	private BigDecimal accountingBalance;
 	

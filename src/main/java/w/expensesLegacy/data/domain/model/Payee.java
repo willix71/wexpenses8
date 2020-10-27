@@ -1,8 +1,11 @@
 package w.expensesLegacy.data.domain.model;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -47,6 +50,9 @@ public class Payee extends DBable<Payee> {
  
     private String display;
     
+    @OneToMany(mappedBy = "owner",fetch = FetchType.LAZY)
+	private Set<Account> accounts;
+	
     @PrePersist
     @PreUpdate
     public void preupdate() {
@@ -170,6 +176,18 @@ public class Payee extends DBable<Payee> {
 		this.bankDetails = bankDetails;
 	}
 	
+	public Account getFirstAccount() {
+		return accounts==null||accounts.isEmpty()?null:accounts.stream().findFirst().orElse(null);
+	}
+	
+	public Set<Account> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<Account> accounts) {
+		this.accounts = accounts;
+	}
+
 	public String toShortString() {
 		String s = getPrefixedName();
 		if (city != null) s += ", " + city.toString();

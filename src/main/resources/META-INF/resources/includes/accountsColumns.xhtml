@@ -21,8 +21,8 @@
 	</p:column>
 
 	<p:column headerText="Consolidated" styleClass="wex-cell-righted" style="width:90px" >
-		<h:outputText value="#{x.consolidationFile.documentDate}" >
-			<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+		<h:outputText value="#{x.consolidation.date}" >
+			<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
 		</h:outputText>
 	</p:column>
 

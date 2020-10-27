@@ -208,22 +208,13 @@
                 selectionMode="single"				
 				rowKey="#{tentry.uid}"
 				disableContextMenuIfEmpty="false" 				
-				expandedRow="true" 
 				style="width: auto;">
-
-			<!-- 
-			<f:facet name="header">
-				Transactions
-				<p:commandButton id="transactionEntriesTableToggler" type="button" style="float:left" icon="pi pi-align-justify" />
-				<p:columnToggler datasource="transactions" trigger="transactionEntriesTableToggler" />
-			</f:facet>
-			-->
 			
 			<ui:include src="/includes/dbableColumns.xhtml">
 				<ui:param name="dba" value="#{tentry}" />
 			</ui:include>
 			
-            <p:column headerText="Date" style="max-width:70px; width:70px" >
+            <p:column headerText="Date" styleClass="wex-cell-centered" style="max-width:130px; width:130px" >
             	<h:outputText value="#{tentry.accountingDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 				</h:outputText>
@@ -236,9 +227,29 @@
 			 	/>
        		</p:column>
        					
-			<p:column headerText="Year" style="max-width:70px; width:70px">
+			<p:column headerText="Year" styleClass="wex-cell-centered" style="max-width:70px; width:70px">
 				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
 				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="js-date-related wex-input-70" thousandSeparator=""/>
+			</p:column>
+
+            <p:column headerText="Consolidated" styleClass="wex-cell-centered" style="max-width:120px; width:120px" >
+            	<h:outputText value="#{tentry.consolidation.date}" styleClass="wex-field-value">
+					<f:convertDateTime type="localDate" pattern="MMM yyyy" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Accounts" style="width:100%" >
+				<h:panelGroup rendered="#{not cc.attrs.edition}">
+					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{cc.attrs.edition}">
+					<p:autoComplete multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						<p:column>
+							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						</p:column>
+					</p:autoComplete>
+				</h:panelGroup>
 			</p:column>
 
 			<p:column headerText="Factor" style="max-width:120px; width:120px">
@@ -246,13 +257,6 @@
 				<p:selectOneButton value="#{tentry.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
 					<f:selectItems value="#{dropboxController.transactionFactors}" />
 				</p:selectOneButton>
-			</p:column>
-
-			<p:column headerText="System" styleClass="wex-cell-centered" style="max-width:50px; width:50px">
-				<h:panelGroup rendered="#{tentry.systemEntry and not cc.attrs.edition}">
-					<i class="pi pi-check"></i>
-				</h:panelGroup>
-				<p:selectBooleanCheckbox value="#{tentry.systemEntry}" rendered="#{cc.attrs.edition}" />
 			</p:column>
 
 			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
@@ -281,20 +285,6 @@
 					</p:outputPanel>
 				</f:facet>				
 			</p:column>
-
-			<p:rowExpansion>
-				<h:panelGroup rendered="#{not cc.attrs.edition}">
-					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
-				</h:panelGroup>
-				<h:panelGroup rendered="#{cc.attrs.edition}">
-					<p:autoComplete id="tagsId" multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
-						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
-						<p:column>
-							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
-						</p:column>
-					</p:autoComplete>
-				</h:panelGroup>
-			</p:rowExpansion>
 		</p:dataTable>
 		
 		<p:contextMenu for="transactions">
