@@ -7,7 +7,10 @@
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
 	<p:column headerText="Id" sortBy="#{dba.id}" style="max-width:60px; width:60px">
-		<h:outputText value="#{dba.fullId}" />
+		<h:outputText value="#{dba.fullId}" rendered="#{empty singlePage}" />
+		<p:link outcome="#{singlePage}" value="#{dba.fullId}" target="_blank" rendered="#{not empty singlePage}">
+		    <f:param name="id" value="#{dba.id}" />
+		</p:link>
 	</p:column>
 
 	<p:column headerText="Uid" sortBy="#{dba.id}" visible="false" style="max-width:300px; width:300px">

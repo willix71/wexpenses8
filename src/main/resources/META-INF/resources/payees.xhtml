@@ -18,6 +18,8 @@
 			<c:set var="controller" value="#{payeeController}" />
 			<c:set var="editionController" value="#{payeeEditionController}" />
 
+			<c:set var="singlePage" value="payee" />
+			
 			<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
                  paginator="true"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

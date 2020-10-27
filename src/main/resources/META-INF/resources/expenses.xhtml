@@ -18,6 +18,8 @@
 			<c:set var="controller" value="#{expenseController}" />
 			<c:set var="editionController" value="#{expenseEditionController}" />
 
+			<c:set var="singlePage" value="expense" />
+
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
 				<wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="wexTableForm:wexTable"/>
 				
