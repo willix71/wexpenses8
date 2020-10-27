@@ -16,6 +16,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
+import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
@@ -72,10 +73,29 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 
 		if (criteria.getAccountingYear()!=null) {
 			predicate = predicate.and(entry.accountingYear.eq(criteria.getAccountingYear()));
-		}	
-		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+		}
+		
+		applyTagCriteria(entry, predicate, criteria.getTagCriterias());
+
+		var query = baseQuery(entry).where(predicate).orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());
+		return query.fetch();
+	}
+	
+	@Override
+	public List<TransactionEntry> findConsolidatableEntrys(List<TagCriteria> tags, RangeLocalDateCriteria dateRange) {
+		QTransactionEntry entry = QTransactionEntry.transactionEntry;
+		BooleanBuilder predicate = new BooleanBuilder();
+		predicate = predicate.and(entry.consolidation.isNull());
+		predicate = CriteriaHelper.addLocalDateRange(predicate, dateRange, entry.accountingDate);
+		applyTagCriteria(entry, predicate, tags);
+		var query = baseQuery(entry).where(predicate).orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());
+		return query.fetch();
+	}
+
+	private void applyTagCriteria(QTransactionEntry entry, BooleanBuilder predicate, List<TagCriteria> tags) {
+		if (!CollectionHelper.isEmpty(tags)) {
 			boolean not = false;
-			for(TagCriteria t:criteria.getTagCriterias()) {
+			for(TagCriteria t:tags) {
 				if (t instanceof Tag) {
 					predicate = not?
 							predicate.andNot(entry.tags.contains((Tag) t)):
@@ -112,18 +132,17 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 				not = false;
 			}
 		}
-
+	}
+	
+	private JPAQuery<TransactionEntry> baseQuery(QTransactionEntry entry) {
 		var query = new JPAQuery<TransactionEntry>(entityManager);
 		query.distinct().select(entry).from(entry)
 			.leftJoin(entry.expense, QExpense.expense).fetchJoin()
 			.leftJoin(QExpense.expense.payee).fetchJoin()
 			.leftJoin(QExpense.expense.expenseType).fetchJoin()
 			.leftJoin(QExpense.expense.documentFiles).fetchJoin()
-			.leftJoin(entry.tags).fetchJoin()
-			.where(predicate)
-			.orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());
-		return query.fetch();
+			.leftJoin(entry.tags).fetchJoin();
+		return query;
+		
 	}
-	
-	
 }
