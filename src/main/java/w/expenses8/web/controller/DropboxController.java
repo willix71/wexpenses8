@@ -1,14 +1,22 @@
 package w.expenses8.web.controller;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
@@ -24,6 +32,7 @@ import w.expenses8.data.domain.service.ITagGroupService;
 import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.domain.service.impl.CountryService;
 
+@Slf4j
 @Named
 @ApplicationScoped
 public class DropboxController implements Serializable {
@@ -109,4 +118,82 @@ public class DropboxController implements Serializable {
 	public List<String> getCurrencies() {
 		return countryService.getCurrenciesCodes();
 	}
-}
+	
+	public boolean filterByValue(Object value, Object filter, Locale locale) {
+		if (filter == null)
+			return true;
+
+		String filterText = filter.toString().trim();
+		if (filterText.isEmpty())
+			return true;
+
+		if (value == null)
+			return false;
+
+		try {
+			if (filterText.startsWith(">=") || filterText.startsWith("=>")) {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText.substring(2)))>=0;
+			} else if (filterText.startsWith("<=") || filterText.startsWith("=<")) {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText.substring(2)))<=0;
+			} else if (filterText.startsWith(">")) {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText.substring(1)))>0;
+			} else if (filterText.startsWith("<")) {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText.substring(1)))<0;
+			} else if (filterText.startsWith("=")) {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText.substring(1)))==0;
+			} else {
+				return ((BigDecimal) value).compareTo(new BigDecimal(filterText))==0;
+			}
+		} catch(NumberFormatException nfe) {
+			log.debug("Failed to conver number [{}]", value);
+			return false;
+		}
+	}
+	
+	public boolean filterByDate(Object value, Object filter, Locale locale) {
+		if (filter == null)
+			return true;
+		
+		String filterText = filter.toString().trim();
+		if (filterText.isEmpty())
+			return true;
+		
+		String ds = dateToString(value);
+		
+		if (ds == null)
+			return false;
+		
+		try {
+			if (filterText.startsWith(">=") || filterText.startsWith("=>")) {
+				return ds.compareTo(filterText.substring(2))>=0;
+			} else if (filterText.startsWith("<=") || filterText.startsWith("=<")) {
+				return ds.compareTo(filterText.substring(2))<=0;
+			} else if (filterText.startsWith(">")) {
+				return ds.compareTo(filterText.substring(2))>0;
+			} else if (filterText.startsWith("<")) {
+				return ds.compareTo(filterText.substring(2))<0;
+			} else if (filterText.startsWith("=")) {
+				return ds.compareTo(filterText.substring(2))==0;
+			} else {
+				return ds.startsWith(filterText);
+			}
+		} catch(NumberFormatException nfe) {
+			log.debug("Failed to conver number [{}]", value);
+			return false;
+		}
+	}
+	
+	private String dateToString(Object d) {
+		if (d==null) {
+			return null;
+		} else if (d instanceof LocalDate) {
+			return ((LocalDate) d).format(DateTimeFormatter.BASIC_ISO_DATE);
+		} else if (d instanceof LocalDateTime) {
+			return ((LocalDateTime) d).format(DateTimeFormatter.BASIC_ISO_DATE);
+		} else if (d instanceof Date) {
+			return new SimpleDateFormat("yyyyMMdd").format((Date) d);
+		} else {
+			return d.toString();
+		}
+	}
+ }
