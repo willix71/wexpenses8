@@ -46,16 +46,21 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	}
 	
 	@PostConstruct
-	public void initSelectedElement() {
+	public void initSelectedElementId() {		
+		setCurrentElementId(getInitialElementId());
+	}
+	
+	protected Object getInitialElementId() {
 		String id=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("id");
 		if (id!=null) {
-			setCurrentElementId(Long.parseLong(id));
+			return Long.parseLong(id);
 		} else {
 			String uid=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("uid");
 			if (uid!=null) {
-				setCurrentElementId(uid);
+				return uid;
 			}
 		}
+		return null;
 	}
 	
 	public void setEdition(boolean edit) {
