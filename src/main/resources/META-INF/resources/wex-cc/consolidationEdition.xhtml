@@ -53,64 +53,65 @@
 		    </p:inputNumber>
 
 			<h:outputText value="delta value" styleClass="wex-field-label"/>
-			<h:outputText value="#{conso.deltaValue}" />										
+			<h:outputText id="deltaValue" value="#{conso.deltaValue}" />										
 		</h:panelGrid>
-		
-		<p:dataTable id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{conso.transactions}" resizableColumns="true"
-		paginator="true" 
-		rowsPerPageTemplate="10,50,100,1000"
-		rows="#{cc.attrs.rows}"
-		currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
-				<f:facet name="header">
-					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
-					<p:columnToggler datasource="consoTransactionEntries" trigger="toggler" />
+	
+	    <p:pickList id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{consolidationEditionController.entries}"
+                itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{transactionEntryConverter}" 
+                showTargetControls="true" 
+                showCheckbox="true"
+                responsive="true">
+ 
+		        <f:facet name="sourceCaption">
+					<p:autoComplete multiple="true" value="#{consolidationEditionController.sourceTags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						<p:column>
+							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						</p:column>
+					</p:autoComplete>
 				</f:facet>
+		        <f:facet name="targetCaption">
+					<p:autoComplete multiple="true" value="#{consolidationEditionController.targetTags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						<p:column>
+							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+						</p:column>
+					</p:autoComplete>
+		        </f:facet>
+		 
+		        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="@form" />
 
-				<ui:include src="/includes/dbableColumns.xhtml">
-					<ui:param name="dba" value="#{xct}" />
-				</ui:include>
-			
+		        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" update="@form"/>
+
 				<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px" >
 					<h:outputText value="#{xct.accountingDate}" >
 						<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
 					</h:outputText>
 				</p:column>
 			
-				<p:column headerText="Consolidated" styleClass="wex-cell-righted" style="width:90px" >
-					<h:outputText value="#{xct.consolidation.date}" >
-						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
-					</h:outputText>
+				<p:column headerText="Payee" style="width:100%">
+					<p:outputPanel>
+						<h:outputText value="#{xct.expense.payee.prefix}#{xct.expense.payee.name} #{xct.expense.payee.extra}" /><br/>
+						<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!='CHF'}"/>
+					</p:outputPanel>
 				</p:column>
-			
-				<p:column headerText="Payee">
-					<h:outputText value="#{xct.expense.payee.prefix}#{xct.expense.payee.name} #{xct.expense.payee.extra}" />
+				
+				<p:column styleClass="wex-cell-righted" style="width:80px;min-width:80px" >
+					<h:outputText value="[#{xct.accountingOrder}]" />
 				</p:column>
-			
-				<p:column headerText="Description" visible="false">
-					<h:outputText value="#{xct.expense.description}" />
-				</p:column>
-			
-				<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:120px" >
-					<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" />
-				</p:column>
-			
-				<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px" >
+						
+				<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px;min-width:80px" >
 					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='IN'}"/>
 				</p:column>
 			
-				<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
+				<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px;min-width:80px" >
 					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='OUT'}"/>
 				</p:column>
 			
-				<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px" >
-					<h:outputText value="#{xct.liveBalance}" />
+				<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px;min-width:80px" >
+					<h:outputText value="#{xct.accountingBalance}" />
 				</p:column>
-			
-				<p:column headerText="Accounts" styleClass="wex-cell-righted" >
-					<ui:repeat var="t" value="#{xct.tags}">
-						<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
-					</ui:repeat>
-				</p:column>	
-		</p:dataTable>	
+
+		</p:pickList>
    	</composite:implementation>
 </ui:component>
