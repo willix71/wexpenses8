@@ -24,7 +24,7 @@
 		<h:panelGroup id="wexPayeeeSelectorPanel" rendered="#{cc.attrs.edition}">
 			<p:autoComplete id="ccpPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='CCP'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndCcp}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" > 
+             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" placeholder="payee"> 
              	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
              	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
@@ -39,7 +39,7 @@
 
 			<p:autoComplete id="ibanPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer=='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayeeAndIban}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" >
+             	var="theme" itemLabel="#{cc.attrs.payeeDisplayer.display(theme)}" itemValue="#{theme}" forceSelection="true" placeholder="payee">
              	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
              	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
@@ -54,7 +54,7 @@
 
 			<p:autoComplete id="defaultPayeeSelectorId" value="#{cc.attrs.payee}" rendered="#{cc.attrs.payeeDisplayer!='CCP' and cc.attrs.payeeDisplayer!='IBAN'}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
-             	var="theme" itemLabel="#{requestController.displayPayee(theme)}" itemValue="#{theme}" forceSelection="true" >
+             	var="theme" itemLabel="#{requestController.displayPayee(theme)}" itemValue="#{theme}" forceSelection="true" placeholder="payee">
               	<p:ajax event="itemSelect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
              	<p:ajax event="itemUnselect" update="wexPayeeEditionPanel #{cc.attrs.update}" />
             </p:autoComplete>
