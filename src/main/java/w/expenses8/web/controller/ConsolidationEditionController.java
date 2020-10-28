@@ -1,9 +1,13 @@
 package w.expenses8.web.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -22,12 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.model.Consolidation;
+import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IConsolidationService;
 import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CollectionHelper;
+import w.expenses8.data.utils.ConsolidationHelper;
 
 @Slf4j
 @Named
@@ -84,9 +90,8 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 				sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 				log.info("Target tags {} ", sourceTags);
 			}
-			if (this.currentElement.getTransactions()!=null) {
-				this.entries.setTarget(new ArrayList<>(this.currentElement.getTransactions()));
-			}
+			this.entries.setTarget(transactionEntryService.findConsolidationEntries(this.currentElement));
+
 			updateSourceEntries();
 		}		
 	}
@@ -103,7 +108,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	
 	public void updateSourceEntries() {
 		RangeLocalDateCriteria dateRange = !limitRange || this.currentElement.getDate()==null?null:new RangeLocalDateCriteria(this.currentElement.getDate().minusMonths(3),this.currentElement.getDate().plusMonths(3));
-		List<TransactionEntry> sourceEntries = transactionEntryService.findConsolidatableEntrys(sourceTags, dateRange);
+		List<TransactionEntry> sourceEntries = transactionEntryService.findConsolidatableEntries(sourceTags, dateRange);
 		entries.setSource(sourceEntries);
 	}
 	
@@ -119,41 +124,64 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		return id;
 	}
 
-    public void onTransfer(TransferEvent event) {
-    	compute();
+	public BigDecimal getTotalIn() {
+		return ConsolidationHelper.sum(entries.getTarget(), TransactionFactor.IN);
+	}
+	
+	public BigDecimal getTotalOut() {
+		return ConsolidationHelper.sum(entries.getTarget(), TransactionFactor.OUT);
+	}
+	
+	public BigDecimal getLastBalance() {
+		return CollectionHelper.isEmpty(entries.getTarget())?null:CollectionHelper.last(entries.getTarget()).getAccountingBalance();
+	}
+
+	public void onTransfer(TransferEvent event) {
+		log.info("Transfered {}: {}", event.isAdd(), event.getItems());
+		compute();
     }  
+	
+	public void onReorder() {
+		compute();
+	}
      
     public void onSelect(SelectEvent<TransactionEntry> event) {
     	log.info("Selected {}", event.getObject());
-    	compute();
     }
      
     public void onUnselect(UnselectEvent<TransactionEntry> event) {
     	log.info("Unselected {}", event.getObject());
-    	compute();
-    }
-     
-    public void onReorder() {
-    	compute();
     }
     
-    private void compute() {
-		if (!CollectionHelper.isEmpty(entries.getTarget())) {
-			//Tag tag = entityManager.
-			Consolidation conso = this.getCurrentElement();
-			long order = ((conso.getDate().getYear()*100) + conso.getDate().getMonthValue()) * 10000;
-			BigDecimal balance = conso.getOpeningValue();
-			for(TransactionEntry entry: entries.getTarget()) {
-				entry.setConsolidation(conso);
-				entry.setAccountingOrder(++order);
-				if (entry.getFactor()==TransactionFactor.IN) {
-					balance = balance.add(entry.getAccountingValue());
-				} else if (entry.getFactor()==TransactionFactor.OUT) {
-					balance = balance.subtract(entry.getAccountingValue());
-				}
-				entry.setAccountingBalance(balance);
-			}
-			conso.setDeltaValue(conso.getClosingValue().subtract(balance));
-		}
+    public void compute() {
+    	ConsolidationHelper.clearConsolidationEntries(entries.getSource());
+    	ConsolidationHelper.balanceConsolidation(this.currentElement, entries.getTarget());
     }
+
+	@Override
+	public void save() {
+		compute();
+		
+		List<Tag> tags = targetTags.stream().filter(t->t instanceof Tag).map(t->(Tag) t).collect(Collectors.toList());
+		Set<TransactionEntry> altered = new HashSet<>();
+		entries.getTarget().stream().forEach(t->{
+			t.setConsolidation(this.currentElement);
+			t.getTags().addAll(tags);
+			altered.add(t);
+		});
+		entries.getSource().stream().filter(t->t.getConsolidation()!=null).forEach(t->{
+			t.setConsolidation(null);
+			t.getTags().removeAll(tags);
+			altered.add(t);
+		});
+		currentElement = consolidationService.save(currentElement, altered);
+
+		try {
+			FacesContext.getCurrentInstance().getExternalContext().redirect("consolidation.xhtml?id="+currentElement.getId());
+		} catch(IOException ioe) {
+			log.error("Failed to redirect consolidation...", ioe);
+		}
+	}
+    
+    
 }

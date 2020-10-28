@@ -124,6 +124,10 @@
 	margin:0
 }
 
+.wex-conso-picklist .ui-picklist-list {
+	height: 600px !important;
+}
+
 .wex-criteria-form .ui-selectonemenu-label.ui-selectonemenu-label-placeholder { color: gray; font-style: italic; font-size: small}
 ::-webkit-input-placeholder { color: gray; font-style: italic; font-size: small}
 ::-moz-placeholder {color: gray; font-style: italic; font-size: small}

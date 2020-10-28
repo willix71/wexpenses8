@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -35,7 +36,9 @@ import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
-import w.expenses8.data.domain.service.impl.DocumentFileService;
+import w.expenses8.data.domain.service.IConsolidationService;
+import w.expenses8.data.domain.service.IDocumentFileService;
+import w.expenses8.data.utils.ConsolidationHelper;
 import w.expenses8.data.utils.DateHelper;
 import w.expensesLegacy.data.domain.model.Discriminator;
 
@@ -49,7 +52,10 @@ public class MigrateService {
 	private CurrencyValue currencyValue;
 	
 	@Inject
-	private DocumentFileService docService;
+	private IDocumentFileService docService;
+
+	@Inject
+	private IConsolidationService consolidationService;
 	
 	@Inject 
 	private DataSource dataSource;
@@ -306,8 +312,8 @@ public class MigrateService {
 				Set<Tag> tags = getTags(legacy.getInstitution().getFirstAccount(), null, legacy);
 				newType.setOpeningValue(legacy.getOpeningBalance());
 				newType.setClosingValue(legacy.getClosingBalance());
-				newType.setOpeningEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.IN,  legacy.getOpeningBalance()));
-				newType.setClosingEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.OUT,  legacy.getClosingBalance()));
+				//newType.setOpeningEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.IN,  legacy.getOpeningBalance()));
+				//newType.setClosingEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.OUT,  legacy.getClosingBalance()));
 				newType.setDeltaValue(legacy.getDeltaBalance());
 			}
 			entityManager.persist(newType);
@@ -341,6 +347,14 @@ public class MigrateService {
 		
 		entityManager.persist(entry);
 		return entry;		
+	}
+	
+	@Transactional
+	public void consolidate() {
+		for(Consolidation conso: consolidationService.loadAll()) {
+			List<TransactionEntry> entries = entityManager.createQuery("SELECT t from TransactionEntry t where t.consolidation = ?1 order by t.accountingDate, t.accountingValue", TransactionEntry.class).setParameter(1, conso).getResultList();
+			ConsolidationHelper.balanceConsolidation(conso, entries);
+		}
 	}
 }
  

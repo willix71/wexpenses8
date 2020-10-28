@@ -26,40 +26,39 @@
 				showIcon="true"
 				showButtonBar="true"
 				appendTo="@(body)"
-				styleClass="wex-small-datepicker js-date-related"
-		 	/>
+				styleClass="wex-small-datepicker js-date-related">
+				<p:ajax event="dateSelect" listener="#{consolidationEditionController.updateDate}" update="consoTransactionEntries" />
+			</p:datePicker>
 		
 			<h:outputText value="institution" styleClass="wex-field-label"/>
 			<p:outputPanel id="payeeSelector">
 				<wex:payeeSelector payee="#{conso.institution}" edition="true" />
 			</p:outputPanel>
 			
-			<h:outputText value="document date" styleClass="wex-field-label"/>
-			<h:outputText value="#{conso.documentFile.documentDate}" >
-				<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
-			</h:outputText>
+			<h:outputText value="document" styleClass="wex-field-label"/>
+			<p:outputPanel id="documentFileSelector">
+				<wex:documentFileEdition docFile="#{conso.documentFile}" extra="#{conso}" edition="true" />
+			</p:outputPanel>
 
-			<h:outputText value="document file" styleClass="wex-field-label"/>
-			<h:outputText value="#{conso.documentFile.fileName}" />
-
-			<h:outputText value="opening value" styleClass="wex-field-label"/>
-		    <p:inputNumber value="#{conso.openingValue}" thousandSeparator="'">
-		    
-		    </p:inputNumber>
-			    
-			<h:outputText value="closing value" styleClass="wex-field-label"/>
-		    <p:inputNumber value="#{conso.closingValue}" thousandSeparator="'">
-		    
-		    </p:inputNumber>
-
-			<h:outputText value="delta value" styleClass="wex-field-label"/>
-			<h:outputText id="deltaValue" value="#{conso.deltaValue}" />										
+			<h:outputText value="values" styleClass="wex-field-label"/>
+			<p:outputPanel>
+				<h:outputLabel value="opening" styleClass="wex-field-label" style="padding-right:5px"/>
+			    <p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening" style="padding-right:20px"/>
+				<h:outputLabel value="closing" styleClass="wex-field-label" style="padding-right:5px"/>
+			    <p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closing" style="padding-right:20px"/>
+				<h:outputLabel value="delta" styleClass="wex-field-label" style="padding-right:5px"/>
+				<h:outputText id="deltaValue" value="#{conso.deltaValue}" style="padding-right:20px"/>										
+				<h:outputLabel value="in" styleClass="wex-field-label" style="padding-right:5px"/>
+			    <h:outputText value="#{consolidationEditionController.totalIn}" thousandSeparator="'" label="in" style="padding-right:20px"/>
+				<h:outputLabel value="out" styleClass="wex-field-label" style="padding-right:5px"/>
+			    <h:outputText value="#{consolidationEditionController.totalOut}" thousandSeparator="'" label="out" style="padding-right:20px"/>
+			</p:outputPanel>
 		</h:panelGrid>
 	
-	    <p:pickList id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{consolidationEditionController.entries}"
+	    <p:pickList id="consoTransactionEntries" styleClass="js-wexTable wex-conso-picklist" var="xct" value="#{consolidationEditionController.entries}"
                 itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{transactionEntryConverter}" 
                 showTargetControls="true" 
-                showCheckbox="true"
+                showCheckbox="false"
                 responsive="true">
  
 		        <f:facet name="sourceCaption">
@@ -80,8 +79,11 @@
 		        </f:facet>
 		 
 		        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="@form" />
-
-		        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" update="@form"/>
+		        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" />
+				
+				<p:column style="width:40px;min-width:40px" >
+					<h:outputText value="#{xct.accountingOrder % 1000})" rendered="#{not empty xct.accountingOrder}"/>
+				</p:column>
 
 				<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px" >
 					<h:outputText value="#{xct.accountingDate}" >
@@ -95,10 +97,6 @@
 						<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!='CHF'}"/>
 					</p:outputPanel>
 				</p:column>
-				
-				<p:column styleClass="wex-cell-righted" style="width:80px;min-width:80px" >
-					<h:outputText value="[#{xct.accountingOrder}]" />
-				</p:column>
 						
 				<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px;min-width:80px" >
 					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='IN'}"/>
@@ -111,7 +109,16 @@
 				<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px;min-width:80px" >
 					<h:outputText value="#{xct.accountingBalance}" />
 				</p:column>
-
 		</p:pickList>
+		
+	    <h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:space-between">
+     		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" >
+				<f:actionListener binding="#{consolidationEditionController.save()}" />
+			</p:commandButton>
+     		<p:commandButton id="wexRefresh" value="Refresh" update="wexEditionForm">
+				<f:actionListener binding="#{consolidationEditionController.compute()}" />
+			</p:commandButton>
+       	</h:panelGroup>
+       	
    	</composite:implementation>
 </ui:component>

@@ -21,6 +21,7 @@ import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.dao.ITransactionEntryDao;
+import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.QExpense;
 import w.expenses8.data.domain.model.QTag;
 import w.expenses8.data.domain.model.QTagGroup;
@@ -44,7 +45,7 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 	}
 
 	@Override
-	public List<TransactionEntry> findTransactionEntrys(TransactionEntryCriteria criteria) {
+	public List<TransactionEntry> findTransactionEntries(TransactionEntryCriteria criteria) {
 		QTransactionEntry entry = QTransactionEntry.transactionEntry;
 		BooleanBuilder predicate = new BooleanBuilder();
 		
@@ -82,7 +83,12 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 	}
 	
 	@Override
-	public List<TransactionEntry> findConsolidatableEntrys(List<TagCriteria> tags, RangeLocalDateCriteria dateRange) {
+	public List<TransactionEntry> findConsolidationEntries(Consolidation conso) {
+		return getDao().findByConsolidation(conso);
+	}
+
+	@Override
+	public List<TransactionEntry> findConsolidatableEntries(List<TagCriteria> tags, RangeLocalDateCriteria dateRange) {
 		QTransactionEntry entry = QTransactionEntry.transactionEntry;
 		BooleanBuilder predicate = new BooleanBuilder();
 		predicate = predicate.and(entry.consolidation.isNull());
@@ -137,6 +143,7 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 	private JPAQuery<TransactionEntry> baseQuery(QTransactionEntry entry) {
 		var query = new JPAQuery<TransactionEntry>(entityManager);
 		query.distinct().select(entry).from(entry)
+			.leftJoin(entry.consolidation).fetchJoin()
 			.leftJoin(entry.expense, QExpense.expense).fetchJoin()
 			.leftJoin(QExpense.expense.payee).fetchJoin()
 			.leftJoin(QExpense.expense.expenseType).fetchJoin()

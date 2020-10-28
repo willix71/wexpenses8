@@ -112,62 +112,62 @@ public class ExpenseCriteriaTest {
 	@Order(2)
 	public void test_salary() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(salary)).build())).hasSize(1).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("1000.00"));
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(salary)).build())).hasSize(1).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("1000.00"));
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(salary)).build())).hasSize(1).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("1000.00"));
 	}
 	
 	@Test
 	@Order(2)
 	public void test_not_salary() {
 		//assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(not,salary)).build())).hasSize(3);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(not,salary)).build())).hasSize(8);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(not,salary)).build())).hasSize(8);
 	}
 	
 	@Test
 	@Order(2)
 	public void test_cash() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(cash)).build())).hasSize(2).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("1000.00"));
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(cash)).build())).hasSize(2).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("71.00"));
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(cash)).build())).hasSize(2).first().hasFieldOrPropertyWithValue("currencyAmount", new BigDecimal("71.00"));
 	}
 	
 	@Test
 	@Order(3)
 	public void test_me() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
 	}
 
 	@Test
 	@Order(3)
 	public void test_not_me() {
 		//assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(me)).build())).hasSize(2);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(not, me)).build())).hasSize(7);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(not, me)).build())).hasSize(7);
 	}
 	
 	@Test
 	@Order(4)
 	public void test_pills() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(pills)).build())).hasSize(1);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(pills)).build())).hasSize(2);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(pills)).build())).hasSize(2);
 	}
 	
 	@Test
 	@Order(5)
 	public void test_healths() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(healths)).build())).hasSize(2);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(healths)).build())).hasSize(3);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(healths)).build())).hasSize(3);
 	}
 	
 	@Test
 	@Order(6)
 	public void test_healths_and_me() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(healths,me)).build())).hasSize(2);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(healths,me)).build())).hasSize(2);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(healths,me)).build())).hasSize(2);
 	}
 	
 	@Test
 	@Order(6)
 	public void test_expenses() {
 		assertThat(expenseService.findExpenses(ExpenseCriteria.with().tagCriterias(asList(TagType.EXPENSE)).build())).hasSize(3);
-		assertThat(accountService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(asList(TagType.EXPENSE)).build())).hasSize(4);
+		assertThat(accountService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(asList(TagType.EXPENSE)).build())).hasSize(4);
 	}
 }

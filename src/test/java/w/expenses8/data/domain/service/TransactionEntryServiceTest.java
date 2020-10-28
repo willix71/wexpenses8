@@ -79,27 +79,27 @@ public class TransactionEntryServiceTest {
 		assertThat(expenseService.count()).isEqualTo(4);
 		assertThat(transactionEntryService.count()).isEqualTo(9);
 		
-		List<TransactionEntry> accounted2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().accountingYear(2019).build());
+		List<TransactionEntry> accounted2019 = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().accountingYear(2019).build());
 		assertThat(accounted2019).hasSize(5);
 		
-		List<TransactionEntry> year2019 = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().localDate(new RangeLocalDateCriteria(LocalDate.of(2019,1,1), LocalDate.of(2020,1,1))).build());
+		List<TransactionEntry> year2019 = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().localDate(new RangeLocalDateCriteria(LocalDate.of(2019,1,1), LocalDate.of(2020,1,1))).build());
 		assertThat(year2019).hasSize(5);
 		
-		List<TransactionEntry> chf = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().currencyCode("USD").build());
+		List<TransactionEntry> chf = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().currencyCode("USD").build());
 		assertThat(chf).hasSize(3);
 		
-		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(cash)).build());
+		List<TransactionEntry> cashes = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(cash)).build());
 		assertThat(cashes).hasSize(3);
 
-		List<TransactionEntry> healthkim = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(health, kim)).build());
+		List<TransactionEntry> healthkim = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().tagCriterias(Arrays.asList(health, kim)).build());
 		assertThat(healthkim).hasSize(1);
 		assertThat(healthkim.get(0).getExpense().getPayee().getName()).isEqualTo("Doctor");
 		assertThat(healthkim.get(0).getExpense().getExpenseType().getName()).isEqualTo("BVO");
 
-		List<TransactionEntry> bvos = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().expenseType(bvo).build());
+		List<TransactionEntry> bvos = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().expenseType(bvo).build());
 		assertThat(bvos).hasSize(4);
 		
-		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntrys(TransactionEntryCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(40),new BigDecimal(50))).build());
+		List<TransactionEntry> groceries = transactionEntryService.findTransactionEntries(TransactionEntryCriteria.with().amountValue(new RangeNumberCriteria(new BigDecimal(40),new BigDecimal(50))).build());
 		assertThat(groceries).hasSize(2);
 	}
 }

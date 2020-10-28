@@ -24,6 +24,7 @@ public class WexpensesLegacyApplication {
 	    return (args) -> {
 	    	log.info("Started up");
 	    	service.migrate();
+	    	service.consolidate();
 	    	log.info("Done migrating");
 	    };
 	  }

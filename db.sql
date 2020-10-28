@@ -39,7 +39,6 @@ alter table WEX_PayeeType add constraint UK_3ox14v12khxi30fvhvlo8iitr unique (ui
 alter table WEX_Tag add constraint UK_tmab68c4ew3iyhlwc8rjaw21x unique (uid);
 alter table WEX_TagGroup add constraint UK_59omfoixlo8cq78yr2vamddbk unique (uid);
 alter table WEX_TransactionEntry add constraint UK_fuy123o2g19m1rx3fyec8fxy8 unique (uid);
-alter table WEX_Consolidation add constraint FKr66beccmweovyy61xi8jwwtps foreign key (accounts_id) references WEX_TagGroup;
 alter table WEX_Consolidation add constraint FK5if1o5fl0amj156kx5oe1p1ax foreign key (closingEntry_id) references WEX_TransactionEntry;
 alter table WEX_Consolidation add constraint FKaa6rw4tf9k3ypn9hlhu1auvpa foreign key (documentFile_id) references WEX_Document;
 alter table WEX_Consolidation add constraint FKdsp4ibc8kch4ywc8q3w3oatvg foreign key (institution_id) references WEX_Payee;

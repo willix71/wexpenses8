@@ -30,13 +30,10 @@
 				<wex:payeeSelector payee="#{conso.institution}" edition="false" />
 			</p:outputPanel>
 			
-			<h:outputText value="document date" styleClass="wex-field-label"/>
-			<h:outputText value="#{conso.documentFile.documentDate}" >
-				<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
-			</h:outputText>
-
-			<h:outputText value="document file" styleClass="wex-field-label"/>
-			<h:outputText value="#{conso.documentFile.fileName}" />
+			<h:outputText value="document" styleClass="wex-field-label"/>
+			<p:outputPanel id="documentFileSelector">
+				<wex:documentFileEdition docFile="#{conso.documentFile}" extra="#{conso}" edition="false" />
+			</p:outputPanel>
 
 			<h:outputText value="opening value" styleClass="wex-field-label"/>
 			<h:outputText value="#{conso.openingValue}" />
@@ -48,11 +45,11 @@
 			<h:outputText value="#{conso.deltaValue}" />										
 		</h:panelGrid>
 		
-		<p:dataTable id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{conso.transactions}" resizableColumns="true"
-		paginator="true" 
-		rowsPerPageTemplate="10,50,100,1000"
-		rows="#{cc.attrs.rows}"
-		currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+		<p:dataTable id="consoTransactionEntries" styleClass="js-wexTable" var="xct" value="#{consolidationEditionController.entries.target}" resizableColumns="true"
+			paginator="true" 
+			rowsPerPageTemplate="10,50,100,1000"
+			rows="#{cc.attrs.rows}"
+			currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
 				<f:facet name="header">
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
 					<p:columnToggler datasource="consoTransactionEntries" trigger="toggler" />
@@ -61,7 +58,15 @@
 				<ui:include src="/includes/dbableColumns.xhtml">
 					<ui:param name="dba" value="#{xct}" />
 				</ui:include>
-			
+		
+				<p:column styleClass="wex-cell-righted" style="width:20px" >
+					<h:outputText value="#{xct.accountingOrder % 1000}" />
+					
+					<f:facet name="footer">
+						<h:outputText value="#{consolidationEditionController.entries.target.size()}" />
+					</f:facet>
+				</p:column>
+				
 				<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px" >
 					<h:outputText value="#{xct.accountingDate}" >
 						<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
@@ -88,14 +93,26 @@
 			
 				<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px" >
 					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='IN'}"/>
+					
+					<f:facet name="footer">
+						<h:outputText value="#{consolidationEditionController.totalIn}" />
+					</f:facet>
 				</p:column>
 			
 				<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
 					<h:outputText value="#{xct.accountingValue}" rendered="#{xct.factor=='OUT'}"/>
+					
+					<f:facet name="footer">
+						<h:outputText value="#{consolidationEditionController.totalOut}" />
+					</f:facet>
 				</p:column>
 			
 				<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px" >
-					<h:outputText value="#{xct.liveBalance}" />
+					<h:outputText value="#{xct.accountingBalance}" />
+					
+					<f:facet name="footer">
+						<h:outputText value="#{consolidationEditionController.lastBalance}" />
+					</f:facet>
 				</p:column>
 			
 				<p:column headerText="Accounts" styleClass="wex-cell-righted" >

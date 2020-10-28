@@ -56,7 +56,7 @@ public class TransactionEntryController extends AbstractListController<Transacti
 	@Override
 	protected void loadEntities() {
 		log.info("loading transaction entries with {}", criteria);
-		elements = transactionEntryService.findTransactionEntrys(criteria);
+		elements = transactionEntryService.findTransactionEntries(criteria);
 		
 		BigDecimal liveBalance = BigDecimal.ZERO;
 		BigDecimal opposite = BigDecimal.valueOf(-1);
