@@ -21,4 +21,14 @@ public class ConsolidationController extends AbstractListController<Consolidatio
 			return "newConsolidation.xhtml";
 		}
 	}
+	
+	public String prepareEditConsolidation() {
+		Consolidation selectedConso = getSelectedElement();
+		if (selectedConso==null) {
+			return null;
+		} else {
+			FacesContext.getCurrentInstance().getExternalContext().getFlash().put(ConsolidationEditionController.NEXT_CONSOLIDATION_FLASH_ID, selectedConso);
+			return "newConsolidation.xhtml";
+		}
+	}
 }
