@@ -46,8 +46,10 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	}
 	
 	@PostConstruct
-	public void initSelectedElementId() {		
-		setCurrentElementId(getInitialElementId());
+	public void initSelectedElementId() {
+		Object id = getInitialElementId();
+		// only set the initial element if we are shure it has to be set
+		if (id != null) setCurrentElementId(id);
 	}
 	
 	protected Object getInitialElementId() {
