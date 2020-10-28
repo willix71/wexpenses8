@@ -22,7 +22,7 @@ public class DbableConverter<T extends DBable<?>> implements Converter<T> {
 				return service.loadByUid(uid);
 			} catch (NumberFormatException e) {
 				throw new ConverterException(
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid expense type."));
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Conversion Error", "Not a valid DBable."));
 			}
 		} else {
 			return null;
