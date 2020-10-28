@@ -58,13 +58,13 @@
 		    </p:contextMenu>
      		
 			<p:outputPanel id="wexDetailPanel">
-	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top">
+	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Consolidation" position="top">
 					<wex:consolidationView />
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
-	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Expense" position="top" modal="true">
+	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Consolidation" position="top" modal="true">
 					<wex:consolidationView />
 					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
 						<f:actionListener binding="#{editionController.delete()}" />

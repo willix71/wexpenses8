@@ -53,8 +53,12 @@
 					</p:selectOneListbox>
 	
 					<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-center" >
-			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.createNewExpense}" update="wexEditionForm" />
-			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.copyNewExpense}" update="wexEditionForm" disabled="#{empty newExpenseController.baseExpense}"/>
+			     		<p:commandButton id="wexNewExpense" value="New" update="wexEditionForm" >
+			     			<f:setPropertyActionListener value="#{newExpenseController.newEmptyExpense}" target="#{expenseEditionController.currentElement}" />
+			     		</p:commandButton>
+			     		<p:commandButton id="wexCopyExpense" value="Copy" update="wexEditionForm" disabled="#{empty newExpenseController.baseExpense}">
+			     			<f:setPropertyActionListener value="#{newExpenseController.newDuplicatedExpense}" target="#{expenseEditionController.currentElement}" />
+			     		</p:commandButton>
 						<p:selectManyCheckbox value="#{newExpenseController.copyOptions}" disabled="#{empty newExpenseController.baseExpense}">
 					        <f:selectItem itemLabel="Date" itemValue="date" />
 					        <f:selectItem itemLabel="Reference" itemValue="reference" itemDisabled="#{empty newExpenseController.baseExpense.externalReference}"/>

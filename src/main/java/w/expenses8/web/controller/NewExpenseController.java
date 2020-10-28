@@ -33,9 +33,6 @@ import w.expenses8.data.utils.ExpenseHelper;
 public class NewExpenseController implements Serializable {
 	
 	@Inject
-	private ExpenseEditionController editionController;
-
-	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
@@ -74,13 +71,13 @@ public class NewExpenseController implements Serializable {
 		copyOptions = potentialOptions.toArray(new String[potentialOptions.size()]);
 	}
 
-	public void createNewExpense() {
+	public Expense getNewEmptyExpense() {
 		newExpense = ExpenseHelper.build(expenseType, payee);
-		log.info("createNewExpense {}",newExpense);
-		editionController.setCurrentElement(newExpense);
+		log.info("created new expense {}",newExpense);
+		return newExpense;
 	}
 	
-	public void copyNewExpense() {
+	public Expense getNewDuplicatedExpense() {
 		Set<String> options = new HashSet<>(Arrays.asList(copyOptions));
 		newExpense = ExpenseHelper.build(
 				payee, expenseType!=null?expenseType:baseExpense.getExpenseType(), options.contains("date")?baseExpense.getDate():null,baseExpense.getCurrencyAmount(), baseExpense.getCurrencyCode(), 
@@ -102,8 +99,8 @@ public class NewExpenseController implements Serializable {
 					.fixFee(baseExpense.getExchangeRate().getFixFee())
 					.build());
 		}
-		log.info("copy new expense {}",newExpense);
-		editionController.setCurrentElement(newExpense);
+		log.info("duplicated new expense {}",newExpense);
+		return newExpense;
 	}	
 	
 	public void reset() {
