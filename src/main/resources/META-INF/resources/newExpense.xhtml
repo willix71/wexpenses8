@@ -19,7 +19,7 @@
 
 				<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
 				 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
-	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" >
+	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" placeholder="type">
 	             	<p:ajax event="itemSelect" update="wexEditionForm" />
 	            </p:autoComplete>
 			
