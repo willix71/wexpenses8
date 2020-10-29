@@ -128,6 +128,26 @@
 	height: 600px !important;
 }
 
+.wex-documentFile-selector {
+	border: none;
+}
+	
+.wex-documentFile-selector.ui-tabs-left>.ui-tabs-nav {
+	height: 10px !important;
+	width: 4%;
+	position: relative;
+	left: 1%;
+}
+
+.wex-documentFile-selector.ui-tabs-left>.ui-tabs-panels {
+	border: 1px solid #a8a8a8;
+	width: 95%;
+}
+
+.wex-documentFile-selector.ui-tabs-left>.ui-tabs-panels>.ui-tabs-panel {
+	padding: 0.3em 0.5em;
+}
+	
 .wex-criteria-form .ui-selectonemenu-label.ui-selectonemenu-label-placeholder { color: gray; font-style: italic; font-size: small}
 ::-webkit-input-placeholder { color: gray; font-style: italic; font-size: small}
 ::-moz-placeholder {color: gray; font-style: italic; font-size: small}
