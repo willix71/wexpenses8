@@ -48,7 +48,7 @@ wexpenses:
 spring:
   profiles: work
   datasource:
-    url: jdbc:h2:C:/Users/willi/git/wexpenses8/db/wexpenses-work-v2;AUTO_SERVER=TRUE
+    url: jdbc:h2:C:/Users/willi/db/wexpenses-work-v2;AUTO_SERVER=TRUE
   jpa:
     hibernate:
       ddl-auto: none
