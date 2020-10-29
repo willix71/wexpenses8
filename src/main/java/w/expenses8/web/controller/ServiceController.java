@@ -1,8 +1,12 @@
 package w.expenses8.web.controller;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,4 +38,19 @@ public class ServiceController {
 	public String getDocumentFileUrl(DocumentFile docFile) {
 		return documentFileService.getUrl(docFile);
 	}
+	
+    public Object handleSelect(SelectEvent<DocumentFile> event) {
+        log.info("DocumentFile selected {}", event==null?"No event":event.getObject());
+        return null;
+    }
+    
+    public Object handleUnselect(UnselectEvent<DocumentFile> event) {
+    	log.info("DocumentFile unselected {}", event==null?"No event":event.getObject());
+    	return null;
+    }
+    
+	public void valueChangeMethod(ValueChangeEvent event){
+		log.info("DocumentFile unselected {}", event==null?"No event":event.getOldValue());
+	}
+	
 }
