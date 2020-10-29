@@ -1,6 +1,5 @@
 package w.expensesLegacy.data.domain.service;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -35,7 +34,6 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
-import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IConsolidationService;
 import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.utils.ConsolidationHelper;
@@ -309,9 +307,9 @@ public class MigrateService {
 				newType.setDocumentFile(getDocumentFile(file.getDocumentDate(), file.getFileName()));
 			}
 			if (legacy.getOpeningBalance()!=null && legacy.getClosingBalance()!=null) {
-				Set<Tag> tags = getTags(legacy.getInstitution().getFirstAccount(), null, legacy);
 				newType.setOpeningValue(legacy.getOpeningBalance());
 				newType.setClosingValue(legacy.getClosingBalance());
+				//Set<Tag> tags = getTags(legacy.getInstitution().getFirstAccount(), null, legacy);
 				//newType.setOpeningEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.IN,  legacy.getOpeningBalance()));
 				//newType.setClosingEntry(getConsolidatinEntry(newType, legacy.getDate(), tags, TransactionFactor.OUT,  legacy.getClosingBalance()));
 				newType.setDeltaValue(legacy.getDeltaBalance());
@@ -323,31 +321,31 @@ public class MigrateService {
 		
 	}
 	
-	protected TransactionEntry getConsolidatinEntry(Consolidation conso, Date date, Set<Tag> tags, TransactionFactor factor, BigDecimal value) {
-		long accountingOrder = ((conso.getDate().getYear() * 100 ) + conso.getDate().getMonthValue()) * 10000;
-		if (factor == TransactionFactor.OUT) 
-			accountingOrder +=9999;
-		
-		LocalDate accountingDate = conso.getDate();
-		if (factor == TransactionFactor.OUT) 
-			accountingDate = accountingDate.plusMonths(1).minusDays(1);
-		
-		TransactionEntry entry = TransactionEntry.with()
-				.consolidation(conso)
-				.accountingDate(accountingDate)
-				.accountingYear(accountingDate.getYear())
-				.accountingOrder(accountingOrder)
-				.systemEntry(true)
-				.factor(factor)
-				.currencyAmount(value)
-				.accountingValue(value)
-				.accountingBalance(factor == TransactionFactor.OUT?BigDecimal.ZERO:value)
-				.tags(tags)
-				.build();
-		
-		entityManager.persist(entry);
-		return entry;		
-	}
+//	protected TransactionEntry getConsolidatinEntry(Consolidation conso, Date date, Set<Tag> tags, TransactionFactor factor, BigDecimal value) {
+//		long accountingOrder = ((conso.getDate().getYear() * 100 ) + conso.getDate().getMonthValue()) * 10000;
+//		if (factor == TransactionFactor.OUT) 
+//			accountingOrder +=9999;
+//		
+//		LocalDate accountingDate = conso.getDate();
+//		if (factor == TransactionFactor.OUT) 
+//			accountingDate = accountingDate.plusMonths(1).minusDays(1);
+//		
+//		TransactionEntry entry = TransactionEntry.with()
+//				.consolidation(conso)
+//				.accountingDate(accountingDate)
+//				.accountingYear(accountingDate.getYear())
+//				.accountingOrder(accountingOrder)
+//				.systemEntry(true)
+//				.factor(factor)
+//				.currencyAmount(value)
+//				.accountingValue(value)
+//				.accountingBalance(factor == TransactionFactor.OUT?BigDecimal.ZERO:value)
+//				.tags(tags)
+//				.build();
+//		
+//		entityManager.persist(entry);
+//		return entry;		
+//	}
 	
 	@Transactional
 	public void consolidate() {

@@ -1,5 +1,10 @@
 package w.expenses8.data.domain.model;
 
+import static javax.persistence.CascadeType.DETACH;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -30,7 +35,7 @@ public class Consolidation extends DBable<Consolidation> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Payee institution;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade={PERSIST, MERGE, REFRESH, DETACH})
 	private DocumentFile documentFile;
 	
 	private BigDecimal openingValue;
@@ -44,23 +49,4 @@ public class Consolidation extends DBable<Consolidation> {
 	private TransactionEntry closingEntry;
 	
 	private BigDecimal deltaValue;
-	
-//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "consolidation", cascade={MERGE, REFRESH, DETACH})
-//	@OrderBy("accountingOrder,accountingDate,accountingValue")
-//	private Set<TransactionEntry> transactions;
-//	
-//	public Consolidation addTransaction(TransactionEntry transaction) {
-//		if (transactions == null) {
-//			transactions = new HashSet<TransactionEntry>();
-//		}
-//		transactions.add(transaction);
-//		transaction.setConsolidation(this);
-//		return this;
-//	}
-//
-//	public Consolidation removeTransaction(TransactionEntry transaction) {
-//		if (transactions != null) transactions.remove(transaction);
-//		transaction.setConsolidation(null);
-//		return this;
-//	}
 }
