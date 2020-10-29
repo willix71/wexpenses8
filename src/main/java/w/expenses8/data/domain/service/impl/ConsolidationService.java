@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import w.expenses8.WexpensesConstants;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.dao.IConsolidationDao;
@@ -39,7 +40,7 @@ public class ConsolidationService extends GenericServiceImpl<Consolidation, Long
 	
 	@Override
 	public Consolidation reload(Object o) {
-		if (o == null) return new Consolidation();
+		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return new Consolidation();
 		Long id;
 		if (o instanceof Consolidation) {
 			Consolidation x=(Consolidation)o;

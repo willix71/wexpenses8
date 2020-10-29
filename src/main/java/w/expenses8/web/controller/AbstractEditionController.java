@@ -15,6 +15,7 @@ import org.primefaces.event.SelectEvent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import w.expenses8.WexpensesConstants;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.IGenericService;
 
@@ -55,7 +56,11 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	protected Object getInitialElementId() {
 		String id=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("id");
 		if (id!=null) {
-			return Long.parseLong(id);
+			if (id.equalsIgnoreCase("new")) {
+				return WexpensesConstants.NEW_INSTANCE;
+			} else {
+				return Long.parseLong(id);
+			}
 		} else {
 			String uid=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("uid");
 			if (uid!=null) {

@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import w.expenses8.WexpensesConstants;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.PayeeCriteria;
 import w.expenses8.data.domain.dao.IPayeeDao;
@@ -25,7 +26,7 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 	
 	@Override
 	public Payee reload(Object o) {
-		if (o == null) return new Payee();
+		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return new Payee();
 		Long id;
 		if (o instanceof Payee) {
 			Payee p = (Payee)o;
