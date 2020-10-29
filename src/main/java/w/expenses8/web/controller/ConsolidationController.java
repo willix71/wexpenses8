@@ -24,6 +24,18 @@ public class ConsolidationController extends AbstractListController<Consolidatio
 			return null;
 		}
 	}
+
+	public String prepareNewConsolidation() throws IOException {
+		Consolidation selectedConso = getSelectedElement();
+		if (selectedConso==null) {
+			return null;
+		} else {
+			Consolidation nextConso = Consolidation.with().build();
+			FacesContext.getCurrentInstance().getExternalContext().getFlash().put(ConsolidationEditionController.NEXT_CONSOLIDATION_FLASH_ID, nextConso);
+			FacesContext.getCurrentInstance().getExternalContext().redirect("newConsolidation.xhtml");
+			return null;
+		}
+	}
 	
 	public String prepareEditConsolidation() throws IOException {
 		Consolidation selectedConso = getSelectedElement();
