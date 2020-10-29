@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,6 +22,7 @@ import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.service.IDocumentFileService;
+import w.expenses8.data.utils.CriteriaHelper;
 
 @Service
 public class DocumentFileService extends GenericServiceImpl<DocumentFile, Long, IDocumentFileDao>  implements IDocumentFileService {
@@ -41,6 +43,11 @@ public class DocumentFileService extends GenericServiceImpl<DocumentFile, Long, 
 		return getDao().findByFileName(name);
 	}
 		
+	@Override
+	public List<DocumentFile> findByText(String text) {
+		return getDao().findByText(CriteriaHelper.safeLowerLike(text));
+	}
+	
 	@Override
 	public String generateFilename(LocalDate fileDate, DBable<?> x) {
 		if (x instanceof Expense) return generateFilename(fileDate, (Expense) x);

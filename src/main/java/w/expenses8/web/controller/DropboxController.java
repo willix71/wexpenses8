@@ -18,6 +18,7 @@ import javax.inject.Named;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.TagCriteria;
+import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.PayeeType;
@@ -25,6 +26,7 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
+import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.domain.service.IExpenseTypeService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.IPayeeTypeService;
@@ -117,6 +119,13 @@ public class DropboxController implements Serializable {
 	
 	public List<String> getCurrencies() {
 		return countryService.getCurrenciesCodes();
+	}
+	
+	@Inject
+	private IDocumentFileService documentFileService;
+	
+	public List<DocumentFile> completeDocumentFile(String fileName) {
+		return documentFileService.findByText(fileName);
 	}
 	
 	public boolean filterByValue(Object value, Object filter, Locale locale) {
