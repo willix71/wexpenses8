@@ -32,7 +32,7 @@ public class Payee extends DBable<Payee> {
 	private PayeeType payeeType;
 	
 	@NonNull
-	@NotBlank
+	@NotBlank(message = "Payee's name can't be blank")
 	private String name;
 	private String prefix;
 	private String extra;

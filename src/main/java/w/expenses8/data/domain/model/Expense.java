@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -30,6 +32,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.boot.model.relational.Namespace.ComparableHelper;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -116,7 +119,16 @@ public class Expense extends DBable<Expense> {
 	
 	public Expense addTransaction(TransactionEntry transaction) {
 		if (transactions == null) {
-			transactions = new HashSet<TransactionEntry>();
+			transactions = new TreeSet<TransactionEntry>(new Comparator<TransactionEntry>() {
+				@Override
+				public int compare(TransactionEntry o1, TransactionEntry o2) {
+					int c = ComparableHelper.compare(o2.getFactor(), o1.getFactor());
+					if (c!=0) return c;
+					c = ComparableHelper.compare(o2.getAccountingValue(), o1.getAccountingValue());
+					if (c!=0) return c;
+					return ComparableHelper.compare(o2.getUid(), o1.getUid());
+				}
+			});
 		}
 		transactions.add(transaction);
 		transaction.setExpense(this);

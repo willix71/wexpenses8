@@ -17,6 +17,9 @@
 		<wex:dbableDetails dbable="#{payee}"/>
 		
 		<h:panelGrid columns="2" rendered="#{not empty payee}" style="width:100%">
+			<h:outputText value=""/>
+			<p:messages showDetail="true" showSummary="true" />
+					
 			<h:outputText value="type" styleClass="wex-field-label"/>
 			<h:outputText value="#{payee.payeeType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:autoComplete id="payeeTypeId" value="#{payee.payeeType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"

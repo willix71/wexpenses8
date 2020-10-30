@@ -90,7 +90,9 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 				sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 				log.info("Target tags {} ", sourceTags);
 			}
-			this.entries.setTarget(transactionEntryService.findConsolidationEntries(this.currentElement));
+			if (!this.currentElement.isNew()) {
+				this.entries.setTarget(transactionEntryService.findConsolidationEntries(this.currentElement));
+			}
 
 			updateSourceEntries();
 		}		
@@ -101,14 +103,14 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		updateSourceEntries();
 	}
 
-	public void updateInstitution() {
+	public void updateInstitution(SelectEvent<?> o) {
 		sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 		updateSourceEntries();
 	}
 	
 	public void updateSourceEntries() {
 		RangeLocalDateCriteria dateRange = !limitRange || this.currentElement.getDate()==null?null:new RangeLocalDateCriteria(this.currentElement.getDate().minusMonths(3),this.currentElement.getDate().plusMonths(3));
-		List<TransactionEntry> sourceEntries = transactionEntryService.findConsolidatableEntries(sourceTags, dateRange);
+		List<TransactionEntry> sourceEntries = CollectionHelper.isEmpty(sourceTags)?new ArrayList<>():transactionEntryService.findConsolidatableEntries(sourceTags, dateRange);
 		entries.setSource(sourceEntries);
 	}
 	

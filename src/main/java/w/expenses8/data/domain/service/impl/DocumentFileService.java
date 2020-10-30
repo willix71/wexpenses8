@@ -77,6 +77,10 @@ public class DocumentFileService extends GenericServiceImpl<DocumentFile, Long, 
 
 	@Override
 	public String getUrl(DocumentFile docFile) {
-		return MessageFormat.format(urlFormat, Date.from(docFile.getDocumentDate().atStartOfDay(ZoneId.systemDefault()).toInstant()) , docFile.getFileName());
+		if (docFile==null || docFile.getDocumentDate()==null) {
+			return MessageFormat.format(urlFormat, new Date() , "");
+		} else {
+			return MessageFormat.format(urlFormat, Date.from(docFile.getDocumentDate().atStartOfDay(ZoneId.systemDefault()).toInstant()) , docFile.getFileName());
+		}
 	}
 }

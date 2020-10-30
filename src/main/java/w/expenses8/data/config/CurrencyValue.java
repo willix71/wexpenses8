@@ -25,6 +25,7 @@ public class CurrencyValue {
 	}
 
 	public static BigDecimal applyPrecision(BigDecimal amount, BigDecimal precision) {
+		if (amount==null || precision==null) return amount;
 		long x = amount.divide(precision).setScale(0, RoundingMode.HALF_UP).longValue();
 		return BigDecimal.valueOf(x).multiply(precision);
 	}

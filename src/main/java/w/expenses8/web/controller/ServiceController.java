@@ -39,18 +39,15 @@ public class ServiceController {
 		return documentFileService.getUrl(docFile);
 	}
 	
-    public Object handleSelect(SelectEvent<DocumentFile> event) {
-        log.info("DocumentFile selected {}", event==null?"No event":event.getObject());
-        return null;
+    public void handleSelect(SelectEvent<?> event) {
+        log.info("autocomplete selected {}", event==null?"No event":event.getObject());
     }
     
-    public Object handleUnselect(UnselectEvent<DocumentFile> event) {
-    	log.info("DocumentFile unselected {}", event==null?"No event":event.getObject());
-    	return null;
+    public void handleUnselect(UnselectEvent<?> event) {
+    	log.info("autocomplete unselected {}", event==null?"No event":event.getObject());
     }
     
 	public void valueChangeMethod(ValueChangeEvent event){
-		log.info("DocumentFile unselected {}", event==null?"No event":event.getOldValue());
+		log.info("autocomplete unselected {}", event==null?"No event":event.getOldValue());
 	}
-	
 }
