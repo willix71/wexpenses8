@@ -23,6 +23,7 @@ import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IExpenseService;
+import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 
 @Slf4j
@@ -86,7 +87,7 @@ public class NewExpenseController implements Serializable {
 			newExpense.setExternalReference(baseExpense.getExternalReference());
 		}
 		if (options.contains("documents")) {
-			newExpense.setDocumentFiles(new HashSet<>(baseExpense.getDocumentFiles()));
+			CollectionHelper.stream(baseExpense.getDocumentFiles()).forEach(d->newExpense.addDocumentFile(d));
 		}
 		if (options.contains("rate") && baseExpense.getExchangeRate()!=null) {
 			newExpense.setExchangeRate(ExchangeRate.with()

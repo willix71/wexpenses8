@@ -11,6 +11,7 @@
 	<composite:interface>
 		<composite:attribute name="edition" default="false" />
 		<composite:attribute name="docFile" type="w.expenses8.data.domain.model.DocumentFile" />
+		<composite:attribute name="newDocFile" type="w.expenses8.data.domain.model.DocumentFile" />
 		<composite:attribute name="extra" type="w.expenses8.data.core.model.DBable" />
 		<composite:attribute name="handleSelect" method-signature="java.lang.Object unselect(org.primefaces.event.SelectEvent)" default="#{serviceController.handleSelect}"/>
 		<composite:attribute name="handleUnselect" method-signature="java.lang.Object unselect(org.primefaces.event.UnselectEvent)" default="#{serviceController.handleUnselect}" />
@@ -39,18 +40,18 @@
 				<p:tab >
 					<div style="width:100%;display:flex;justify-content:space-between" >
 			        	<span style="min-width:150px; width:150px">
-								<p:datePicker id="documentDateId" value="#{cc.attrs.docFile.documentDate}" styleClass="wex-small-datepicker"
+								<p:datePicker id="documentDateId" value="#{cc.attrs.newDocFile.documentDate}" styleClass="wex-small-datepicker"
 									pattern="dd/MM/yyyy"
 									showIcon="true"
 									showButtonBar="true"
 									appendTo="@(body)">
-							 		<p:ajax event="dateSelect" listener="#{serviceController.onDocumentFileDateChange(cc.attrs.docFile, cc.attrs.extra)}" update="@(.js-docdate-related)"  />
+							 		<p:ajax event="dateSelect" listener="#{serviceController.onDocumentFileDateChange(cc.attrs.newDocFile, cc.attrs.extra)}" update="@(.js-docdate-related)"  />
 							 	</p:datePicker>
-						 </span>
+						</span>
 				 
-					   		<p:inputText id="fileNameId" value="#{cc.attrs.docFile.fileName}" styleClass="wex-field-edit js-docdate-related"/>
+					   	<p:inputText id="fileNameId" value="#{cc.attrs.newDocFile.fileName}" styleClass="wex-field-edit js-docdate-related"/>
 			     		
-				   		<p:button href="#{serviceController.getDocumentFileUrl(cc.attrs.docFile)}" icon="pi pi-search" target="_blank"/>
+				   		<p:button href="#{serviceController.getDocumentFileUrl(cc.attrs.newDocFile)}" icon="pi pi-search" target="_blank"/>
 		   			</div>
 		   		</p:tab>
 		   		

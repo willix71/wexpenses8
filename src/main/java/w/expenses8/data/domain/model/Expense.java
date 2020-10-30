@@ -93,7 +93,7 @@ public class Expense extends DBable<Expense> {
 	private Integer documentCount;
 	
 	@Valid
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	@JoinTable(name = "WEX_Expense_WEX_Document", joinColumns = @JoinColumn(name = "WEX_Expense_id"), inverseJoinColumns = @JoinColumn(name = "documentFiles_id"))
 	@OrderBy("documentDate, fileName")
 	private Set<DocumentFile> documentFiles;

@@ -78,9 +78,9 @@ public class ExpenseHelper {
 				Object first = CollectionHelper.first((Collection<?>) o);
 				if (first != null) {
 					if (first instanceof TransactionEntry) {
-						x.setTransactions(new HashSet<>((Collection<TransactionEntry>) o));
+						((Collection<TransactionEntry>) o).stream().forEach(t->x.addTransaction(t));
 					} else if (first instanceof DocumentFile) {
-						x.setDocumentFiles(new HashSet<>((Collection<DocumentFile>) o));
+						((Collection<DocumentFile>) o).stream().forEach(d->x.addDocumentFile(d));						
 					}
 				}
 				continue;

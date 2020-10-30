@@ -83,6 +83,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		persist(x.getPayee());
 		persist(x.getExchangeRate());
 		CollectionHelper.stream(x.getTransactions()).forEach(te->CollectionHelper.stream(te.getTags()).forEach(tag->persist(tag)));
+		CollectionHelper.stream(x.getDocumentFiles()).forEach(doc->persist(doc));
 		return super.save(x);
 	}
 		

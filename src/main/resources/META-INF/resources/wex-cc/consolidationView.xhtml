@@ -32,7 +32,7 @@
 			
 			<h:outputText value="document" styleClass="wex-field-label"/>
 			<p:outputPanel id="documentFileSelector">
-				<wex:documentFileEdition docFile="#{conso.documentFile}" extra="#{conso}" edition="false" />
+				<wex:documentFileSelector extra="#{conso}" edition="#{cc.attrs.edition}" />
 			</p:outputPanel>
 
 			<h:outputText value="opening value" styleClass="wex-field-label"/>

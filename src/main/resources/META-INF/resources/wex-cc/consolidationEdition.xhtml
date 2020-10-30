@@ -18,7 +18,7 @@
 		
 		<h:panelGrid columns="2" rendered="#{not empty conso}" style="width:100%">
 			<h:outputText value=""/>
-			<p:messages for="ValidationErrors" showDetail="true" showSummary="true" />
+			<p:messages showDetail="true" showSummary="true" />
 			
 			<h:outputText value="date" styleClass="wex-field-label"/>
 			<p:datePicker value="#{conso.date}"  view="month"  
@@ -32,7 +32,7 @@
 		
 			<h:outputText value="institution" styleClass="wex-field-label"/>
 			<p:outputPanel id="payeeSelector">
-				<wex:payeeSelector payee="#{conso.institution}" edition="true" />
+				<wex:payeeSelector payee="#{conso.institution}" edition="true" handleSelect="#{consolidationEditionController.updateInstitution}" update="@(.wex-conso-picklist)"/>
 			</p:outputPanel>
 			
 			<h:outputText value="document" styleClass="wex-field-label"/>
@@ -67,6 +67,8 @@
 						<p:column>
 							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
 						</p:column>
+						<p:ajax event="itemSelect" listener="#{consolidationEditionController.updateInstitution}" />
+						<p:ajax event="itemUnselect" listener="#{consolidationEditionController.updateInstitution}" />
 					</p:autoComplete>
 				</f:facet>
 		        <f:facet name="targetCaption">
@@ -115,7 +117,7 @@
      		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" >
 				<f:actionListener binding="#{consolidationEditionController.save()}" />
 			</p:commandButton>
-     		<p:commandButton id="wexRefresh" value="Refresh" update="wexEditionForm">
+     		<p:commandButton id="wexRefresh" value="Refresh" update="wexEditionForm" >
 				<f:actionListener binding="#{consolidationEditionController.compute()}" />
 			</p:commandButton>
        	</h:panelGroup>

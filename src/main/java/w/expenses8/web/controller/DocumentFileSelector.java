@@ -68,4 +68,8 @@ public class DocumentFileSelector {
 	public String getDocumentFileUrl() {
 		return documentFileService.getUrl(getCurrentDocumentFile());
 	}
+	
+	public String getDocumentFileUrlFor(DocumentFile docFile) {
+		return documentFileService.getUrl(docFile);
+	}
 }

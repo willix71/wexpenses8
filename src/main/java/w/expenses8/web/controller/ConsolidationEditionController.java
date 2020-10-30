@@ -44,6 +44,9 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	private static final long serialVersionUID = 3351336696734127296L;
 
 	static final String NEXT_CONSOLIDATION_FLASH_ID = "_NEXT_CONSOLIDATION_";
+
+	@Inject
+	DocumentFileSelector documentFileSelector;
 	
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -94,6 +97,8 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 				this.entries.setTarget(transactionEntryService.findConsolidationEntries(this.currentElement));
 			}
 
+			documentFileSelector.setCurrentDocumentFile(this.currentElement.getDocumentFile());
+			
 			updateSourceEntries();
 		}		
 	}

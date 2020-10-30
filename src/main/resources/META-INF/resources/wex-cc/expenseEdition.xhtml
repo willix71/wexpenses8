@@ -172,7 +172,7 @@
 				<p:outputPanel rendered="#{cc.attrs.edition}" style="display:flex">
 					<p:commandButton style="font-size: small;margin:10px 0;" value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.addDocumentFile}"/>
 					<p:outputPanel style="width:100%">
-					<wex:documentFileSelector extra="#{expense}" edition="#{cc.attrs.edition}" />
+						<wex:documentFileSelector extra="#{expense}" edition="#{cc.attrs.edition}" />
 					</p:outputPanel>
 				</p:outputPanel>
 			</f:facet>
@@ -200,7 +200,7 @@
        		</p:column>
        		
        		<p:column headerText="View" style="max-width:50px;width:50px" >
-       			<p:button href="#{serviceController.getDocumentFileUrl(docFile)}" icon="pi pi-search" target="_blank" styleClass="js-docdate-related"/>
+       			<p:button href="#{documentFileSelector.getDocumentFileUrlFor(docFile)}" icon="pi pi-search" target="_blank" styleClass="js-docdate-related"/>
        		</p:column>
 		</p:dataTable>        		
        
