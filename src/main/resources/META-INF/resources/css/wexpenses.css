@@ -132,6 +132,10 @@
 	border: none;
 }
 	
+.wex-documentFile-selector.ui-tabs-left {
+	background-color: transparent;	
+}
+
 .wex-documentFile-selector.ui-tabs-left>.ui-tabs-nav {
 	height: 10px !important;
 	width: 4%;

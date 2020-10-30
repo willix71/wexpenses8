@@ -38,6 +38,9 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	private static final long serialVersionUID = 3351336696734127296L;
 
 	@Inject
+	DocumentFileSelector documentFileSelector;
+	
+	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
@@ -175,9 +178,10 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 	}
 	
-	public void newDocumentFile() {
-		currentElement.addDocumentFile(new DocumentFile(currentElement.getDate()==null?null:currentElement.getDate().toLocalDate(),null));
+	public void addDocumentFile() {
+		currentElement.addDocumentFile(documentFileSelector.getCurrentDocumentFile());		
 		currentElement.updateDocumentCount();
+		documentFileSelector.reset();
 	}
 	
 	public void deleteDocumentFile() {

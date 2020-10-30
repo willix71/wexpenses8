@@ -168,17 +168,43 @@
 			</f:facet>
 			-->
 			
+			<f:facet name="footer"  >
+				<p:outputPanel rendered="#{cc.attrs.edition}" style="display:flex">
+					<p:commandButton style="font-size: small;margin:10px 0;" value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.addDocumentFile}"/>
+					<p:outputPanel style="width:100%">
+					<wex:documentFileSelector extra="#{expense}" edition="#{cc.attrs.edition}" />
+					</p:outputPanel>
+				</p:outputPanel>
+			</f:facet>
+			
 			<ui:include src="/includes/dbableColumns.xhtml">
 				<ui:param name="dba" value="#{docFile}" />
 			</ui:include>	    
 			
-            <p:column headerText="Document (#{expense.documentCount})" style="width:100%">
-				<wex:documentFileEdition docFile="#{docFile}" extra="#{expense}" edition="#{cc.attrs.edition}" />
+            <p:column headerText="Date" style="max-width:130px; width:130px">
+            	<h:outputText value="#{docFile.documentDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+				</h:outputText>
+				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{cc.attrs.edition}" styleClass="wex-small-datepicker"
+					pattern="dd/MM/yyyy"
+					showIcon="true"
+					showButtonBar="true"
+					appendTo="@(body)">
+			 		<p:ajax event="dateSelect" listener="#{expenseEditionController.onDocumentFileDateChange(docFile)}" update="@(.js-docdate-related)"  />
+			 	</p:datePicker>
+    	   	</p:column>
+            
+            <p:column headerText="Filename (#{expense.documentCount})" style="width:100%">
+           		<h:outputText value="#{docFile.fileName}" rendered="#{not cc.attrs.edition}" />
+          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit js-docdate-related"/>
+       		</p:column>
+       		
+       		<p:column headerText="View" style="max-width:50px;width:50px" >
+       			<p:button href="#{serviceController.getDocumentFileUrl(docFile)}" icon="pi pi-search" target="_blank" styleClass="js-docdate-related"/>
        		</p:column>
 		</p:dataTable>        		
        
         <p:contextMenu for="documentFilesTableId">
-        	<p:menuitem value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.newDocumentFile}"/>
         	<p:menuitem value="Delete" update="documentFilesTableId" icon="pi pi-trash" action="#{expenseEditionController.deleteDocumentFile}"/>
     	</p:contextMenu>
 		
@@ -237,6 +263,7 @@
 				<h:outputText value="#{tentry.factor}" rendered="#{not cc.attrs.edition}" />
 				<p:selectOneButton value="#{tentry.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
 					<f:selectItems value="#{dropboxController.transactionFactors}" />
+					<p:ajax listener="#{expenseEditionController.onTransactionAmountChange(tentry)}" update="@(.js-transaction-value-related)" />
 				</p:selectOneButton>
 			</p:column>
 
