@@ -297,6 +297,7 @@
 		
 		<p:contextMenu for="transactions" rendered="#{not empty expense}">
         	<p:menuitem value="Add" update="transactions" icon="pi pi-plus" action="#{expenseEditionController.newTransactionEntry}"/>
+        	<p:menuitem value="Split" update="transactions" icon="pi pi-plus" action="#{expenseEditionController.splitTransactionEntry}"/>
         	<p:menuitem value="Delete" update="transactions" icon="pi pi-trash" action="#{expenseEditionController.deleteTransactionEntry}"/>
     	</p:contextMenu>
 

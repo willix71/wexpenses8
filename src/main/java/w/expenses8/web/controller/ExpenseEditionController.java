@@ -28,6 +28,7 @@ import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.impl.CountryService;
+import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.data.utils.TransactionsSums;
 
 @Slf4j
@@ -187,11 +188,28 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	public void newTransactionEntry() {
 		currentElement.addTransaction(new TransactionEntry());
 	}
+
+	public void splitTransactionEntry() {
+		if (selectedTransactionEntry!=null) {
+			TransactionEntry newEntry = ExpenseHelper.buildTransactionEntry(
+					selectedTransactionEntry.getAccountingDate(),
+					selectedTransactionEntry.getAccountingYear(),
+					selectedTransactionEntry.getTags(),
+					selectedTransactionEntry.getFactor(),
+					selectedTransactionEntry.getConsolidation()
+			);
+			currentElement.addTransaction(newEntry);
+			this.currentElement.updateValues(currencyValue.getPrecision());
+			transactionsSums.compute(currentElement.getTransactions());
+		}
+			
+	}
 	
 	public void deleteTransactionEntry() {
 		if (selectedTransactionEntry!=null) {
 			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
 			currentElement.removeTransaction(selectedTransactionEntry);
+			transactionsSums.compute(currentElement.getTransactions());
 		}
 	}
 	
