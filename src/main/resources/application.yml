@@ -23,7 +23,7 @@ logging:
     name: c:/tmp/logs/wexpenses8.log
   pattern:
     file: "%d [%t] %5p %c{1}:%L - %m%n"
-    console: "%d [%t] %-5level %logger : %msg%n"
+    console: "%green(%d) [%t] %highlight(%-5level) %logger : %cyan(%msg%n)"
   level:
     org.springframework.web: DEBUG        
 
