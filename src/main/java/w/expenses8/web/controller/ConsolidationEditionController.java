@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -100,7 +101,14 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 			documentFileSelector.setCurrentDocumentFile(this.currentElement.getDocumentFile());
 			
 			updateSourceEntries();
-		}		
+
+		} else {
+			sourceTags = null;
+			targetTags = null;
+			this.entries.setSource(new ArrayList<>());
+			this.entries.setTarget(new ArrayList<>());
+			documentFileSelector.reset();
+		}
 	}
 	
 	public void updateDate() {
@@ -108,7 +116,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		updateSourceEntries();
 	}
 
-	public void updateInstitution(SelectEvent<?> o) {
+	public void updateInstitution(AjaxBehaviorEvent event) {
 		sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 		updateSourceEntries();
 	}
@@ -168,6 +176,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	@Override
 	public void save() {
 		compute();
+		currentElement.setDocumentFile(documentFileSelector.getCurrentDocumentFile());
 		
 		List<Tag> tags = targetTags.stream().filter(t->t instanceof Tag).map(t->(Tag) t).collect(Collectors.toList());
 		Set<TransactionEntry> altered = new HashSet<>();

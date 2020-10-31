@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.service.IDocumentFileService;
+import w.expenses8.data.utils.StringHelper;
 
 @Slf4j
 @Named
@@ -30,6 +31,8 @@ public class DocumentFileSelector {
 	
 	private DocumentFile documentFile;
 	
+	private String documentUid;
+	
 	private LocalDate documentDate;
 	
 	private String fileName;
@@ -37,11 +40,21 @@ public class DocumentFileSelector {
 	private int activeTabIndex = 0;
 	
 	public DocumentFile getCurrentDocumentFile() {
-		return activeTabIndex == 0?new DocumentFile(documentDate, fileName):documentFile;
+		if (activeTabIndex == 0) {
+			if (documentFile !=null && documentUid != null && documentUid.equals(documentFile.getUid())) {
+				// same document file instance
+				documentFile.setDocumentDate(documentDate);
+				documentFile.setFileName(fileName);				
+			} else if (documentDate != null || !StringHelper.isEmpty(fileName)) {
+				return new DocumentFile(documentDate, fileName);
+			}
+		}
+		return documentFile;
 	}
 
 	public void setCurrentDocumentFile(DocumentFile currentDocumentFile) {
 		this.documentFile = currentDocumentFile;
+		this.documentUid =  currentDocumentFile==null?null:currentDocumentFile.getUid();
 		this.documentDate = currentDocumentFile==null?null:currentDocumentFile.getDocumentDate();
 		this.fileName = currentDocumentFile==null?null:currentDocumentFile.getFileName();
 	}
@@ -66,7 +79,7 @@ public class DocumentFileSelector {
 	}
 	
 	public String getDocumentFileUrl() {
-		return documentFileService.getUrl(getCurrentDocumentFile());
+		return activeTabIndex == 0?documentFileService.getUrl(documentDate, fileName):documentFileService.getUrl(documentFile);
 	}
 	
 	public String getDocumentFileUrlFor(DocumentFile docFile) {

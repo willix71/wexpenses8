@@ -16,5 +16,7 @@ public interface IDocumentFileService  extends IGenericService<DocumentFile, Lon
 	String generateFilename(LocalDate fileDate, DBable<?> x);
 	
 	String getUrl(DocumentFile docFile);
+	
+	String getUrl(LocalDate date, String filename);
 
 }

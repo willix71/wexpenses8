@@ -27,6 +27,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.IPayeeService;
+import w.expenses8.data.domain.service.impl.CountryService;
 import w.expenses8.data.utils.TransactionsSums;
 
 @Slf4j
@@ -38,7 +39,12 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	private static final long serialVersionUID = 3351336696734127296L;
 
 	@Inject
-	DocumentFileSelector documentFileSelector;
+	private DocumentFileSelector documentFileSelector;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private CountryService countryService;
 	
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -85,7 +91,8 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 				this.potentialExchangeRates.put(currentElement.getExchangeRate().getFromCurrencyCode(), currentElement.getExchangeRate());
 			}
 			transactionsSums.compute(currentElement.getTransactions());
-		}	
+		}
+		documentFileSelector.reset();
 	}
 	
 	@Override
@@ -109,6 +116,16 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		setCurrentElement(t.getExpense());
 	}
 	
+	public void handlePayeeChange(SelectEvent<Payee> event) {
+		if (this.currentElement.getPayee()!=null) {
+			String newCurrencyCode = countryService.getCurrency(this.currentElement.getPayee().getCountryCode());
+			if (newCurrencyCode!=null && !newCurrencyCode.equals(this.currentElement.getCurrencyCode())) {
+				this.currentElement.setCurrencyCode(newCurrencyCode);
+				onCurrencyChange();
+			}
+		}
+	}
+	
 	public void handleDateChange(SelectEvent<LocalDateTime> event) {
 		LocalDateTime newdate = event.getObject();
 		log.info("handleDateChange old {} new {}",currentDate, newdate);
@@ -124,7 +141,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	
 	public void onCurrencyChange() {
 		String newCurrencyCode = currentElement.getCurrencyCode();
-		log.debug("onCurrencyChange {}",newCurrencyCode);
+		log.debug("onCurrencyChange {}", newCurrencyCode);
 		if (currencyValue.getCode().equals(newCurrencyCode)) {
 			currentElement.setExchangeRate(null);
 		} else {
@@ -179,9 +196,12 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	}
 	
 	public void addDocumentFile() {
-		currentElement.addDocumentFile(documentFileSelector.getCurrentDocumentFile());		
-		currentElement.updateDocumentCount();
-		documentFileSelector.reset();
+		DocumentFile docFile = documentFileSelector.getCurrentDocumentFile();
+		if (docFile != null) {
+			currentElement.addDocumentFile(docFile);		
+			currentElement.updateDocumentCount();
+			documentFileSelector.reset();
+		}
 	}
 	
 	public void deleteDocumentFile() {

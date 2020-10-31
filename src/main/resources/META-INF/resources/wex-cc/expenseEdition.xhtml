@@ -17,7 +17,7 @@
 		
 		<wex:dbableDetails dbable="#{expense}"/>
 
-		<h:panelGrid id="expenseFieldsPanelId" columns="2" rendered="#{not empty expense}" style="width:100%">
+		<h:panelGrid id="expenseFieldsPanelId" columns="2" rendered="#{not empty expense}" style="width:100%" styleClass="js-expense">
 			<h:outputText value=""/>
 			<p:messages for="ValidationErrors" showDetail="true" showSummary="true" />
 			
@@ -31,7 +31,7 @@
  			
 			<h:outputText value="payee" styleClass="wex-field-label"/>
 			<p:outputPanel id="payeeSelector">
-				<wex:payeeSelector payee="#{expense.payee}" payeeDisplayer="#{expense.expenseType.displayer}" edition="#{cc.attrs.edition}" />
+				<wex:payeeSelector payee="#{expense.payee}" payeeDisplayer="#{expense.expenseType.displayer}" edition="#{cc.attrs.edition}" handleSelect="#{expenseEditionController.handlePayeeChange}" update="@(.js-expense)" />
 			</p:outputPanel>			
              	
 			<h:outputText value="date" styleClass="wex-field-label"/>
@@ -79,7 +79,7 @@
 			<h:panelGroup id="exchangeRateLabelId" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code &amp;&amp; not empty expense.exchangeRate}">
 				<h:outputText  value="exchange rate" styleClass="wex-field-label" />
 			</h:panelGroup>
-			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code &amp;&amp; not empty expense.exchangeRate}">
+			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code &amp;&amp; not empty expense.exchangeRate}" >
 				<h:panelGroup rendered="#{not cc.attrs.edition}">
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col">
