@@ -1,10 +1,5 @@
 package w.expenses8.data.domain.model;
 
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REFRESH;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -35,7 +30,7 @@ public class Consolidation extends DBable<Consolidation> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Payee institution;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade={PERSIST, MERGE, REFRESH, DETACH})
+	@ManyToOne(fetch = FetchType.LAZY)
 	private DocumentFile documentFile;
 	
 	private BigDecimal openingValue;
