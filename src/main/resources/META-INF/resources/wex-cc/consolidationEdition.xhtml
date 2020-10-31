@@ -73,7 +73,7 @@
 			</p:outputPanel>
 		</h:panelGrid>
 	
-	    <p:pickList id="consoTransactionEntries" styleClass="js-wexTable js-conso-source wex-conso-picklist" var="xct" value="#{consolidationEditionController.entries}"
+	    <p:pickList id="consoTransactionEntries" rendered="#{not empty conso}" styleClass="js-wexTable js-conso-source wex-conso-picklist" var="xct" value="#{consolidationEditionController.entries}"
                 itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{transactionEntryConverter}" 
                 showTargetControls="true" 
                 showCheckbox="false"
@@ -112,7 +112,7 @@
 				</p:column>
 		</p:pickList>
 		
-	    <h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:space-between">
+	    <h:panelGroup rendered="#{not empty conso}" style="width:100%;display:flex;align-items:center;justify-content:space-between">
      		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" >
 				<f:actionListener binding="#{consolidationEditionController.save()}" />
 			</p:commandButton>

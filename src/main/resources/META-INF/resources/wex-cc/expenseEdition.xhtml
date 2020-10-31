@@ -152,7 +152,7 @@
 		</h:panelGrid>
 
 		<p/>
-		<p:dataTable id="documentFilesTableId"  var="docFile" value="#{expense.documentFiles}"
+		<p:dataTable id="documentFilesTableId" rendered="#{not empty expense}" var="docFile" value="#{expense.documentFiles}"
 				styleClass="js-documentFilesTable" resizableColumns="true" 
                 selection="#{expenseEditionController.selectedDocumentFile}" 
                 selectionMode="single"
@@ -204,12 +204,12 @@
        		</p:column>
 		</p:dataTable>        		
        
-        <p:contextMenu for="documentFilesTableId">
+        <p:contextMenu for="documentFilesTableId" rendered="#{not empty expense}">
         	<p:menuitem value="Delete" update="documentFilesTableId" icon="pi pi-trash" action="#{expenseEditionController.deleteDocumentFile}"/>
     	</p:contextMenu>
 		
 		<p/>		
-		<p:dataTable id="transactions" var="tentry" value="#{expense.transactions}" 
+		<p:dataTable id="transactions" rendered="#{not empty expense}" var="tentry" value="#{expense.transactions}" 
 				styleClass="js-transactionEntryTable" resizableColumns="true" 
                 selection="#{expenseEditionController.selectedTransactionEntry}" 
                 selectionMode="single"				
@@ -295,7 +295,7 @@
 			</p:column>
 		</p:dataTable>
 		
-		<p:contextMenu for="transactions">
+		<p:contextMenu for="transactions" rendered="#{not empty expense}">
         	<p:menuitem value="Add" update="transactions" icon="pi pi-plus" action="#{expenseEditionController.newTransactionEntry}"/>
         	<p:menuitem value="Delete" update="transactions" icon="pi pi-trash" action="#{expenseEditionController.deleteTransactionEntry}"/>
     	</p:contextMenu>
