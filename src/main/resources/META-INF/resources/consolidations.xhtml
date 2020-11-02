@@ -66,13 +66,13 @@
      		
 			<p:outputPanel id="wexDetailPanel">
 	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Consolidation" position="top">
-					<wex:consolidationEdition2 edition="false"/>
+					<wex:consolidationEdition edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
 	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Consolidation" position="top" modal="true">
-					<wex:consolidationEdition2 edition="false"/>
+					<wex:consolidationEdition edition="false"/>
 					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
 						<f:actionListener binding="#{editionController.delete()}" />
 						<f:actionListener binding="#{controller.refresh()}" />
@@ -85,7 +85,7 @@
 		<h:form id="wexEditionForm" >
 			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="Consolidation" position="top" modal="true">
 				<p:outputPanel id="wexEditionPanel">
-					<wex:consolidationEdition2 edition="true"/>
+					<wex:consolidationEdition edition="true"/>
 				</p:outputPanel>
 				
 				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
