@@ -87,12 +87,20 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	
 	public void save() {
 		currentElement = elementService.save(currentElement);
-		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
-		edition=false; // switch back to view mode after save
+		saved();
 	}
 	
+	protected void saved() {
+		edition=false; // switch back to view mode after save
+		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
+	}
+
 	public void delete() {
 		elementService.delete(currentElement);
+		deleted();
+	}
+	
+	protected void deleted() {
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("deleted"));
 		currentElement = null;
 	}
