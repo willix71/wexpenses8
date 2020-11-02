@@ -24,13 +24,13 @@
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:160px">
 	   	    		<p:outputLabel for="@next" value="date" styleClass="wex-field-label" />
 	   	    		<p:datePicker value="#{conso.date}" rendered="#{cc.attrs.edition}" 
-	   	    			 view="month"  
+	   	    			view="month"  
 						pattern="MMM yyyy"
 						showIcon="true"
 						showButtonBar="true"
 						appendTo="@(body)"
 						styleClass="wex-small-datepicker js-date-related">
-						<p:ajax event="dateSelect" listener="#{consolidationEditionController.updateDate}" update="targetTags consoTransactionEntries" />
+						<p:ajax event="dateSelect" listener="#{consolidationEditionController.updateDate}" update="@(.js-conso-target)" />
 					</p:datePicker>
 	   	    		<h:outputText value="#{conso.date}" rendered="#{not cc.attrs.edition}" >
 						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
@@ -53,29 +53,33 @@
 			<h:panelGroup styleClass="wex-form-row" >
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
-	   	    		<p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening value" rendered="#{cc.attrs.edition}" />
+	   	    		<p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening value" rendered="#{cc.attrs.edition}" >
+	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
+	   	    		</p:inputNumber>
 	   	    		<h:outputText value="#{conso.openingValue}" rendered="#{not cc.attrs.edition}" />
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
-	   	    		<p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closin value" rendered="#{cc.attrs.edition}" />
+	   	    		<p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closin value" rendered="#{cc.attrs.edition}" >
+	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
+	   	    		</p:inputNumber>
 	   	    		<h:outputText value="#{conso.closingValue}" rendered="#{not cc.attrs.edition}" />
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="delta value" styleClass="wex-field-label" />
-	   	    		<h:outputText id="deltaValue" value="#{conso.deltaValue}" />
+	   	    		<h:outputText id="deltaValue" value="#{conso.deltaValue}" styleClass="js-conso-total"/>
 	   	    	</h:panelGroup>
 
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="in" styleClass="wex-field-label" />
-	   	    		<h:outputText value="#{consolidationEditionController.totalIn}" />
+	   	    		<h:outputText id="totalIn" value="#{consolidationEditionController.totalIn}" styleClass="js-conso-total"/>
 	   	    	</h:panelGroup>
 
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="out" styleClass="wex-field-label" />
-	   	    		<h:outputText value="#{consolidationEditionController.totalOut}" />
+	   	    		<h:outputText id="totalOut" value="#{consolidationEditionController.totalOut}" styleClass="js-conso-total"/>
 	   	    	</h:panelGroup>
 			</h:panelGroup>
 			
@@ -95,7 +99,7 @@
 				<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">	   	    	
 	   	    		<h:outputText for="@next" value="target tag" styleClass="wex-field-label"/>
 					<p:autoComplete id="targetTags" multiple="true" value="#{consolidationEditionController.targetTags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
-						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags js-conso-target">
 						<p:column>
 							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
 						</p:column>
@@ -110,7 +114,7 @@
 	                showCheckbox="false"
 	                responsive="true">
 			 
-			        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="@form" />
+			        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="@(.js-conso-total)" />
 			        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" />
 					
 					<p:column style="width:40px;min-width:40px" >
