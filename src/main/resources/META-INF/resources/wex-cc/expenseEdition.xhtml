@@ -210,7 +210,7 @@
 		
 		<p/>		
 		<p:dataTable id="transactions" rendered="#{not empty expense}" var="tentry" value="#{expense.transactions}" 
-				styleClass="js-transactionEntryTable" resizableColumns="true" 
+				styleClass="js-transactionEntryTable js-date-related js-value-related" resizableColumns="true" 
                 selection="#{expenseEditionController.selectedTransactionEntry}" 
                 selectionMode="single"				
 				rowKey="#{tentry.uid}"
@@ -225,18 +225,18 @@
             	<h:outputText value="#{tentry.accountingDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
 					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 				</h:outputText>
-				<p:datePicker id="transcationEntryId" value="#{tentry.accountingDate}" rendered="#{cc.attrs.edition}" 
+				<p:datePicker id="transcationDateId" value="#{tentry.accountingDate}" rendered="#{cc.attrs.edition}" 
 					pattern="dd/MM/yyyy"
 					showIcon="true"
 					showButtonBar="true"
 					appendTo="@(body)"
-					styleClass="wex-small-datepicker js-date-related"
+					styleClass="wex-small-datepicker "
 			 	/>
        		</p:column>
        					
 			<p:column headerText="Year" styleClass="wex-cell-centered" style="max-width:70px; width:70px">
 				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
-				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="js-date-related wex-input-70" thousandSeparator=""/>
+				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" thousandSeparator=""/>
 			</p:column>
 
             <p:column headerText="Consolidated" styleClass="wex-cell-centered" style="max-width:120px; width:120px" >
@@ -269,11 +269,11 @@
 
 			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
 				<h:outputText value="#{tentry.currencyAmount} #{expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
-				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s" thousandSeparator="'" styleClass="wex-input-right wex-input-150 js-value-related" >
+				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s" thousandSeparator="'" styleClass="wex-input-right wex-input-150" >
 					<p:ajax listener="#{expenseEditionController.onTransactionAmountChange(tentry)}" update="@(.js-transaction-value-related)" />
 				</p:inputNumber>
 				<f:facet name="footer">
-					<p:outputPanel styleClass="js-value-related js-transaction-value-related">
+					<p:outputPanel styleClass="js-transaction-value-related">
 						<h:outputText value="#{expenseEditionController.transactionsSums.currencyAmountSums.sumIn} #{expense.currencyCode}" rendered="#{expenseEditionController.transactionsSums.currencyAmountSums.valid}" />
 						<h:outputText value="#{expenseEditionController.transactionsSums.currencyAmountSums.delta} #{expense.currencyCode}" rendered="#{not expenseEditionController.transactionsSums.currencyAmountSums.valid}" style="color: #b94a48;"/>
 					</p:outputPanel>
@@ -281,13 +281,13 @@
 			</p:column>
 
 			<p:column headerText="Value" styleClass="wex-cell-righted" style="max-width:120px; width:120px">
-				<p:outputPanel styleClass="js-value-related js-transaction-value-related">
+				<p:outputPanel>
 					<h:outputFormat value="{0,number, 0.00}" >
 						<f:param value="#{tentry.accountingValue}" />
 					</h:outputFormat>
 				</p:outputPanel>
 				<f:facet name="footer">
-					<p:outputPanel styleClass="js-value-related js-transaction-value-related">
+					<p:outputPanel styleClass="js-transaction-value-related">
 						<h:outputText value="#{expenseEditionController.transactionsSums.accountingValueSums.sumIn}" rendered="#{expenseEditionController.transactionsSums.accountingValueSums.valid}" />
 						<h:outputText value="#{expenseEditionController.transactionsSums.accountingValueSums.delta}" rendered="#{not expenseEditionController.transactionsSums.accountingValueSums.valid}" style="color: #b94a48;"/>
 					</p:outputPanel>
@@ -301,5 +301,6 @@
         	<p:menuitem value="Delete" update="transactions" icon="pi pi-trash" action="#{expenseEditionController.deleteTransactionEntry}"/>
     	</p:contextMenu>
 
+		<composite:insertChildren />
    	</composite:implementation>
 </ui:component>

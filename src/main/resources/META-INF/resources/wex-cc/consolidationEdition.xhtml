@@ -146,6 +146,11 @@
 						<h:outputText value="#{xct.accountingBalance}" />
 					</p:column>
 				</p:pickList>
+				
+				       
+		        <p:contextMenu for="consoTransactionEntries" rendered="#{not empty expense}">
+		        	<p:menuitem value="edit" update="consoTransactionEntries" icon="pi pi-trash" />
+		    	</p:contextMenu>
 			</h:panelGroup>
 			
 			<h:panelGroup styleClass="wex-form-row" rendered="#{not cc.attrs.edition}" >
