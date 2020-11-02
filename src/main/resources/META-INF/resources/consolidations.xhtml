@@ -37,35 +37,42 @@
 			
                 <ui:include src="/includes/consolidationsColumns.xhtml"/>
 	     		
-	     		<p:ajax event="rowSelect" update="wexTableForm:consolidationMenu" />
-	     		<p:ajax event="rowDblselect" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexDetailDialog').show()" />
+               	<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
+		        	<p:resetInput target="wexEditionForm" />
+	     		</p:ajax>
 			</p:dataTable>
 			
 			<p:contextMenu id="consolidationMenu" for="wexTable">
 		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()">
 		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
-		        <p:menuitem value="Edit" icon="pi pi-pencil" action="#{controller.prepareEditConsolidation}" ajax="false" immediate="true" target="_blank" >
+		        <p:menuitem value="Edit" update="wexEditionForm" icon="pi pi-pencil" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
+		        	<p:resetInput target="wexEditionForm" />
 		        </p:menuitem>
 		        <p:menuitem value="Delete" update="wexDeletePanel" icon="pi pi-trash" oncomplete="PF('w_wexDeleteDialog').show()">
 		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
-		        <p:menuitem value="New" icon="pi pi-plus" action="#{controller.prepareNewConsolidation}" ajax="false" immediate="true" target="_blank">
+		        <p:menuitem value="New" update="wexEditionForm" icon="pi pi-plus" action="#{editionController.newElement}" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{null}" target="#{editionController.currentElement}" />
+		        	<p:resetInput target="wexEditionForm" />
 		        </p:menuitem>
-		        <p:menuitem value="Next" icon="pi pi-plus" action="#{controller.prepareNextConsolidation}" ajax="false" immediate="true" target="_blank">
+		        <p:menuitem value="Next" update="wexEditionForm" icon="pi pi-plus" oncomplete="PF('w_wexEditionDialog').show()">
+		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.nextElement}" />
+		        	<p:resetInput target="wexEditionForm" />
 		        </p:menuitem>
 		        <p:menuitem value="Refresh" update="wexTableForm" icon="pi pi-replay" action="#{controller.refresh}"/>
 		    </p:contextMenu>
      		
 			<p:outputPanel id="wexDetailPanel">
 	 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Consolidation" position="top">
-					<wex:consolidationView />
+					<wex:consolidationEdition2 edition="false"/>
 				</p:dialog>
 			</p:outputPanel>
 
 			<p:outputPanel id="wexDeletePanel">
 	 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Consolidation" position="top" modal="true">
-					<wex:consolidationView />
+					<wex:consolidationEdition2 edition="false"/>
 					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
 						<f:actionListener binding="#{editionController.delete()}" />
 						<f:actionListener binding="#{controller.refresh()}" />
@@ -73,6 +80,23 @@
 					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
 				</p:dialog>
 			</p:outputPanel>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<p:dialog id="wexEditionDialog" widgetVar="w_wexEditionDialog" header="Consolidation" position="top" modal="true">
+				<p:outputPanel id="wexEditionPanel">
+					<wex:consolidationEdition2 edition="true"/>
+				</p:outputPanel>
+				
+				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+					<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
+					<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel">
+						<f:actionListener binding="#{editionController.save()}" />
+					</p:commandButton>
+				</h:panelGroup>
+				
+				<p:ajax event="close" listener="#{controller.refresh()}" update="wexTableForm:wexTable wexTableForm:growl" />
+			</p:dialog>
 		</h:form>
 	</ui:define>
 </ui:composition>	

@@ -21,6 +21,17 @@
 	width: 100% !important
 }
 
+.wex-form-row {
+	margin-top: 10px;
+	display:flex;
+	flex-direction:row;
+	align-items: center
+}
+.wex-form-field {
+	display:flex;
+	flex-direction:column
+}
+
 .wex-cell-centered {
 	text-align: center;	
 }

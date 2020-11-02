@@ -1,6 +1,5 @@
 package w.expenses8.web.controller;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,6 +83,12 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		initCurrentConsolidation();
 	}
 
+	public void setNextElement(Consolidation conso) {
+		conso = consolidationService.reload(conso);
+		this.currentElement = Consolidation.with().date(conso.getDate().plusMonths(1)).institution(conso.getInstitution()).openingValue(conso.getClosingValue()).build();
+		initCurrentConsolidation();
+	}
+	
 	private void initCurrentConsolidation() {
 		if (this.currentElement!=null) {
 			if (this.currentElement.getDate() != null) {
@@ -190,13 +195,9 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 			t.getTags().removeAll(tags);
 			altered.add(t);
 		});
+		
 		currentElement = consolidationService.save(currentElement, altered);
-
-		try {
-			FacesContext.getCurrentInstance().getExternalContext().redirect("consolidation.xhtml?id="+currentElement.getId());
-		} catch(IOException ioe) {
-			log.error("Failed to redirect consolidation...", ioe);
-		}
+		saved();
 	}
     
     
