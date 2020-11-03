@@ -1,6 +1,5 @@
 package w.expenses8.web.controller;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +30,7 @@ import w.expenses8.data.utils.ExpenseHelper;
 @ViewScoped
 @Getter @Setter
 @SuppressWarnings("serial")
-public class NewExpenseController implements Serializable {
+public class NewExpenseController extends ExpenseController {
 	
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -48,12 +47,16 @@ public class NewExpenseController implements Serializable {
 	
 	private Expense baseExpense;
 	
-	private Expense newExpense;
-	
 	public void setPayee(Payee p) {
 		this.payee = p;
 		this.copyOptions = null;
 		this.lastPayeeExpenses = p == null?null:expenseService.findExpenses(ExpenseCriteria.with().payee(payee).build());
+	}
+	
+	@Override
+	protected void loadEntities() {
+		log.info("loading recent expenses...");
+		elements = expenseService.findLatestExpenses();
 	}
 	
 	public void baseExpenseSelected() {
@@ -72,15 +75,15 @@ public class NewExpenseController implements Serializable {
 		copyOptions = potentialOptions.toArray(new String[potentialOptions.size()]);
 	}
 
-	public Expense getNewEmptyExpense() {
-		newExpense = ExpenseHelper.build(expenseType, payee);
+	public void newEmptyExpense() {
+		Expense newExpense = ExpenseHelper.build(expenseType, payee);
 		log.info("created new expense {}",newExpense);
-		return newExpense;
+		getEditionController().setCurrentElement(newExpense);
 	}
 	
-	public Expense getNewDuplicatedExpense() {
+	public void newDuplicatedExpense() {
 		Set<String> options = new HashSet<>(Arrays.asList(copyOptions));
-		newExpense = ExpenseHelper.build(
+		Expense newExpense = ExpenseHelper.build(
 				payee, expenseType!=null?expenseType:baseExpense.getExpenseType(), options.contains("date")?baseExpense.getDate():null,baseExpense.getCurrencyAmount(), baseExpense.getCurrencyCode(), 
 				baseExpense.getTransactions().stream().map(e->ExpenseHelper.buildTransactionEntry(e.getTags().stream().filter(t->t.getType()!=TagType.CONSOLIDATION).collect(Collectors.toList()),e.getFactor())).collect(Collectors.toList()));
 		if (options.contains("reference")) {
@@ -101,20 +104,15 @@ public class NewExpenseController implements Serializable {
 					.build());
 		}
 		log.info("duplicated new expense {}",newExpense);
-		return newExpense;
+		getEditionController().setCurrentElement(newExpense);
 	}	
-	
-	public void reset() {
+
+	@Override
+	public void saveElement() {
+		super.saveElement();
 		payee = null;
 		expenseType = null;
 		baseExpense = null;
-		newExpense = null;
-		copyOptions = null;
-	}
-
-	public void reselect() {
-		baseExpense = null;
-		newExpense = null;
 		copyOptions = null;
 	}
 }

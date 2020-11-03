@@ -17,5 +17,7 @@ public interface IExpenseService extends IGenericService<Expense, Long> {
 
 	List<Expense> findExpenses(ExpenseCriteria criteria);
 
+	List<Expense> findLatestExpenses();
+
 	List<Expense> findExpensesToPay();
 }

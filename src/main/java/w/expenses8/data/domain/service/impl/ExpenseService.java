@@ -1,6 +1,8 @@
 package w.expenses8.data.domain.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -176,6 +178,17 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
     }
+	
+	@Override
+	public List<Expense> findLatestExpenses() {
+		QExpense ex = QExpense.expense;
+		
+		Date noOlderThan = Date.from(LocalDateTime.now().minusHours(24).atZone(ZoneId.systemDefault()).toInstant());
+		BooleanBuilder predicate = new BooleanBuilder().and(ex.createdTs.gt(noOlderThan).or(ex.modifiedTs.gt(noOlderThan)));
+		
+		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		return query.fetch();
+	}
 	
 	@Override
 	public List<Expense> findExpensesToPay() {
