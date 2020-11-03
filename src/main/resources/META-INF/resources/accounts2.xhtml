@@ -1,0 +1,44 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Accounts</ui:define>
+
+	<ui:define name="content">
+		<h:form id="wexTableForm">
+			<p:growl id="growl" />
+			
+			<c:set var="controller" value="#{transactionEntryController}" />
+
+			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
+				 <wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="@(.js-wexTable)"/>
+				 
+				 <h:panelGrid columns="2" cellpadding="2">
+					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{controller.refresh}" update="@(.js-wexTable)" />
+					<p:commandButton id="resetFilterBtn" icon="pi pi-times" value="Reset" action="#{controller.reset}" update="criteriaFields @(.js-wexTable)" />
+				</h:panelGrid>
+			</p:fieldset>
+			
+			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/accountsColumns.xhtml" >
+				<f:facet name="elementViewer">
+					<wex:expenseEdition edition="false"/>
+				</f:facet>
+			</wex:dbableTable>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Account" update="wexTableForm">
+				<f:facet name="elementViewer">
+					<wex:expenseEdition edition="true"/>
+				</f:facet>
+			</wex:dbableEditDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>	

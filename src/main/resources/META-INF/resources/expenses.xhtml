@@ -42,13 +42,13 @@
                  rowKey="#{x.uid}"
                  selection="#{controller.selectedElement}" 
                  selectionMode="single"
-                 expandedRow="#{controller.expandAll}"
+                 expandedRow="#{controller.expandAllRows}"
                  rowStyleClass="#{x.date.isAfter(requestController.time) ? 'wex-expense-futur' : 'wex-expense-past'}"
                  >
 				<f:facet name="header">
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
-					<p:selectBooleanCheckbox itemLabel="Expand All" value="#{controller.expandAll}" style="float:right" >
+					<p:selectBooleanCheckbox itemLabel="Expand All" value="#{controller.expandAllRows}" style="float:right" >
 						<p:ajax update="wexTable" />
 					</p:selectBooleanCheckbox>
 				</f:facet>

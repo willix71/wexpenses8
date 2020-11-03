@@ -26,10 +26,13 @@ import w.expenses8.data.domain.service.IExpenseService;
 @Named
 @ViewScoped
 @Getter @Setter
-public class ExpenseController extends AbstractListController<Expense> {
+public class ExpenseController extends AbstractListEditionController<Expense, Expense> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 
+	@Inject 
+	private ExpenseEditionController expenseEditionController;
+	
 	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
@@ -42,7 +45,9 @@ public class ExpenseController extends AbstractListController<Expense> {
 	
 	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 
-	private boolean expandAll = false;
+	private ExpenseController() {
+		super(Expense.class);
+	}
 	
 	public void resetMonth() {
 		criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
@@ -61,6 +66,11 @@ public class ExpenseController extends AbstractListController<Expense> {
 	protected void loadEntities() {
 		log.info("loading expenses with {}", criteria);
 		elements = expenseService.findExpenses(criteria);
+	}
+	
+	@Override
+	protected AbstractEditionController<Expense> getEditionController() {
+		return expenseEditionController;
 	}
 	
 	public MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {

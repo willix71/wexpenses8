@@ -59,7 +59,7 @@ public class LocalDateTimeCustomConverter implements Converter<LocalDateTime> {
 		int y = fields.length > 2 && fields[2].length() > 0 ? Integer.parseInt(fields[2]) : now.get(Calendar.YEAR);
 		try {
 			LocalDateTime date =  LocalDateTime.of(y, m, d, hour, minute, second);
-			log.info("Converted [{}] to {}", value, date);
+			log.debug("Converted [{}] to {}", value, date);
 			return date;
 		} catch(Exception e) {
 			throw new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid date", "Can't parse " + value));
@@ -68,7 +68,7 @@ public class LocalDateTimeCustomConverter implements Converter<LocalDateTime> {
 
 	@Override
 	public String getAsString(FacesContext context, UIComponent component, LocalDateTime value) {
-		log.info("Converting [{}] from LocalDate", value);
+		log.debug("Converting [{}] from LocalDate", value);
 		if (value == null) {
 			return null;
 		} else if (value.getMinute()==0 && value.getHour()==0) {

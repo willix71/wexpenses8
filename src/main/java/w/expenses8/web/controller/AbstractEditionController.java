@@ -93,6 +93,7 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	protected void saved() {
 		edition=false; // switch back to view mode after save
 		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
+		showMessage("saved " + currentElement.getFullId());
 	}
 
 	public void delete() {
@@ -101,8 +102,12 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	}
 	
 	protected void deleted() {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("deleted"));
+		showMessage("deleted " + currentElement.getFullId());
 		currentElement = null;
+	}
+	
+	protected void showMessage(String text) {
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(text));
 	}
 	
 	public abstract void setCurrentElementId(Object o); 

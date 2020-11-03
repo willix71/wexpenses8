@@ -9,7 +9,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.RowEditEvent;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.model.DBable;
@@ -55,8 +54,8 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	}
 
 	public void refresh() {
+		log.info("Refreshing {}", clazz.getSimpleName());
 		loadEntities();
-		log.info("{} refreshed", clazz.getSimpleName());
 		showMessage(nameOf(null) + " refreshed");
 	}
 	
@@ -64,18 +63,8 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 		selectedElement = clazz.newInstance();
 	}
 	
-	public void onRowEdit(RowEditEvent<T> event) {
-		T t = event.getObject();
-		t = elementService.save(selectedElement);
-		showMessage(nameOf(t) + " saved " + t.getFullId());
-		refresh();
-	}
-
-	public void onRowCancel(RowEditEvent<T> event) {
-		refresh();
-	}
-	
 	public void save() {
+		log.info("Saving {}", selectedElement);
 		int index = elements.indexOf(selectedElement);
 		T newP = elementService.save(selectedElement);
 		if (index<0) {
@@ -83,13 +72,17 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 		} else {
 			elements.set(index, newP);
 		}
+		showMessage(nameOf(selectedElement) + " saved");
+		
 		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
 	}
 	
 	public void delete() {
+		log.info("Deleting {}", selectedElement);
 		elementService.delete(selectedElement);
+		elements.remove(selectedElement);
 		showMessage(nameOf(selectedElement) + " deleted");
-		refresh();
+		
 		selectedElement = null;
 	}
 

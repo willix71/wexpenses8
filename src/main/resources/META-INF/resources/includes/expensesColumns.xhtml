@@ -55,7 +55,9 @@
 	</p:column>
 
 	<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:15%">
-		<h:outputText value="#{x.currencyAmount}" />
+		<h:outputFormat value="{0,number, ###0.00}">
+			<f:param value="#{x.currencyAmount}" />
+		</h:outputFormat>
 	</p:column>
 
 	<p:column headerText="Currency" style="width:60px">

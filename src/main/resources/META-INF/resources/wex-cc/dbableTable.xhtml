@@ -1,0 +1,74 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+   	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="controller" type="w.expenses8.web.controller.AbstractListEditionController" required="true" />
+		<composite:attribute name="columsDefinition" required="true"/>
+		<composite:attribute name="hasExpandedRows" default="false"/>
+		<composite:attribute name="singlePage" required="false"/>
+		<composite:facet name="elementViewer" required="true"/>
+	</composite:interface>
+	
+	<composite:implementation>
+		<c:set var="controller" value="#{cc.attrs.controller}" />
+		
+		<c:set var="singlePage" value="#{cc.attrs.singlePage}" />
+
+		<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
+                paginator="true"
+                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                rowsPerPageTemplate="5,10,50,100,1000"
+				rows="10"
+                rowKey="#{x.uid}"
+                selectionMode="single"
+                selection="#{controller.selectedElement}" 
+                expandedRow="#{controller.expandAllRows}"
+                rowStyleClass="#{controller.getRowStyleClass(x)}}"
+                >
+
+			<f:facet name="header">
+				<h:panelGroup rendered="#{cc.attrs.hasExpandedRows}">
+					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
+					<p:columnToggler datasource="wexTable" trigger="toggler" />
+					<p:selectBooleanCheckbox itemLabel="Expand All" value="#{controller.expandAllRows}" style="float:right" >
+						<p:ajax update="wexTable" />
+					</p:selectBooleanCheckbox>
+				</h:panelGroup>
+			</f:facet>
+			
+			<ui:include src="#{cc.attrs.columsDefinition}"/>
+			
+			<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{controller.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" />
+		</p:dataTable>
+			
+		<p:contextMenu for="wexTable" model="#{controller.menuModel}"/>
+		
+		<p:outputPanel id="wexDetailPanel">
+ 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top">
+				<composite:renderFacet name="elementViewer" />
+				<h:panelGroup styleClass="wex-edit-buttons-panel">
+					<p:commandButton id="wexCloseBtn" value="Close" type="button" onclick="PF('w_wexDetailDialog').hide()" />
+				</h:panelGroup>			
+			</p:dialog>
+		</p:outputPanel>
+
+		<p:outputPanel id="wexDeletePanel">
+ 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Expense" position="top" modal="true">
+				<composite:renderFacet name="elementViewer" />
+				<h:panelGroup styleClass="wex-edit-buttons-panel">
+					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
+						<f:actionListener binding="#{controller.deleteElement()}" />
+						<f:actionListener binding="#{controller.refresh()}" />
+					</p:commandButton>
+					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
+				</h:panelGroup>
+			</p:dialog>
+		</p:outputPanel>
+	</composite:implementation>
+</ui:component>

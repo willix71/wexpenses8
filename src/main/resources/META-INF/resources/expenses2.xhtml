@@ -1,0 +1,48 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Expenses</ui:define>
+
+	<ui:define name="content">
+		<h:form id="wexTableForm">
+			<p:growl id="growl" />
+			
+			<c:set var="controller" value="#{expenseController}" />
+
+			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
+				<wex:expenseCriteria criteria="#{expenseController.criteria}" action="#{expenseController.refresh}" update="@(.js-wexTable)"/>
+				
+		        <h:panelGrid columns="2" cellpadding="2">
+					<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="@(.js-wexTable)" />
+					<p:splitButton id="clearFilterBtn" value="Clear" icon="pi pi-times">
+            			<p:menuitem value="Month" action="#{expenseController.resetMonth}" update="criteriaFields @(.js-wexTable)" />
+            			<p:menuitem value="Year" action="#{expenseController.resetYear}" update="criteriaFields @(.js-wexTable)" />
+            			<p:menuitem value="All" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
+            		</p:splitButton>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/expensesColumns.xhtml" hasExpandedRows="true" singlePage="expense">
+				<f:facet name="elementViewer">
+					<wex:expenseEdition edition="false"/>
+				</f:facet>
+			</wex:dbableTable>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Expense" update="wexTableForm">
+				<f:facet name="elementViewer">
+					<wex:expenseEdition edition="true"/>
+				</f:facet>
+			</wex:dbableEditDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>	

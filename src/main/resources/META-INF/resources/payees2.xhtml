@@ -1,0 +1,35 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"
+	template="templates/main-template.xhtml"
+	>
+
+	<ui:define name="title">Wexpenses Payees</ui:define>
+
+	<ui:define name="content">
+		<h:form id="wexTableForm">
+			<p:growl id="growl" />
+			
+			<c:set var="controller" value="#{payeeController}" />
+
+			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/payeesColumns.xhtml" singlePage="payee">
+				<f:facet name="elementViewer">
+					<wex:payeeEdition edition="false"/>
+				</f:facet>
+			</wex:dbableTable>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Payee" update="wexTableForm">
+				<f:facet name="elementViewer">
+					<wex:payeeEdition edition="true"/>
+				</f:facet>
+			</wex:dbableEditDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>	

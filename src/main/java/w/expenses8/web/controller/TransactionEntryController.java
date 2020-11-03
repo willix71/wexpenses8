@@ -7,8 +7,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.primefaces.PrimeFaces;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +21,12 @@ import w.expenses8.data.domain.service.ITransactionEntryService;
 @Named
 @ViewScoped
 @Getter @Setter
-public class TransactionEntryController extends AbstractListController<TransactionEntry> {
+public class TransactionEntryController extends AbstractListEditionController<TransactionEntry, Expense> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
+	
+	@Inject 
+	private ExpenseEditionController expenseEditionController;
 	
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -40,6 +41,16 @@ public class TransactionEntryController extends AbstractListController<Transacti
 	private ITransactionEntryService transactionEntryService;
 	
 	private TransactionEntryCriteria criteria = TransactionEntryCriteria.from(Year.now().getValue());
+	
+
+	public TransactionEntryController() {
+		super(TransactionEntry.class);
+	}
+
+	@Override
+	protected AbstractEditionController<Expense> getEditionController() {
+		return expenseEditionController;
+	}
 	
 	public void reset() {
 		criteria = TransactionEntryCriteria.from(Year.now().getValue());
@@ -75,17 +86,9 @@ public class TransactionEntryController extends AbstractListController<Transacti
 			e.setLiveBalance(liveBalance);
 		}
 	}
-	
-	public void deleteExpense() {
-		expenseService.delete(selectedElement.getExpense());
-		showMessage(nameOf(selectedElement) + " deleted");
-		refresh();
-		selectedElement = null;
-	}
-	
-	public void saveExpense() {
-		expenseService.save(selectedExpense);
-		refresh();
-		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
+
+	@Override
+	public Expense convert(TransactionEntry t) {
+		return t.getExpense();
 	}
 }
