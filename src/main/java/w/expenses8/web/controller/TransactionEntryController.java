@@ -41,7 +41,6 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 	private ITransactionEntryService transactionEntryService;
 	
 	private TransactionEntryCriteria criteria = TransactionEntryCriteria.from(Year.now().getValue());
-	
 
 	public TransactionEntryController() {
 		super(TransactionEntry.class);

@@ -45,7 +45,7 @@ public class ExpenseController extends AbstractListEditionController<Expense, Ex
 	
 	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
 
-	private ExpenseController() {
+	public ExpenseController() {
 		super(Expense.class);
 	}
 	
@@ -75,17 +75,17 @@ public class ExpenseController extends AbstractListEditionController<Expense, Ex
 	
 	public MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {
 		MenuModel model= new DefaultMenuModel();
-	
-		for(DocumentFile file:files) {
-			model.getElements().add(DefaultMenuItem.builder()
-					//.label(file.getFileName())
-					.value(file.getFileName())
-					.icon("pi pi-circle-on")
-					.url(documentFileService.getUrl(file))
-					.target("_blank")
-					.build());
+		if (files != null) {
+			for(DocumentFile file:files) {
+				model.getElements().add(DefaultMenuItem.builder()
+						//.label(file.getFileName())
+						.value(file.getFileName())
+						.icon("pi pi-circle-on")
+						.url(documentFileService.getUrl(file))
+						.target("_blank")
+						.build());
+			}
 		}
-		
 		return model;
 	}
 }

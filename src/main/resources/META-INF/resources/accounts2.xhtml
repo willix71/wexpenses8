@@ -17,7 +17,7 @@
 			
 			<c:set var="controller" value="#{transactionEntryController}" />
 
-			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500">
+			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500" style="margin-bottom: 20px;">
 				 <wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="@(.js-wexTable)"/>
 				 
 				 <h:panelGrid columns="2" cellpadding="2">

@@ -12,21 +12,24 @@
 	<ui:define name="title">Wexpenses New Expense</ui:define>
 
 	<ui:define name="content">
-		<h:form id="wexEditionForm" styleClass="wex-single-element">
-		
-			<p:outputPanel id="payeeSelector" rendered="#{empty newExpenseController.newExpense}">
-				<wex:payeeSelector payee="#{newExpenseController.payee}" payeeDisplayer="#{newExpenseController.expenseType.displayer}" edition="true" update="wexEditionForm"/>
+		<h:form id="wexTableForm" styleClass="wex-single-element">
+			<p:growl id="growl" />
+			
+			<c:set var="controller" value="#{newExpenseController}" />
+
+			<p:outputPanel id="payeeSelector">
+				<wex:payeeSelector payee="#{newExpenseController.payee}" payeeDisplayer="#{newExpenseController.expenseType.displayer}" edition="true" update="wexTableForm"/>
 
 				<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
 				 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
 	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" placeholder="type">
-	             	<p:ajax event="itemSelect" update="wexEditionForm" />
+	             	<p:ajax event="itemSelect" update="wexTableForm" />
 	            </p:autoComplete>
 			
 	        	<p:outputPanel id="payeeLastExpenseId" rendered="#{not empty newExpenseController.payee}">
 			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{expenseConverter}" var="x" style="width:100%">
 			            <f:selectItems value="#{newExpenseController.lastPayeeExpenses}"/>
-			 			<p:ajax listener="#{newExpenseController.baseExpenseSelected}" update="wexEditionForm" />
+			 			<p:ajax listener="#{newExpenseController.baseExpenseSelected}" update="wexTableForm" />
 			            <p:column>
 			                <h:outputText value="#{x.expenseType.name}" />
 			            </p:column>
@@ -53,11 +56,9 @@
 					</p:selectOneListbox>
 	
 					<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-center" >
-			     		<p:commandButton id="wexNewExpense" value="New" update="wexEditionForm" >
-			     			<f:setPropertyActionListener value="#{newExpenseController.newEmptyExpense}" target="#{expenseEditionController.currentElement}" />
+			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.newEmptyExpense}" update="wexEditionForm" oncomplete="PF('w_wexEditionDialog').show()" >
 			     		</p:commandButton>
-			     		<p:commandButton id="wexCopyExpense" value="Copy" update="wexEditionForm" disabled="#{empty newExpenseController.baseExpense}">
-			     			<f:setPropertyActionListener value="#{newExpenseController.newDuplicatedExpense}" target="#{expenseEditionController.currentElement}" />
+			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.newDuplicatedExpense}" update="wexEditionForm" oncomplete="PF('w_wexEditionDialog').show()" disabled="#{empty newExpenseController.baseExpense}">
 			     		</p:commandButton>
 						<p:selectManyCheckbox value="#{newExpenseController.copyOptions}" disabled="#{empty newExpenseController.baseExpense}">
 					        <f:selectItem itemLabel="Date" itemValue="date" />
@@ -67,24 +68,23 @@
 					    </p:selectManyCheckbox>
 		        	</h:panelGroup>	
 	        	</p:outputPanel>
+
+	        	<p:outputPanel id="lastExpenseId" rendered="#{empty newExpenseController.payee}" style="padding-top: 20px;">
+					<wex:dbableTable controller="#{controller}" columsDefinition="/includes/expensesColumns.xhtml" hasExpandedRows="true" singlePage="expense" rowsPerPage="100">
+						<f:facet name="elementViewer">
+							<wex:expenseEdition edition="false"/>
+						</f:facet>
+					</wex:dbableTable>
+	        	</p:outputPanel>
 			</p:outputPanel>	
-        	
-			<p:outputPanel rendered="#{not empty newExpenseController.newExpense}">
-				<wex:expenseEdition edition="true"/>
-			
-				<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
-		     		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" >
-						<f:actionListener binding="#{expenseEditionController.save()}" />
-						<f:actionListener binding="#{newExpenseController.reset()}" />
-					</p:commandButton>
-		     		<p:commandButton id="wexReset" value="Reset" update="wexEditionForm" immediate="true" >
-						<f:actionListener binding="#{newExpenseController.reset()}" />
-					</p:commandButton>
-		     		<p:commandButton id="wexReselect" value="Reselect" update="wexEditionForm" immediate="true" >
-						<f:actionListener binding="#{newExpenseController.reselect()}" />
-					</p:commandButton>
-	        	</h:panelGroup>				
-			</p:outputPanel>
+		</h:form>
+		
+		<h:form id="wexEditionForm" >
+			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Expense" update="wexTableForm">
+				<f:facet name="elementViewer">
+					<wex:expenseEdition edition="true"/>
+				</f:facet>
+			</wex:dbableEditDialog>
 		</h:form>
 	</ui:define>
 </ui:composition>	

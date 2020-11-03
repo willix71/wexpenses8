@@ -29,8 +29,9 @@
 						showIcon="true"
 						showButtonBar="true"
 						appendTo="@(body)"
+						showOnFocus="false"
 						styleClass="wex-small-datepicker js-date-related">
-						<p:ajax event="dateSelect" listener="#{consolidationEditionController.updateDate}" update="@(.js-conso-target)" />
+						<p:ajax event="dateSelect" listener="#{consolidationEditionController.onConsoDateChange}" update="@(.js-conso-target)" />
 					</p:datePicker>
 	   	    		<h:outputText value="#{conso.date}" rendered="#{not cc.attrs.edition}" >
 						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
@@ -39,7 +40,7 @@
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:100%">
 	   	    		<p:outputLabel for="@next" value="institution" styleClass="wex-field-label" />
-					<wex:payeeSelector payee="#{conso.institution}" edition="#{cc.attrs.edition}" handleSelect="#{consolidationEditionController.updateInstitution}" update="@(.js-conso-source)"/>
+					<wex:payeeSelector payee="#{conso.institution}" edition="#{cc.attrs.edition}" handleSelect="#{consolidationEditionController.onConsoInstitutionChange}" update="@(.js-conso-source)"/>
 	   	    	</h:panelGroup>
 	   	    </h:panelGroup>
 	   	    
@@ -146,7 +147,6 @@
 						<h:outputText value="#{xct.accountingBalance}" />
 					</p:column>
 				</p:pickList>
-				
 				       
 		        <p:contextMenu for="consoTransactionEntries" rendered="#{not empty expense}">
 		        	<p:menuitem value="edit" update="consoTransactionEntries" icon="pi pi-trash" />
@@ -155,7 +155,7 @@
 			
 			<h:panelGroup styleClass="wex-form-row" rendered="#{not cc.attrs.edition}" >
 				<p:dataTable id="consoTransactionEntriesRO" styleClass="js-wexTable"
-					var="xct" value="#{consolidationEditionController.entries.target}" 
+					var="xct" value="#{consolidationEditionController.targetEntries}" 
 					resizableColumns="true" paginator="true" 					
 					rows="#{cc.attrs.rows}" rowsPerPageTemplate="10,50,100,1000" 
 					currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
@@ -173,7 +173,7 @@
 						<h:outputText value="#{xct.accountingOrder % 1000}" />
 						
 						<f:facet name="footer">
-							<h:outputText value="#{consolidationEditionController.entries.target.size()}" />
+							<h:outputText value="#{consolidationEditionController.targetEntries.size()}" />
 						</f:facet>
 					</p:column>
 					
