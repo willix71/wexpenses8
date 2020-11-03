@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -69,6 +68,10 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 
 	private List<TagCriteria> targetTags;
 	
+//    private List<TransactionEntry> sourceEntries;
+//	
+//    private List<TransactionEntry> targetEntries;
+	
 	private DualListModel<TransactionEntry> entries = new DualListModel<TransactionEntry>();
 	
 	@Override
@@ -100,7 +103,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 				log.info("Target tags {} ", sourceTags);
 			}
 			if (!this.currentElement.isNew()) {
-				this.entries.setTarget(transactionEntryService.findConsolidationEntries(this.currentElement));
+				setTargetEntries(transactionEntryService.findConsolidationEntries(this.currentElement));
 			}
 
 			documentFileSelector.setCurrentDocumentFile(this.currentElement.getDocumentFile());
@@ -110,18 +113,18 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		} else {
 			sourceTags = null;
 			targetTags = null;
-			this.entries.setSource(new ArrayList<>());
-			this.entries.setTarget(new ArrayList<>());
+			setSourceEntries(new ArrayList<>());
+			setTargetEntries(new ArrayList<>());
 			documentFileSelector.reset();
 		}
 	}
 	
-	public void updateDate() {
+	public void onConsoDateChange() {
 		targetTags = new ArrayList<TagCriteria>(Collections.singleton(tagService.getConsolidationTag(this.currentElement.getDate())));
 		updateSourceEntries();
 	}
 
-	public void updateInstitution(AjaxBehaviorEvent event) {
+	public void onConsoInstitutionChange(AjaxBehaviorEvent event) {
 		sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 		updateSourceEntries();
 	}
@@ -129,31 +132,19 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	public void updateSourceEntries() {
 		RangeLocalDateCriteria dateRange = !limitRange || this.currentElement.getDate()==null?null:new RangeLocalDateCriteria(this.currentElement.getDate().minusMonths(3),this.currentElement.getDate().plusMonths(3));
 		List<TransactionEntry> sourceEntries = CollectionHelper.isEmpty(sourceTags)?new ArrayList<>():transactionEntryService.findConsolidatableEntries(sourceTags, dateRange);
-		entries.setSource(sourceEntries);
-	}
-	
-	@Override
-	protected Object getInitialElementId() {
-		Object id = super.getInitialElementId();
-		if (id == null) {
-			try {
-				id = FacesContext.getCurrentInstance().getExternalContext().getFlash().get(NEXT_CONSOLIDATION_FLASH_ID);
-				FacesContext.getCurrentInstance().getExternalContext().getFlash().put(NEXT_CONSOLIDATION_FLASH_ID,null);
-			} catch(NullPointerException e) { /* sometimes happens just after the session is created */ }
-		}
-		return id;
+		setSourceEntries(sourceEntries);
 	}
 
 	public BigDecimal getTotalIn() {
-		return ConsolidationHelper.sum(entries.getTarget(), TransactionFactor.IN);
+		return ConsolidationHelper.sum(getTargetEntries(), TransactionFactor.IN);
 	}
 	
 	public BigDecimal getTotalOut() {
-		return ConsolidationHelper.sum(entries.getTarget(), TransactionFactor.OUT);
+		return ConsolidationHelper.sum(getTargetEntries(), TransactionFactor.OUT);
 	}
 	
 	public BigDecimal getLastBalance() {
-		return CollectionHelper.isEmpty(entries.getTarget())?null:CollectionHelper.last(entries.getTarget()).getAccountingBalance();
+		return CollectionHelper.isEmpty(getTargetEntries())?null:CollectionHelper.last(getTargetEntries()).getAccountingBalance();
 	}
 
 	public void onTransfer(TransferEvent event) {
@@ -162,6 +153,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
     }  
 	
 	public void onReorder() {
+		log.info("Reordered...");
 		compute();
 	}
      
@@ -174,8 +166,8 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
     }
     
     public void compute() {
-    	ConsolidationHelper.clearConsolidationEntries(entries.getSource());
-    	ConsolidationHelper.balanceConsolidation(this.currentElement, entries.getTarget());
+    	ConsolidationHelper.clearConsolidationEntries(getSourceEntries());
+    	ConsolidationHelper.balanceConsolidation(this.currentElement, getTargetEntries());
     }
 
 	@Override
@@ -185,12 +177,12 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		
 		List<Tag> tags = targetTags.stream().filter(t->t instanceof Tag).map(t->(Tag) t).collect(Collectors.toList());
 		Set<TransactionEntry> altered = new HashSet<>();
-		entries.getTarget().stream().forEach(t->{
+		getTargetEntries().stream().forEach(t->{
 			t.setConsolidation(this.currentElement);
 			t.getTags().addAll(tags);
 			altered.add(t);
 		});
-		entries.getSource().stream().filter(t->t.getConsolidation()!=null).forEach(t->{
+		getSourceEntries().stream().filter(t->t.getConsolidation()!=null).forEach(t->{
 			t.setConsolidation(null);
 			t.getTags().removeAll(tags);
 			altered.add(t);
@@ -199,6 +191,24 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		currentElement = consolidationService.save(currentElement, altered);
 		saved();
 	}
-    
-    
+
+	public List<TransactionEntry> getSourceEntries() {
+		//return sourceEntries;
+		return entries.getSource();
+	}
+
+	public void setSourceEntries(List<TransactionEntry> sourceEntries) {
+		//this.sourceEntries = sourceEntries;
+		this.entries.setSource(sourceEntries);
+	}
+
+	public List<TransactionEntry> getTargetEntries() {
+		//return targetEntries;
+		return entries.getTarget();
+	}
+
+	public void setTargetEntries(List<TransactionEntry> targetEntries) {
+		//this.targetEntries = targetEntries;
+		this.entries.setTarget(targetEntries);
+	}
 }
