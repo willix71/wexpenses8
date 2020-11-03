@@ -35,9 +35,9 @@
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
 				</f:facet>
 				
-                <ui:include src="/includes/payeesColumns.xhtml"/>
-                
-               	<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
+				<ui:include src="includes/payeesColumns.xhtml"/>
+				
+				<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
 		        	<p:resetInput target="wexEditionForm" />
 	     		</p:ajax>
 			</p:dataTable>

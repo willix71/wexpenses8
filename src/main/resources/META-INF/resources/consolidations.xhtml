@@ -34,15 +34,15 @@
 					<p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="pi pi-align-justify" />
 					<p:columnToggler datasource="wexTable" trigger="toggler" />
 				</f:facet>
-			
-                <ui:include src="/includes/consolidationsColumns.xhtml"/>
-	     		
-               	<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
+				
+				<ui:include src="includes/consolidationsColumns.xhtml"/>
+				
+				<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{editionController.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" >
 		        	<p:resetInput target="wexEditionForm" />
 	     		</p:ajax>
 			</p:dataTable>
 			
-			<p:contextMenu id="consolidationMenu" for="wexTable">
+			<p:contextMenu for="wexTable">
 		        <p:menuitem value="View" update="wexDetailPanel" icon="pi pi-eye" oncomplete="PF('w_wexDetailDialog').show()">
 		        	<f:setPropertyActionListener value="#{controller.selectedElement}" target="#{editionController.currentElement}" />
 		        </p:menuitem>
