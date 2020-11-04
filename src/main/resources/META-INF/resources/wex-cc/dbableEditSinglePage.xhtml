@@ -1,0 +1,26 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+   	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="controller" type="w.expenses8.web.controller.AbstractEditionController" required="true" />
+	</composite:interface>
+		
+	<composite:implementation>
+		<c:set var="controller" value="#{cc.attrs.controller}" />
+		
+		<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+			Edit
+			<p:toggleSwitch value="#{controller.edition}" style="margin: 10px 20px 10px 5px;">
+            	<p:ajax update="wexEditionForm" />
+        	</p:toggleSwitch>
+     		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" rendered="#{controller.edition}">
+				<f:actionListener binding="#{controller.save()}" />
+			</p:commandButton>
+       	</h:panelGroup>
+	</composite:implementation>
+</ui:component>

@@ -17,15 +17,7 @@
 				<wex:expenseEdition edition="#{expenseEditionController.edition}"/>
 			</p:outputPanel>
 			
-			<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
-				Edit
-				<p:toggleSwitch value="#{expenseEditionController.edition}" style="margin: 10px 20px 10px 5px;">
-	            	<p:ajax update="wexEditionForm" />
-	        	</p:toggleSwitch>
-	     		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" rendered="#{expenseEditionController.edition}">
-					<f:actionListener binding="#{expenseEditionController.save()}" />
-				</p:commandButton>
-        	</h:panelGroup>
+			<wex:dbableEditSinglePage controller="#{expenseEditionController}" />
 		</h:form>
 	</ui:define>
 </ui:composition>	
