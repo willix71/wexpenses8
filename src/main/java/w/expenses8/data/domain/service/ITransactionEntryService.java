@@ -16,5 +16,5 @@ public interface ITransactionEntryService extends IGenericService<TransactionEnt
 
 	List<TransactionEntry> findConsolidationEntries(Consolidation conso);
 	
-	List<TransactionEntry> findConsolidatableEntries(List<TagCriteria> tags, RangeLocalDateCriteria dateRange);
+	List<TransactionEntry> findConsolidatableEntries(Consolidation conso, List<TagCriteria> tags, RangeLocalDateCriteria dateRange);
 }

@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -25,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.domain.criteria.TagCriteria;
 import w.expenses8.data.domain.model.Consolidation;
+import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
@@ -33,6 +38,7 @@ import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ConsolidationHelper;
+import w.expenses8.web.converter.DbableConverter;
 
 @Slf4j
 @Named
@@ -44,6 +50,9 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 
 	static final String NEXT_CONSOLIDATION_FLASH_ID = "_NEXT_CONSOLIDATION_";
 
+	@Inject
+	ExpenseEditionController expenseEditionController;
+	
 	@Inject
 	DocumentFileSelector documentFileSelector;
 	
@@ -62,17 +71,15 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	@Setter(AccessLevel.NONE)
 	private ITagService tagService;
 	
-	private boolean limitRange = true;
+	private Integer rangeLimit = 3;
 	
 	private List<TagCriteria> sourceTags;
 
 	private List<TagCriteria> targetTags;
 	
-//    private List<TransactionEntry> sourceEntries;
-//	
-//    private List<TransactionEntry> targetEntries;
-	
 	private DualListModel<TransactionEntry> entries = new DualListModel<TransactionEntry>();
+
+	private TransactionEntry selectedEntry;
 	
 	@Override
 	public void setCurrentElementId(Object o) {
@@ -96,11 +103,11 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		if (this.currentElement!=null) {
 			if (this.currentElement.getDate() != null) {
 				targetTags = new ArrayList<TagCriteria>(Collections.singleton(tagService.getConsolidationTag(this.currentElement.getDate())));
-				log.info("Target tags {} ", targetTags);
+				log.debug("Initial target tags {} ", targetTags);
 			}
 			if (this.currentElement.getInstitution() != null) {
 				sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
-				log.info("Target tags {} ", sourceTags);
+				log.debug("Initial Source tags {} ", sourceTags);
 			}
 			if (!this.currentElement.isNew()) {
 				setTargetEntries(transactionEntryService.findConsolidationEntries(this.currentElement));
@@ -130,8 +137,8 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	}
 	
 	public void updateSourceEntries() {
-		RangeLocalDateCriteria dateRange = !limitRange || this.currentElement.getDate()==null?null:new RangeLocalDateCriteria(this.currentElement.getDate().minusMonths(3),this.currentElement.getDate().plusMonths(3));
-		List<TransactionEntry> sourceEntries = CollectionHelper.isEmpty(sourceTags)?new ArrayList<>():transactionEntryService.findConsolidatableEntries(sourceTags, dateRange);
+		RangeLocalDateCriteria dateRange = rangeLimit==null || rangeLimit<1 || this.currentElement.getDate()==null?null:new RangeLocalDateCriteria(this.currentElement.getDate().minusMonths(rangeLimit),this.currentElement.getDate().plusMonths(3));
+		List<TransactionEntry> sourceEntries = CollectionHelper.isEmpty(sourceTags)?new ArrayList<>():transactionEntryService.findConsolidatableEntries(this.currentElement,sourceTags, dateRange);
 		setSourceEntries(sourceEntries);
 	}
 
@@ -158,20 +165,24 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	}
      
     public void onSelect(SelectEvent<TransactionEntry> event) {
-    	log.info("Selected {}", event.getObject());
+    	log.debug("Selected {}", event.getObject());
+    	selectedEntry = event.getObject();
     }
      
     public void onUnselect(UnselectEvent<TransactionEntry> event) {
-    	log.info("Unselected {}", event.getObject());
+    	log.debug("Unselected {}", event.getObject());
+    	selectedEntry = null;
     }
     
     public void compute() {
+    	log.debug("computing consolidation...");
     	ConsolidationHelper.clearConsolidationEntries(getSourceEntries());
     	ConsolidationHelper.balanceConsolidation(this.currentElement, getTargetEntries());
     }
 
 	@Override
 	public void save() {
+		log.info("saving consolidation...");
 		compute();
 		currentElement.setDocumentFile(documentFileSelector.getCurrentDocumentFile());
 		
@@ -193,22 +204,63 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	}
 
 	public List<TransactionEntry> getSourceEntries() {
-		//return sourceEntries;
 		return entries.getSource();
 	}
 
 	public void setSourceEntries(List<TransactionEntry> sourceEntries) {
-		//this.sourceEntries = sourceEntries;
+		sourceEntries.removeAll(getTargetEntries());
 		this.entries.setSource(sourceEntries);
 	}
 
 	public List<TransactionEntry> getTargetEntries() {
-		//return targetEntries;
 		return entries.getTarget();
 	}
 
 	public void setTargetEntries(List<TransactionEntry> targetEntries) {
-		//this.targetEntries = targetEntries;
 		this.entries.setTarget(targetEntries);
 	}
+	
+	public boolean isExpenseEditable() {
+		return selectedEntry!=null;	
+	}
+	
+	public void showExpense() {
+		log.debug("Editing expense {}",selectedEntry.getExpense());
+		expenseEditionController.setCurrentElementId(selectedEntry.getExpense().getId());
+	}
+	
+	public void saveExpense() {
+		log.info("Saving expense");
+		expenseEditionController.save();
+		updateEntries(expenseEditionController.getCurrentElement(),getTargetEntries());
+		updateSourceEntries();
+		compute();
+	}
+
+	private void updateEntries(Expense expense, List<TransactionEntry> entries) {
+		for(ListIterator<TransactionEntry> iter=entries.listIterator();iter.hasNext();) {
+			TransactionEntry t = iter.next();
+			if (expense.equals(t.getExpense())) {
+				if (expense.getTransactions().contains(t)) {
+					iter.set(transactionEntryService.reload(t));
+				} else {
+					iter.remove();
+				}
+			}
+		}
+	}
+	
+	public Converter<TransactionEntry> getTransactionEntryConverter() {
+		return converter;
+	}
+	
+	private Converter<TransactionEntry> converter = new DbableConverter<TransactionEntry>() {
+		@Override
+		public TransactionEntry getAsObject(FacesContext fc, UIComponent uic, String uid) {
+			TransactionEntry t = CollectionHelper.stream(getSourceEntries()).filter(e->uid.equals(e.getUid())).findFirst().orElseGet(
+					()->CollectionHelper.stream(getTargetEntries()).filter(e->uid.equals(e.getUid())).findFirst().orElseGet(null) );
+			return t;
+		}
+		
+	};
 }

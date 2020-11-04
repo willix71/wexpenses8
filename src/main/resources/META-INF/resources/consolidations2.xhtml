@@ -31,5 +31,20 @@
 				</f:facet>
 			</wex:dbableEditDialog>
 		</h:form>
+		
+		<h:form id="wexEditionForm2" >
+			<p:dialog id="wexEditionDialog2" widgetVar="w_wexEditionDialog2" header="Expense" position="top" modal="true">
+				<p:outputPanel id="wexEditionPanel2" >
+					<wex:expenseEdition edition="true"/>
+				</p:outputPanel>
+				
+				<h:panelGroup styleClass="wex-edit-buttons-panel">
+					<p:commandButton id="wexCancel2" value="Cancel" onclick="PF('w_wexEditionDialog2').hide()" />
+					<p:commandButton id="wexSave2" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog2').hide()" update="wexEditionPanel2 @(.js-consolidationEditionPanel)"	>
+						<f:actionListener binding="#{consolidationEditionController.saveExpense()}" />
+					</p:commandButton>
+				</h:panelGroup>
+			</p:dialog>
+		</h:form>	
 	</ui:define>
 </ui:composition>	

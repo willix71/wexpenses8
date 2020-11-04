@@ -110,10 +110,10 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 	}
 
 	@Override
-	public List<TransactionEntry> findConsolidatableEntries(List<TagCriteria> tags, RangeLocalDateCriteria dateRange) {
+	public List<TransactionEntry> findConsolidatableEntries(Consolidation conso, List<TagCriteria> tags, RangeLocalDateCriteria dateRange) {
 		QTransactionEntry entry = QTransactionEntry.transactionEntry;
 		BooleanBuilder predicate = new BooleanBuilder();
-		predicate = predicate.and(entry.consolidation.isNull());
+		predicate = predicate.and(entry.consolidation.isNull().or(entry.consolidation.eq(conso)));
 		predicate = CriteriaHelper.addLocalDateRange(predicate, dateRange, entry.accountingDate);
 		applyTagCriteria(entry, predicate, tags);
 		var query = baseQuery(entry).where(predicate).orderBy(entry.accountingDate.asc(), entry.accountingOrder.asc());

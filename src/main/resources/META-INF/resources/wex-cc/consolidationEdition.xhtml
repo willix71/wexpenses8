@@ -17,7 +17,7 @@
        	
 		<wex:dbableDetails dbable="#{conso}"/>
 			
-       	<p:outputPanel rendered="#{not empty conso}" style="width:100%">
+       	<p:outputPanel id="consolidationEditionPanel" rendered="#{not empty conso}" style="width:100%" styleClass="js-consolidationEditionPanel">
 			<p:messages showDetail="true" showSummary="true" />
 	   	    
 	   	    <h:panelGroup styleClass="wex-form-row" >
@@ -92,8 +92,8 @@
 						<p:column>
 							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
 						</p:column>
-						<p:ajax event="itemSelect" listener="#{consolidationEditionController.updateSourceEntries}" update="consoTransactionEntries"/>
-						<p:ajax event="itemUnselect" listener="#{consolidationEditionController.updateSourceEntries}" update="consoTransactionEntries"/>
+						<p:ajax event="itemSelect" listener="#{consolidationEditionController.updateSourceEntries}" update="consoTransactionEntries @(.js-conso-expense-selected)"/>
+						<p:ajax event="itemUnselect" listener="#{consolidationEditionController.updateSourceEntries}" update="consoTransactionEntries  @(.js-conso-expense-selected)"/>
 					</p:autoComplete>
 	   	    	</h:panelGroup>
 
@@ -106,17 +106,26 @@
 						</p:column>
 					</p:autoComplete>
 	   	    	</h:panelGroup>
+	   	    	
+				<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">	   	    	
+	   	    		<h:outputText for="@next" value="range limit" styleClass="wex-field-label"/>
+	   	    		<p:spinner id="rangeLimit" value="#{consolidationEditionController.rangeLimit}" min="0" >
+	   	    			<p:ajax listener="#{consolidationEditionController.updateSourceEntries}" update="consoTransactionEntries" />
+	   	    		</p:spinner>
+	   	    	</h:panelGroup>
 			</h:panelGroup>
 
-			<h:panelGroup styleClass="wex-form-row" rendered="#{cc.attrs.edition}" >
+			<h:panelGroup id="consoTransactionEntriesPanel" styleClass="wex-form-row" rendered="#{cc.attrs.edition}" >
 			    <p:pickList id="consoTransactionEntries" rendered="#{not empty conso}" styleClass="js-wexTable js-conso-source wex-conso-picklist" var="xct" value="#{consolidationEditionController.entries}"
-	                itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{transactionEntryConverter}" 
+	                itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{consolidationEditionController.transactionEntryConverter}" 
 	                showTargetControls="true" 
 	                showCheckbox="false"
 	                responsive="true">
 			 
-			        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="@(.js-conso-total)" />
-			        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" />
+			        <p:ajax event="transfer" listener="#{consolidationEditionController.onTransfer}" update="consoTransactionEntries @(.js-conso-total)" />
+			        <p:ajax event="reorder" listener="#{consolidationEditionController.onReorder}" update="consoTransactionEntries" />
+			        <p:ajax event="select" listener="#{consolidationEditionController.onSelect}" update="@(.js-conso-expense-selected)"/>
+			        <p:ajax event="unselect" listener="#{consolidationEditionController.onUnselect}" update="@(.js-conso-expense-selected)"/>
 					
 					<p:column style="width:40px;min-width:40px" >
 						<h:outputText value="#{xct.accountingOrder % 1000})" rendered="#{not empty xct.accountingOrder}"/>
@@ -131,7 +140,7 @@
 					<p:column headerText="Payee" style="width:100%">
 						<p:outputPanel>
 							<h:outputText value="#{xct.expense.payee.prefix}#{xct.expense.payee.name} #{xct.expense.payee.extra}" /><br/>
-							<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!='CHF'}"/>
+							<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!=requestController.defaultCurrency.code}"/>
 						</p:outputPanel>
 					</p:column>
 							
@@ -147,10 +156,16 @@
 						<h:outputText value="#{xct.accountingBalance}" />
 					</p:column>
 				</p:pickList>
-				       
-		        <p:contextMenu for="consoTransactionEntries" rendered="#{not empty expense}">
-		        	<p:menuitem value="edit" update="consoTransactionEntries" icon="pi pi-trash" />
-		    	</p:contextMenu>
+				
+				<p:contextMenu id="consoTransactionEntriesMenu" for="consoTransactionEntries" styleClass="js-conso-expense-selected">
+			        <p:menuitem value="edit" icon="pi pi-trash" 
+			        	disabled="#{not consolidationEditionController.expenseEditable}"
+			        	action="#{consolidationEditionController.showExpense}"
+			        	update="wexEditionForm2:wexEditionPanel2"
+			        	oncomplete="PF('w_wexEditionDialog2').show()"
+			        	/>
+			        <p:menuitem value="refresh" icon="pi pi-replay" action="#{consolidationEditionController.updateSourceEntries}" update="consolidationEditionPanel" />        	
+			    </p:contextMenu>
 			</h:panelGroup>
 			
 			<h:panelGroup styleClass="wex-form-row" rendered="#{not cc.attrs.edition}" >
@@ -169,7 +184,7 @@
 						<ui:param name="dba" value="#{xct}" />
 					</ui:include>
 			
-					<p:column styleClass="wex-cell-righted" style="width:20px" >
+					<p:column styleClass="wex-cell-righted" style="max-width:40px;width:20px" >
 						<h:outputText value="#{xct.accountingOrder % 1000}" />
 						
 						<f:facet name="footer">
