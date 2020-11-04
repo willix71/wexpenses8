@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,6 +27,7 @@ import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.web.converter.DbableConverter;
 
 @Slf4j
 @Named
@@ -59,8 +63,12 @@ public class NewExpenseController extends ExpenseController {
 		elements = expenseService.findLatestExpenses();
 	}
 	
+	public boolean isPayeeSelected() { 
+		return payee != null;
+	}
+	
 	public void baseExpenseSelected() {
-		log.info("base expense selected {}",baseExpense);
+		log.debug("base expense selected {}",baseExpense);
 		List<String> potentialOptions = new ArrayList<String>();		
 		if (baseExpense.getExchangeRate() != null) {
 			potentialOptions.add("rate");
@@ -115,4 +123,15 @@ public class NewExpenseController extends ExpenseController {
 		baseExpense = null;
 		copyOptions = null;
 	}
+	
+	public Converter<Expense> getExpenseConverter() {
+		return converter;
+	}
+	
+	private Converter<Expense> converter = new DbableConverter<Expense>() {
+		@Override
+		public Expense getAsObject(FacesContext fc, UIComponent uic, String uid) {
+			return CollectionHelper.stream(lastPayeeExpenses).filter(e->uid.equals(e.getUid())).findFirst().orElseGet(null);
+		}		
+	};
 }

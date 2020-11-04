@@ -13,9 +13,9 @@
 	<composite:implementation>
 		<c:set var="controller" value="#{cc.attrs.controller}" />
 		
-		<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-end">
+		<h:panelGroup styleClass="wex-edit-buttons-panel" >
 			Edit
-			<p:toggleSwitch value="#{controller.edition}" style="margin: 10px 20px 10px 5px;">
+			<p:toggleSwitch value="#{controller.edition}" style="margin: 0px 20px 0px 5px;">
             	<p:ajax update="wexEditionForm" />
         	</p:toggleSwitch>
      		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" rendered="#{controller.edition}">

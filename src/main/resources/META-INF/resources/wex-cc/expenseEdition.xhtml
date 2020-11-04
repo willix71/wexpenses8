@@ -58,7 +58,7 @@
 					<f:param value="#{expense.currencyAmount}" />
 				</h:outputFormat>
 				<h:outputText value=""/>
-				<h:outputFormat value="{0,number, ###0.00} #{requestController.defaultCurrency.code}" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code}">
+				<h:outputFormat value="{0,number, ###0.00} #{applicationController.defaultCurrency.code}" rendered="#{expense.currencyCode!=applicationController.defaultCurrency.code}">
 					<f:param value="#{expense.accountingValue}" />
 				</h:outputFormat>
 			</h:panelGroup>
@@ -71,15 +71,15 @@
                 	<f:selectItems value="#{dropboxController.currencies}" />
                 	<h:outputText value="#{expense.accountingValue}"/>
             	</p:selectOneMenu>
-				<h:outputFormat value="{0,number, ###0.00} #{requestController.defaultCurrency.code}" rendered="#{not empty expense.accountingValue &amp;&amp; expense.currencyCode!=requestController.defaultCurrency.code}">
+				<h:outputFormat value="{0,number, ###0.00} #{applicationController.defaultCurrency.code}" rendered="#{not empty expense.accountingValue and expense.currencyCode!=applicationController.defaultCurrency.code}">
 					<f:param value="#{expense.accountingValue}" />
 				</h:outputFormat>
 			</h:panelGroup>
 
-			<h:panelGroup id="exchangeRateLabelId" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code &amp;&amp; not empty expense.exchangeRate}">
+			<h:panelGroup id="exchangeRateLabelId" rendered="#{expense.currencyCode!=applicationController.defaultCurrency.code and not empty expense.exchangeRate}">
 				<h:outputText  value="exchange rate" styleClass="wex-field-label" />
 			</h:panelGroup>
-			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=requestController.defaultCurrency.code &amp;&amp; not empty expense.exchangeRate}" >
+			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=applicationController.defaultCurrency.code and not empty expense.exchangeRate}" >
 				<h:panelGroup rendered="#{not cc.attrs.edition}">
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col">

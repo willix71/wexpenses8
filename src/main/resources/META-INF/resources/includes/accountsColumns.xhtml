@@ -40,14 +40,29 @@
 
 	<p:column headerText="IN" styleClass="wex-cell-righted" style="width:80px" >
 		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='IN'}"/>
+		<f:facet name="footer">
+			<h:outputText value="#{controller.totalIn}" >
+				<f:convertNumber pattern="###0.00"/>  
+			</h:outputText>
+		</f:facet>
 	</p:column>
 
 	<p:column headerText="OUT" styleClass="wex-cell-righted"  style="width:80px" >
 		<h:outputText value="#{x.accountingValue}" rendered="#{x.factor=='OUT'}"/>
+		<f:facet name="footer">
+			<h:outputText value="#{controller.totalOut}" >
+				<f:convertNumber pattern="###0.00"/>  
+			</h:outputText>
+		</f:facet>
 	</p:column>
 
 	<p:column headerText="Balance" styleClass="wex-cell-righted"  style="width:80px" >
 		<h:outputText value="#{x.liveBalance}" />
+		<f:facet name="footer">
+			<h:outputText value="#{controller.lastBalance}" >
+				<f:convertNumber pattern="###0.00"/>  
+			</h:outputText>
+		</f:facet>
 	</p:column>
 
 	<p:column headerText="Accounts" styleClass="wex-cell-righted" >

@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.TransactionEntry;
+import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.ITransactionEntryService;
+import w.expenses8.data.utils.ConsolidationHelper;
 
 @Slf4j
 @Named
@@ -89,5 +91,17 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 	@Override
 	public Expense convert(TransactionEntry t) {
 		return t.getExpense();
+	}
+	
+	public BigDecimal getTotalIn() {
+		return ConsolidationHelper.sum(elements, TransactionFactor.IN);
+	}
+	
+	public BigDecimal getTotalOut() {
+		return ConsolidationHelper.sum(elements, TransactionFactor.OUT);
+	}
+	
+	public BigDecimal getLastBalance() {
+		return ConsolidationHelper.sum(elements);
 	}
 }

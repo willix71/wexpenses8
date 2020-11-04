@@ -6,7 +6,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
-	<p:column headerText="Id" sortBy="#{dba.id}" style="max-width:60px; width:60px">
+	<p:column headerText="Id" sortBy="#{dba.id}" style="max-width:65px; width:65px">
 		<h:outputText value="#{dba.fullId}" rendered="#{empty singlePage}" />
 		<p:link outcome="#{singlePage}" value="#{dba.fullId}" target="_blank" rendered="#{not empty singlePage}">
 		    <f:param name="id" value="#{dba.id}" />

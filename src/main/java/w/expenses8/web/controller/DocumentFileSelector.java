@@ -64,11 +64,11 @@ public class DocumentFileSelector {
 	}
 
 	public void onTabChange(TabChangeEvent<?> event) {
-	    log.info("Tab has changed to {}", activeTabIndex);
+	    log.trace("Tab has changed to {}", activeTabIndex);
 	}
 	
 	public void onDocumentFileSelection(SelectEvent<?> event) {
-		log.info("Tab has changed to {}", activeTabIndex);
+		log.trace("Tab has changed to {}", activeTabIndex);
 	}
 
 	public void onDocumentFileDateChange(DBable<?> o) {

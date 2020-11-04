@@ -26,8 +26,8 @@
 	             	<p:ajax event="itemSelect" update="wexTableForm" />
 	            </p:autoComplete>
 			
-	        	<p:outputPanel id="payeeLastExpenseId" rendered="#{not empty newExpenseController.payee}">
-			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{expenseConverter}" var="x" style="width:100%">
+	        	<p:outputPanel id="payeeLastExpenseId" rendered="#{newExpenseController.payeeSelected}">
+			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{newExpenseController.expenseConverter}" var="x" style="width:100%">
 			            <f:selectItems value="#{newExpenseController.lastPayeeExpenses}"/>
 			 			<p:ajax listener="#{newExpenseController.baseExpenseSelected}" update="wexTableForm" />
 			            <p:column>
@@ -69,8 +69,8 @@
 		        	</h:panelGroup>	
 	        	</p:outputPanel>
 
-	        	<p:outputPanel id="lastExpenseId" rendered="#{empty newExpenseController.payee}" style="padding-top: 20px;">
-					<wex:dbableTable controller="#{controller}" columsDefinition="/includes/expensesColumns.xhtml" hasExpandedRows="true" singlePage="expense" rowsPerPage="100">
+	        	<p:outputPanel id="lastExpenseId" rendered="#{not newExpenseController.payeeSelected}" style="padding-top: 20px;">
+					<wex:dbableTable controller="#{controller}" columsDefinition="/includes/expensesColumns.xhtml" hasExpandedRows="true" singlePage="expense">
 						<f:facet name="elementViewer">
 							<wex:expenseEdition edition="false"/>
 						</f:facet>

@@ -44,7 +44,7 @@ public class ExpenseController extends AbstractListEditionController<Expense, Ex
 	@Setter(AccessLevel.NONE)
 	private IDocumentFileService documentFileService;
 	
-	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
+	private ExpenseCriteria criteria = ExpenseCriteria.from(YearMonth.now().atDay(1).minusMonths(3));
 
 	public ExpenseController() {
 		super(Expense.class);

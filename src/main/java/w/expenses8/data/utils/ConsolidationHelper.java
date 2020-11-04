@@ -44,6 +44,10 @@ public class ConsolidationHelper {
 		}
 	}
 	
+	public static BigDecimal sum(Collection<TransactionEntry> entries) {
+		return CollectionHelper.isEmpty(entries)?null:entries.stream().filter(l->l.getFactor()!=null).map(l->l.getAccountingValue().multiply(l.getFactor().getBigFactor())).filter(d->d!=null).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
+	}
+
 	public static BigDecimal sum(Collection<TransactionEntry> entries, TransactionFactor factor) {
 		return CollectionHelper.isEmpty(entries)?null:entries.stream().filter(l->l.getFactor()==factor).map(l->l.getAccountingValue()).filter(d->d!=null).reduce((l,r)->l==null?r:r==null?null:l.add(r)).orElse(BigDecimal.ZERO);
 	}

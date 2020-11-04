@@ -1,1 +1,0 @@
-Incompatible operand types String and intIncompatible operand types String and intString a = null;		String b = null;System.out.println("=" + (com.google.common.base.Joiner.on(" ").skipNulls().join(a,b).length()==0)); 

@@ -140,7 +140,7 @@
 					<p:column headerText="Payee" style="width:100%">
 						<p:outputPanel>
 							<h:outputText value="#{xct.expense.payee.prefix}#{xct.expense.payee.name} #{xct.expense.payee.extra}" /><br/>
-							<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!=requestController.defaultCurrency.code}"/>
+							<h:outputText value="#{xct.currencyAmount} #{xct.expense.currencyCode}" rendered="#{xct.expense.currencyCode!=applicationController.defaultCurrency.code}"/>
 						</p:outputPanel>
 					</p:column>
 							

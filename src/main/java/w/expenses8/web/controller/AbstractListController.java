@@ -49,7 +49,7 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	}
 
 	public void setSelectedElement(T selectedElement) {
-		log.info("Selecting {}", selectedElement);
+		log.debug("Selecting {}", selectedElement);
 		this.selectedElement = selectedElement;
 	}
 

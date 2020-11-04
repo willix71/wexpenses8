@@ -129,13 +129,13 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	
 	public void handleDateChange(SelectEvent<LocalDateTime> event) {
 		LocalDateTime newdate = event.getObject();
-		log.info("handleDateChange old {} new {}",currentDate, newdate);
+		log.debug("handleDateChange old {} new {}",currentDate, newdate);
 		currentElement.updateDate(currentDate);
 		currentDate = newdate;
 	}
 	
 	public void onDateChange() {
-		log.info("onDateChange old {} new {}",currentDate, currentElement.getDate());
+		log.debug("onDateChange old {} new {}",currentDate, currentElement.getDate());
 		currentElement.updateDate(currentDate);
 		currentDate = currentElement.getDate();
 	}
@@ -169,7 +169,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	}
 	
 	public void onAmountChange() {
-		log.info("onAmountChange old {} new {}",currentAmount, currentElement.getCurrencyAmount());
+		log.debug("onAmountChange old {} new {}",currentAmount, currentElement.getCurrencyAmount());
 		currentElement.updateAmountValues(currentAmount, currencyValue.getPrecision());
 		transactionsSums.compute(currentElement.getTransactions());
 		currentAmount = currentElement.getCurrencyAmount();
@@ -207,7 +207,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	
 	public void deleteTransactionEntry() {
 		if (selectedTransactionEntry!=null) {
-			log.info("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
+			log.debug("Deleting transaction entry {} for {}", selectedTransactionEntry, selectedTransactionEntry.getTags());
 			currentElement.removeTransaction(selectedTransactionEntry);
 			transactionsSums.compute(currentElement.getTransactions());
 		}
@@ -224,7 +224,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	
 	public void deleteDocumentFile() {
 		if (selectedDocumentFile!=null) {
-			log.info("Deleting document file {} named {}", selectedDocumentFile, selectedDocumentFile.getFileName());
+			log.debug("Deleting document file {} named {}", selectedDocumentFile, selectedDocumentFile.getFileName());
 			currentElement.removeDocumentFile(selectedDocumentFile);
 			currentElement.updateDocumentCount();
 		}

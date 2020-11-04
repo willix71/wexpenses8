@@ -155,12 +155,12 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	}
 
 	public void onTransfer(TransferEvent event) {
-		log.info("Transfered {}: {}", event.isAdd(), event.getItems());
+		log.debug("Transfered {}: {}", event.isAdd(), event.getItems());
 		compute();
     }  
 	
 	public void onReorder() {
-		log.info("Reordered...");
+		log.debug("Reordered...");
 		compute();
 	}
      
