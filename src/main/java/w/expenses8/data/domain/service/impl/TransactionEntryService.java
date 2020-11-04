@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.hibernate.internal.util.collections.CollectionHelper;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
+import w.expenses8.WexpensesConstants;
 import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.service.GenericServiceImpl;
 import w.expenses8.data.domain.criteria.TagCriteria;
@@ -32,6 +34,7 @@ import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CriteriaHelper;
+import w.expenses8.data.utils.ExpenseHelper;
 
 @Service
 public class TransactionEntryService extends GenericServiceImpl<TransactionEntry, Long, ITransactionEntryDao> implements ITransactionEntryService {
@@ -42,6 +45,25 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 	@Autowired
 	public TransactionEntryService(ITransactionEntryDao dao) {
 		super(TransactionEntry.class, dao);
+	}
+
+	@Override
+	public TransactionEntry reload(Object o) {
+		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return ExpenseHelper.buildTransactionEntry();
+		var query = baseQuery(QTransactionEntry.transactionEntry);
+		if (o instanceof TransactionEntry) {
+			TransactionEntry x=(TransactionEntry)o;
+			if (x.isNew()) {
+				return x;
+			}
+			return query.where(QTransactionEntry.transactionEntry.id.eq(x.getId())).fetchOne();
+		} else if (o instanceof Long) {
+			return query.where(QTransactionEntry.transactionEntry.id.eq((Long)o)).fetchOne();
+		} else if (o instanceof String) {
+			return query.where(QTransactionEntry.transactionEntry.uid.eq((String)o)).fetchOne();
+		} else {
+			throw new IllegalArgumentException("Can't reload TransactionEntry from " + o);
+		}
 	}
 
 	@Override

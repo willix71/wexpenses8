@@ -8,6 +8,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,21 +60,20 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	@Override
 	public Expense reload(Object o) {
 		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return ExpenseHelper.build();
-		Long id;
+		var query = baseQuery(QExpense.expense);
 		if (o instanceof Expense) {
 			Expense x=(Expense)o;
 			if (x.isNew()) {
 				return x;
 			}
-			id = x.getId();
+			return query.where(QExpense.expense.id.eq(x.getId())).fetchOne();
 		} else if (o instanceof Long) {
-			id = (Long)o;
-		} else {			
-			id = loadByUid((String) o).getId();
+			return query.where(QExpense.expense.id.eq((Long)o)).fetchOne();
+		} else if (o instanceof String) {
+			return query.where(QExpense.expense.uid.eq((String)o)).fetchOne();
+		} else {
+			throw new IllegalArgumentException("Can't reload Expense from " + o);
 		}
-		var query = baseQuery().where(QExpense.expense.id.eq(id));
-		Expense x = query.fetchOne();
-		return x;
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			}
 		}
 		
-		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
 		
 	}
@@ -175,7 +175,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			predicate = predicate.and(ex.id.ne(x.getId()));
 		}
 		
-		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
     }
 	
@@ -186,7 +186,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		Date noOlderThan = Date.from(LocalDateTime.now().minusHours(24).atZone(ZoneId.systemDefault()).toInstant());
 		BooleanBuilder predicate = new BooleanBuilder().and(ex.createdTs.gt(noOlderThan).or(ex.modifiedTs.gt(noOlderThan)));
 		
-		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
 	}
 	
@@ -197,12 +197,11 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		BooleanBuilder predicate = new BooleanBuilder().and(ex.payedDate.isNull());
 		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(LocalDateTime.now().toLocalDate(),null), ex.date);
 		
-		var query = baseQuery().where(predicate).orderBy(QExpense.expense.date.desc());
+		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
 	}
 
-	private JPAQuery<Expense> baseQuery() {
-		QExpense ex = QExpense.expense;
+	private JPAQuery<Expense> baseQuery(QExpense ex) {
 		var query = new JPAQuery<Expense>(entityManager);
 		query.distinct().select(ex).from(ex)
 			.leftJoin(ex.expenseType).fetchJoin()
