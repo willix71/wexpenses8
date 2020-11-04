@@ -1,5 +1,6 @@
 package w.expenses8.web.controller;
 
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.Collection;
@@ -71,6 +72,11 @@ public class ExpenseController extends AbstractListEditionController<Expense, Ex
 	@Override
 	protected AbstractEditionController<Expense> getEditionController() {
 		return expenseEditionController;
+	}
+	
+	@Override
+	public String getRowStyleClass(Expense element) {
+		return element!=null && element.getDate().isAfter(LocalDateTime.now()) ? "wex-expense-futur" : "wex-expense-past";
 	}
 	
 	public MenuModel getDocumentFileMenu(Collection<DocumentFile> files) {
