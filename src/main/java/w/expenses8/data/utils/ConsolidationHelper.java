@@ -11,7 +11,7 @@ import w.expenses8.data.domain.model.enums.TransactionFactor;
 public class ConsolidationHelper {
 
 	public static void balanceConsolidation(Consolidation conso, List<TransactionEntry> entries) {
-		long order = ((conso.getDate().getYear()*100) + conso.getDate().getMonthValue()) * 10000;
+		long order = conso.getDate()==null?0:((conso.getDate().getYear()*100) + conso.getDate().getMonthValue()) * 10000;
 		if (conso.getOpeningValue()!=null && conso.getClosingValue()!=null) {
 			BigDecimal closingValue = balanceConsolidationEntries(conso.getOpeningValue(), order, entries);
 			conso.setDeltaValue(closingValue.subtract(conso.getClosingValue()));

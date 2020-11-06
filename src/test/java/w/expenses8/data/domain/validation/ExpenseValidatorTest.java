@@ -56,6 +56,7 @@ public class ExpenseValidatorTest {
 		Expense x = ExpenseHelper.build(new Date(),new BigDecimal(20),"CHF",someone, cach, tax);
 		return x;
 	}
+	
 	@Test
 	@Order(0)
 	public void test_OK() {
