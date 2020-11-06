@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
+import w.expenses8.data.domain.validation.Ccpnized;
 import w.expenses8.data.domain.validation.Ibanized;
 
 @SuperBuilder(builderMethodName = "with")
@@ -43,7 +44,8 @@ public class Payee extends DBable<Payee> {
 	private String city;
 	private String countryCode;
 	
-    @Pattern(regexp="|\\d{1,2}-\\d{1,6}-\\d")
+    @Pattern(regexp="|\\d{1,2}-\\d{1,6}-\\d", message="Payee's postal account must match pattern ##-######-#")
+    @Ccpnized
     private String postalAccount;
     private String postalBank;
     

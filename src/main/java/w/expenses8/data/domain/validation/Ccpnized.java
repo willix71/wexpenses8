@@ -1,4 +1,5 @@
 package w.expenses8.data.domain.validation;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,14 +10,14 @@ import javax.validation.Payload;
 
 @Target({ElementType.METHOD,ElementType.FIELD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=IbanValidator.class)
-public @interface Ibanized {
+@Constraint(validatedBy=CcpValidator.class)
+public @interface Ccpnized {
 
 	/**
 	 * Can be overriden with a custom message by using curly brackers
 	 * i.e.: "{w.wexpense.validation.iban}"
 	 */
-	String message() default "Invalid IBAN number '${validatedValue}'";
+	String message() default "Invalid CCP number '${validatedValue}'";
 	
 	Class<?>[] groups() default {};
 	

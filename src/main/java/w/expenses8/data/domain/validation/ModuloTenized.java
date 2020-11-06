@@ -9,14 +9,14 @@ import javax.validation.Payload;
 
 @Target({ElementType.METHOD,ElementType.FIELD,ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=IbanValidator.class)
-public @interface Ibanized {
+@Constraint(validatedBy=ModuloTenValidator.class)
+public @interface ModuloTenized {
 
 	/**
 	 * Can be overriden with a custom message by using curly brackers
 	 * i.e.: "{w.wexpense.validation.iban}"
 	 */
-	String message() default "Invalid IBAN number '${validatedValue}'";
+	String message() default "Invalid External Reference number '${validatedValue}'";
 	
 	Class<?>[] groups() default {};
 	

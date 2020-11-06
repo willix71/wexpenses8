@@ -9,12 +9,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Range;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import w.expenses8.data.core.model.DBable;
+import w.expenses8.data.domain.validation.Warning;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -24,7 +27,7 @@ public class Consolidation extends DBable<Consolidation> {
 
 	private static final long serialVersionUID = 1L;
 	
-	@NotNull
+	@NotNull(message = "Consolidation's date is mandatory")
 	private LocalDate date;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,5 +46,6 @@ public class Consolidation extends DBable<Consolidation> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private TransactionEntry closingEntry;
 	
+	@Range(min = 0, max = 0, message = "Delta balance should be 0", groups = Warning.class)
 	private BigDecimal deltaValue;
 }

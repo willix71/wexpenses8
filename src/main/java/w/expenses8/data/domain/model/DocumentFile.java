@@ -26,7 +26,7 @@ public class DocumentFile extends DBable<DocumentFile> {
 	@NotNull(message = "DocumentFile's date is mandatory")
 	private LocalDate documentDate;
 	
-	@NotBlank(message =  "DocumentFile's fileName can't be blank")
+	@NotBlank(message =  "DocumentFile's filename can't be blank")
 	@Column(name = "fileName", unique = true, nullable = false)
 	private String fileName;
 	

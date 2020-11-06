@@ -18,6 +18,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 //import org.hibernate.annotations.Type;
 //import org.hibernate.annotations.TypeDef;
@@ -47,18 +48,18 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	@Builder.Default
 	private boolean systemEntry = false;
 	
-	@NotNull
+	@NotNull(message="TransactionEntry's factor is mandatory")
 	private TransactionFactor factor;
 	
-	@NotNull
+	@NotNull(message="TransactionEntry's amount is mandatory")
 	private BigDecimal currencyAmount;
 
-	@NotNull
+	@NotNull(message="TransactionEntry's value is mandatory")
 	private BigDecimal accountingValue;
 
 	private Integer accountingYear;
 	
-	@NotNull
+	@NotNull(message="TransactionEntry's date is mandatory")
 	private LocalDate accountingDate;
 
 	private Long accountingOrder;
@@ -72,6 +73,7 @@ public class TransactionEntry extends DBable<TransactionEntry> {
 	private BigDecimal liveBalance;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
+	@Size(min = 1, message = "A TransactionEntry must have at least one account")
 	@JoinTable(name = "WEX_TransactionEntry_WEX_Tag", joinColumns = @JoinColumn(name = "WEX_TransactionEntry_id"), inverseJoinColumns = @JoinColumn(name = "tags_id"))
 	@OrderBy("number,name")
 	private Set<Tag> tags;

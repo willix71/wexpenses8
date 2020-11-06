@@ -28,6 +28,7 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.OnDelete;
@@ -43,7 +44,9 @@ import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.validation.Expensenized;
+import w.expenses8.data.domain.validation.ModuloTenized;
 import w.expenses8.data.domain.validation.Transactionsized;
+import w.expenses8.data.domain.validation.Warning;
 
 @SuperBuilder(builderMethodName = "with")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -57,33 +60,36 @@ public class Expense extends DBable<Expense> {
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private ExpenseType expenseType;
 	
-	@NotNull
+	@NotNull(message = "Expense's date is mandatory")
 	private LocalDateTime date;
 
 	private LocalDate payedDate;
 
-	@NotNull
+	@NotNull(message = "Expense's amount is mandatory")
+	@Positive(message = "Expense's amount 'should' be prositive",groups = Warning.class)
 	private BigDecimal currencyAmount;
 
-	@NotBlank
+	@NotBlank(message = "Expense's currency is mandatory")
 	@Size(min=3,max=3)
 	private String currencyCode;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private ExchangeRate exchangeRate;
 	
-	@NotNull
+	@NotNull(message = "Expense's value is mandatory")
 	private BigDecimal accountingValue;
 
+	@NotNull(message = "Expense's payee is compulsory",groups = Warning.class)
 	@ManyToOne(fetch = FetchType.LAZY, cascade={MERGE, REFRESH, DETACH})
 	private Payee payee;
 	
 	private String description;
 	
+	@ModuloTenized(groups=Warning.class)
 	private String externalReference;
 	
 	@Valid
-	@Size(min = 2, message = "A expense must have at least 2 transaction lines: one IN and one OUT")
+	@Size(min = 2, message = "Expenses must have at least two transaction lines: one IN and one OUT")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "expense", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@OrderBy("factor, accountingValue")
