@@ -15,11 +15,11 @@
 	<composite:implementation>		
 		<c:set var="conso" value="#{consolidationEditionController.currentElement}" />
        	
+		<p:messages showDetail="true" showSummary="true" severity="error,warn" />
+
 		<wex:dbableDetails dbable="#{conso}"/>
 			
        	<p:outputPanel id="consolidationEditionPanel" rendered="#{not empty conso}" style="width:100%" styleClass="js-consolidationEditionPanel">
-			<p:messages showDetail="true" showSummary="true" />
-	   	    
 	   	    <h:panelGroup styleClass="wex-form-row" >
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:160px">
 	   	    		<p:outputLabel for="@next" value="date" styleClass="wex-field-label" />

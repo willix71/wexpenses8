@@ -13,7 +13,7 @@
 
 	<ui:define name="content">
 		<h:form id="typesTableForm">
-			<p:growl id="growl" />
+			<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
 
 			<wex:typeEditableTable controller="#{expenseTypeController}" columsDefinition="/includes/expenseTypesColumns.xhtml"/>
 		</h:form>

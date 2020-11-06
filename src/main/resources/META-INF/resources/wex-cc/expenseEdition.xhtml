@@ -15,12 +15,11 @@
 	<composite:implementation>
 		<c:set var="expense" value="#{expenseEditionController.currentElement}" />
 		
+		<p:messages showDetail="true" showSummary="true" severity="error,warn" />
+		
 		<wex:dbableDetails dbable="#{expense}"/>
 
 		<h:panelGrid id="expenseFieldsPanelId" columns="2" rendered="#{not empty expense}" style="width:100%" styleClass="js-expense">
-			<h:outputText value=""/>
-			<p:messages for="ValidationErrors" showDetail="true" showSummary="true" />
-			
 			<h:outputText value="type" styleClass="wex-field-label"/>
 			<h:outputText value="#{expense.expenseType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:autoComplete id="expenseTypeId" value="#{expense.expenseType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"

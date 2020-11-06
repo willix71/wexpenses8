@@ -12,7 +12,7 @@
 
 	<ui:define name="content">
 		<h:form id="typesTableForm">
-			<p:growl id="growl" />
+			<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
 			
 			<wex:typeEditableTable controller="#{tagController}" columsDefinition="/includes/tagsColumns.xhtml"/>
 		</h:form>

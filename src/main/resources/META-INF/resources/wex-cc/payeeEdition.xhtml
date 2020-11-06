@@ -14,12 +14,11 @@
 	<composite:implementation>
 		<c:set var="payee" value="#{payeeEditionController.currentElement}" />
 			
+		<p:messages showDetail="true" showSummary="true" severity="error,warn" />
+
 		<wex:dbableDetails dbable="#{payee}"/>
 		
 		<h:panelGrid columns="2" rendered="#{not empty payee}" style="width:100%">
-			<h:outputText value=""/>
-			<p:messages showDetail="true" showSummary="true" />
-					
 			<h:outputText value="type" styleClass="wex-field-label"/>
 			<h:outputText value="#{payee.payeeType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:autoComplete id="payeeTypeId" value="#{payee.payeeType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
@@ -41,6 +40,14 @@
 			<h:outputText value="address" styleClass="wex-field-label"/>
 			<h:outputText value="#{payee.address1}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:inputText id="payeeAddress1Id" value="#{payee.address1}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+
+			<h:outputText value="" styleClass="wex-field-label"/>
+			<h:outputText value="#{payee.address2}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeAddress2Id" value="#{payee.address2}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+
+			<h:outputText value="" styleClass="wex-field-label"/>
+			<h:outputText value="#{payee.address3}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+			<p:inputText id="payeeAddress3Id" value="#{payee.address3}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
 		
 			<h:outputText value="zip" styleClass="wex-field-label"/>
 			<h:outputText value="#{payee.zip}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
