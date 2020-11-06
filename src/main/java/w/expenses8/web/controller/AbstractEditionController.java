@@ -1,56 +1,62 @@
 package w.expenses8.web.controller;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
+import java.time.Instant;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import w.expenses8.WexpensesConstants;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.IGenericService;
+import w.expenses8.data.core.service.IReloadableService;
+import w.expenses8.data.domain.validation.Warning;
+import w.expenses8.data.utils.ValidationHelper;
 
-@Getter @Setter
-public abstract class AbstractEditionController<T extends DBable<T>> implements Serializable {
+@Slf4j
+@Getter @Setter @NoArgsConstructor
+public abstract class AbstractEditionController<T extends DBable<T>> extends AbstractController<T> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 
-	protected final Class<T> clazz;
-	
 	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	protected IGenericService<T, ?> elementService;
-
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	protected IReloadableService<T> reloadableService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	protected Validator validator;
+	
 	protected T currentElement;
 
 	private boolean edition = true;
 	
-	@SuppressWarnings("unchecked")
-	public AbstractEditionController() {
-		ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
-		clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-	}
-		
-	public void onRowDoubleClick(final SelectEvent<T> event) {
-		T t = event.getObject();
-		setCurrentElement(t);
-	}
+	private Instant lastWarningTime;
 	
 	@PostConstruct
 	public void initSelectedElementId() {
 		Object id = getInitialElementId();
-		// only set the initial element if we are shure it has to be set
-		if (id != null) setCurrentElementId(id);
+		// only set the initial element if we are sure it has to be set
+		if (id != null) resetCurrentElement(id);
 	}
 	
 	protected Object getInitialElementId() {
@@ -82,7 +88,42 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	}
 	
 	public void newElement() throws Exception {
-		setCurrentElementId(null);
+		resetCurrentElement(null);
+	}
+	
+	public void validateAndSave() {
+		if (isValid()) {
+			save();
+		}
+	}
+
+	public boolean isValid() {
+		if (currentElement != null) {
+			try {
+				ValidationHelper.validate(validator, currentElement);
+			} catch(ConstraintViolationException ex) {
+				for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
+					log.warn("ConstraintViolation errors for {} : {}", viol.getPropertyPath(), viol.getMessage());
+					FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
+				}
+				return false;
+			}
+			
+			Instant now = Instant.now();
+			if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
+				lastWarningTime = now;
+				try {
+					ValidationHelper.validate(validator, currentElement, Warning.class);
+				} catch(ConstraintViolationException ex) {
+					for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
+						log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
+						FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
+					}
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	public void save() {
@@ -93,7 +134,7 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	protected void saved() {
 		edition=false; // switch back to view mode after save
 		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
-		showMessage("saved " + currentElement.getFullId());
+		showMessage("Saved", currentElement);
 	}
 
 	public void delete() {
@@ -102,13 +143,19 @@ public abstract class AbstractEditionController<T extends DBable<T>> implements 
 	}
 	
 	protected void deleted() {
-		showMessage("deleted " + currentElement.getFullId());
+		showMessage("Deleted", currentElement);
 		currentElement = null;
 	}
 	
-	protected void showMessage(String text) {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(text));
+	public void setCurrentElement(T t) {
+		resetCurrentElement(t);
 	}
 	
-	public abstract void setCurrentElementId(Object o); 
+	protected void resetCurrentElement(Object o) {
+		this.currentElement = reloadableService.reload(o);
+		this.lastWarningTime = null;
+		initCurrentElement();
+	}
+	
+	protected void initCurrentElement() {}
 }

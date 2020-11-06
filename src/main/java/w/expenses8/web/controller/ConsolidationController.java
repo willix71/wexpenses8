@@ -12,15 +12,12 @@ import w.expenses8.data.domain.model.Consolidation;
 
 @Named
 @ViewScoped
-@SuppressWarnings("serial")
 public class ConsolidationController extends AbstractListEditionController<Consolidation,Consolidation> {
+
+	private static final long serialVersionUID = 3351336696734127296L;
 
 	@Inject
 	private ConsolidationEditionController consolidationEditionController;
-
-	public ConsolidationController() {
-		super(Consolidation.class);
-	}
 
 	@Override
 	protected MenuModel buildMenuModel() {

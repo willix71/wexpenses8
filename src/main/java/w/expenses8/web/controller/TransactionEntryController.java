@@ -44,10 +44,6 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 	
 	private TransactionEntryCriteria criteria = TransactionEntryCriteria.from(Year.now().getValue());
 
-	public TransactionEntryController() {
-		super(TransactionEntry.class);
-	}
-
 	@Override
 	protected AbstractEditionController<Expense> getEditionController() {
 		return expenseEditionController;

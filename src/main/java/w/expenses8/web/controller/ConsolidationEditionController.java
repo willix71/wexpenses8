@@ -82,24 +82,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	private TransactionEntry selectedEntry;
 	
 	@Override
-	public void setCurrentElementId(Object o) {
-		this.currentElement = consolidationService.reload(o);
-		initCurrentConsolidation();
-	}
-	
-	@Override
-	public void setCurrentElement(Consolidation conso) {
-		this.currentElement = consolidationService.reload(conso);
-		initCurrentConsolidation();
-	}
-
-	public void setNextElement(Consolidation conso) {
-		conso = consolidationService.reload(conso);
-		this.currentElement = Consolidation.with().date(conso.getDate().plusMonths(1)).institution(conso.getInstitution()).openingValue(conso.getClosingValue()).build();
-		initCurrentConsolidation();
-	}
-	
-	private void initCurrentConsolidation() {
+	protected void initCurrentElement() {
 		if (this.currentElement!=null) {
 			if (this.currentElement.getDate() != null) {
 				targetTags = new ArrayList<TagCriteria>(Collections.singleton(tagService.getConsolidationTag(this.currentElement.getDate())));
@@ -125,12 +108,16 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 			documentFileSelector.reset();
 		}
 	}
+
+	public void setNextElement(Consolidation conso) {
+		setCurrentElement(Consolidation.with().date(conso.getDate().plusMonths(1)).institution(conso.getInstitution()).openingValue(conso.getClosingValue()).build());
+	}
 	
 	public void onConsoDateChange() {
 		targetTags = new ArrayList<TagCriteria>(Collections.singleton(tagService.getConsolidationTag(this.currentElement.getDate())));
 		updateSourceEntries();
 	}
-
+	
 	public void onConsoInstitutionChange(AjaxBehaviorEvent event) {
 		sourceTags = new ArrayList<TagCriteria>(tagService.findByInstitution(this.currentElement.getInstitution()));
 		updateSourceEntries();
@@ -226,7 +213,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	
 	public void showExpense() {
 		log.debug("Editing expense {}",selectedEntry.getExpense());
-		expenseEditionController.setCurrentElementId(selectedEntry.getExpense().getId());
+		expenseEditionController.setCurrentElement(selectedEntry.getExpense());
 	}
 	
 	public void saveExpense() {

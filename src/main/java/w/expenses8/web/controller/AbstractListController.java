@@ -1,42 +1,30 @@
 package w.expenses8.web.controller;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-import org.primefaces.PrimeFaces;
-
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.IGenericService;
 
 @Slf4j
-public class AbstractListController<T extends DBable<T>> implements Serializable {
+@NoArgsConstructor
+public class AbstractListController<T extends DBable<T>> extends AbstractController<T> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 
-	protected final Class<T> clazz;
-	
 	@Inject
 	protected IGenericService<T, Long> elementService;
 	
 	protected List<T> elements;
 	protected T selectedElement;
-    
-	@SuppressWarnings("unchecked")
-	public AbstractListController() {
-		ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
-		clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-	}
 	
 	public AbstractListController(Class<T> clazz) {
-		this.clazz = clazz;
+		super(clazz);
 	}
-	
+
 	public List<T> getElements() {
 		if (elements == null) {
 			loadEntities();
@@ -56,45 +44,11 @@ public class AbstractListController<T extends DBable<T>> implements Serializable
 	public void refresh() {
 		log.info("Refreshing {}", clazz.getSimpleName());
 		loadEntities();
-		showMessage(nameOf(null) + " refreshed");
-	}
-	
-	public void newElement() throws Exception {
-		selectedElement = clazz.newInstance();
-	}
-	
-	public void save() {
-		log.info("Saving {}", selectedElement);
-		int index = elements.indexOf(selectedElement);
-		T newP = elementService.save(selectedElement);
-		if (index<0) {
-			elements.add(newP);
-		} else {
-			elements.set(index, newP);
-		}
-		showMessage(nameOf(selectedElement) + " saved");
-		
-		PrimeFaces.current().ajax().addCallbackParam("isSaved",true);
-	}
-	
-	public void delete() {
-		log.info("Deleting {}", selectedElement);
-		elementService.delete(selectedElement);
-		elements.remove(selectedElement);
-		showMessage(nameOf(selectedElement) + " deleted");
-		
-		selectedElement = null;
-	}
-
-	protected void showMessage(String text) {
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(text));
+		showMessage("Refreshed",null);
 	}
 	
 	protected void loadEntities() {
 		elements = elementService.loadAll();
 	}
 
-	protected String nameOf(T entity) {
-		return clazz.getSimpleName();
-	}
 }

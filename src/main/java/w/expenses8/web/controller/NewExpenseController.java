@@ -33,9 +33,10 @@ import w.expenses8.web.converter.DbableConverter;
 @Named
 @ViewScoped
 @Getter @Setter
-@SuppressWarnings("serial")
 public class NewExpenseController extends ExpenseController {
 	
+	private static final long serialVersionUID = 3351336696734127296L;
+
 	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)

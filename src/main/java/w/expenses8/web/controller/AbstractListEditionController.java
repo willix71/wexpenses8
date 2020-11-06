@@ -19,11 +19,16 @@ public abstract class AbstractListEditionController<T extends DBable<T>, E exten
 	
 	private MenuModel menuModel;
 	
+	public AbstractListEditionController() {
+		super();
+		buildMenuModel();
+	}
+
 	public AbstractListEditionController(Class<T> clazz) {
 		super(clazz);
 		buildMenuModel();
 	}
-
+	
 	protected abstract AbstractEditionController<E> getEditionController();
 	
 	protected MenuModel buildMenuModel() {
@@ -98,14 +103,21 @@ public abstract class AbstractListEditionController<T extends DBable<T>, E exten
 		getEditionController().setCurrentElement( null);
 		PrimeFaces.current().resetInputs("wexEditionForm");
 	}
-
+	
+	public void validateAndSaveElement() {
+		if (getEditionController().isValid()) {
+			saveElement();
+		}
+	}
+	
 	public void saveElement() {
 		getEditionController().save();
 		loadEntities();
 	}
-
+	
 	public void deleteElement() {
 		getEditionController().delete();
+		loadEntities();
 	}
 	
 	@SuppressWarnings("unchecked")

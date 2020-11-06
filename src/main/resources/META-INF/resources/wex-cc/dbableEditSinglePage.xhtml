@@ -19,7 +19,7 @@
             	<p:ajax update="wexEditionForm" />
         	</p:toggleSwitch>
      		<p:commandButton id="wexSave" value="Save" update="wexEditionForm" rendered="#{controller.edition}">
-				<f:actionListener binding="#{controller.save()}" />
+				<f:actionListener binding="#{controller.validateAndSave()}" />
 			</p:commandButton>
        	</h:panelGroup>
 	</composite:implementation>

@@ -22,9 +22,9 @@
 			</p:outputPanel>
 			
 			<h:panelGroup styleClass="wex-edit-buttons-panel">
-				<p:commandButton id="wexCancel" value="Cancel" onclick="PF('w_wexEditionDialog').hide()" />
-				<p:commandButton id="wexSave" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel #{cc.attrs.update}">
-					<f:actionListener binding="#{controller.saveElement()}" />
+				<p:commandButton id="wexCancel" value="Cancel" icon="pi pi-times" onclick="PF('w_wexEditionDialog').hide()" />
+				<p:commandButton id="wexSave" value="Save" icon="pi pi-check" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog').hide()" update="wexEditionPanel #{cc.attrs.update}">
+					<f:actionListener binding="#{controller.validateAndSaveElement()}" />
 				</p:commandButton>
 			</h:panelGroup>
 		</p:dialog>

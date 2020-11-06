@@ -51,7 +51,7 @@
 		<p:contextMenu for="wexTable" model="#{controller.menuModel}"/>
 		
 		<p:outputPanel id="wexDetailPanel">
- 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top">
+ 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top" modal="true">
 				<composite:renderFacet name="elementViewer" />
 				<h:panelGroup styleClass="wex-edit-buttons-panel">
 					<p:commandButton id="wexCloseBtn" value="Close" type="button" onclick="PF('w_wexDetailDialog').hide()" />
@@ -65,7 +65,6 @@
 				<h:panelGroup styleClass="wex-edit-buttons-panel">
 					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
 						<f:actionListener binding="#{controller.deleteElement()}" />
-						<f:actionListener binding="#{controller.refresh()}" />
 					</p:commandButton>
 					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
 				</h:panelGroup>

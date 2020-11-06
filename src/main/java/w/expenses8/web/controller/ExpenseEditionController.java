@@ -5,13 +5,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.primefaces.event.SelectEvent;
 
@@ -25,7 +21,6 @@ import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.impl.CountryService;
 import w.expenses8.data.utils.ExpenseHelper;
@@ -50,43 +45,28 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	@Inject
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
-	private IExpenseService expenseService;
-	
-	@Inject
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
 	private IPayeeService payeeService;
 	
 	@Inject
 	private CurrencyValue currencyValue;
 	
-	private LocalDateTime currentDate;
-	private BigDecimal currentAmount;
+	private LocalDateTime previousDate;
+	private BigDecimal previousAmount;
 	private Map<String,ExchangeRate> potentialExchangeRates = new HashMap<String, ExchangeRate>();
 	
 	private DocumentFile selectedDocumentFile;
+	
 	private TransactionEntry selectedTransactionEntry;
 	
 	private TransactionsSums transactionsSums = new TransactionsSums();
 	
 	@Override
-	public void setCurrentElementId(Object o) {
-		this.currentElement = expenseService.reload(o);
-		initCurrentElement();
-	}
-	
-	@Override
-	public void setCurrentElement(Expense expense) {
-		this.currentElement = expenseService.reload(expense);
-		initCurrentElement();
-	}
-	
-	public void initCurrentElement() {
+	protected void initCurrentElement() {
 		this.potentialExchangeRates.clear();
 
 		if (currentElement != null) {
-			this.currentDate = currentElement.getDate();
-			this.currentAmount = currentElement.getCurrencyAmount();
+			this.previousDate = currentElement.getDate();
+			this.previousAmount = currentElement.getCurrencyAmount();
 			
 			if (currentElement.getExchangeRate()!=null) {
 				this.potentialExchangeRates.put(currentElement.getExchangeRate().getFromCurrencyCode(), currentElement.getExchangeRate());
@@ -95,28 +75,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 		documentFileSelector.reset();
 	}
-	
-	@Override
-	public void save() {
-		// check for similar expense
-		if (expenseService.findSimiliarExpenses(getCurrentElement()).size() != 0) {
-			
-		}
-		try {
-			super.save();
-		} catch(ConstraintViolationException ex) {
-			for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
-				log.warn("ConstraintViolation for {} : {}", viol.getPropertyPath(), viol.getMessage());
-				FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
-			}
-		}
-	}
-	
-	public void onAccountRowDoubleClick(final SelectEvent<TransactionEntry> event) {
-		TransactionEntry t = event.getObject();
-		setCurrentElement(t.getExpense());
-	}
-	
+
 	public void handlePayeeChange(SelectEvent<Payee> event) {
 		if (this.currentElement.getPayee()!=null) {
 			String newCurrencyCode = countryService.getCurrency(this.currentElement.getPayee().getCountryCode());
@@ -129,15 +88,15 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	
 	public void handleDateChange(SelectEvent<LocalDateTime> event) {
 		LocalDateTime newdate = event.getObject();
-		log.debug("handleDateChange old {} new {}",currentDate, newdate);
-		currentElement.updateDate(currentDate);
-		currentDate = newdate;
+		log.debug("handleDateChange old {} new {}",previousDate, newdate);
+		currentElement.updateDate(previousDate);
+		previousDate = newdate;
 	}
 	
 	public void onDateChange() {
-		log.debug("onDateChange old {} new {}",currentDate, currentElement.getDate());
-		currentElement.updateDate(currentDate);
-		currentDate = currentElement.getDate();
+		log.debug("onDateChange old {} new {}",previousDate, currentElement.getDate());
+		currentElement.updateDate(previousDate);
+		previousDate = currentElement.getDate();
 	}
 	
 	public void onCurrencyChange() {
@@ -169,10 +128,10 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	}
 	
 	public void onAmountChange() {
-		log.debug("onAmountChange old {} new {}",currentAmount, currentElement.getCurrencyAmount());
-		currentElement.updateAmountValues(currentAmount, currencyValue.getPrecision());
+		log.debug("onAmountChange old {} new {}",previousAmount, currentElement.getCurrencyAmount());
+		currentElement.updateAmountValues(previousAmount, currencyValue.getPrecision());
 		transactionsSums.compute(currentElement.getTransactions());
-		currentAmount = currentElement.getCurrencyAmount();
+		previousAmount = currentElement.getCurrencyAmount();
 	}
 	
 	public void onTransactionsAmountChange() {
