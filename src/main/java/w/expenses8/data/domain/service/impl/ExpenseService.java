@@ -20,6 +20,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.var;
 import w.expenses8.WexpensesConstants;
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.criteria.RangeLocalDateCriteria;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.GenericServiceImpl;
@@ -47,6 +48,9 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	private EntityManager entityManager;
 	
 	@Autowired
+	private CurrencyValue currencyValue;
+	
+	@Autowired
 	public ExpenseService(IExpenseDao dao) {
 		super(Expense.class, dao);
 	}
@@ -59,7 +63,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	
 	@Override
 	public Expense reload(Object o) {
-		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return ExpenseHelper.build();
+		if (o == null || o == WexpensesConstants.NEW_INSTANCE) return ExpenseHelper.build(currencyValue);
 		var query = baseQuery(QExpense.expense);
 		if (o instanceof Expense) {
 			Expense x=(Expense)o;
