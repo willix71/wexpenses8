@@ -8,12 +8,11 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import w.expenses8.data.domain.model.Country;
+import w.expenses8.data.domain.service.ICountryService;
 
-@Getter
 @Service
-public class CountryService {
+public class CountryService implements ICountryService {
 
 	private final List<Country> countries;
 	
@@ -28,6 +27,15 @@ public class CountryService {
 		currenciesCodes = countries.stream().map(c->c.getCurrencyCode()).sorted().distinct().collect(Collectors.toList());
 	}
 	
+	public List<String> getCountriesCodes() {
+		return countriesCodes;
+	}
+
+	public List<String> getCurrenciesCodes() {
+		return currenciesCodes;
+	}
+
+	@Override
 	public String getCurrency(String countryCode) {
 		return countryCode==null?null:countries.stream().filter(c->countryCode.equals(c.getCountryCode())).map(c->c.getCurrencyCode()).findFirst().orElse(null);
 	}

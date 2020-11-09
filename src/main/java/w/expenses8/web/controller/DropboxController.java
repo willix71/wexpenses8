@@ -32,7 +32,7 @@ import w.expenses8.data.domain.service.IPayeeService;
 import w.expenses8.data.domain.service.IPayeeTypeService;
 import w.expenses8.data.domain.service.ITagGroupService;
 import w.expenses8.data.domain.service.ITagService;
-import w.expenses8.data.domain.service.impl.CountryService;
+import w.expenses8.data.domain.service.ICountryService;
 
 @Slf4j
 @Named
@@ -111,7 +111,7 @@ public class DropboxController implements Serializable {
 	}
 	
 	@Inject
-	private CountryService countryService;
+	private ICountryService countryService;
 	
 	public List<String> getCountries() {
 		return countryService.getCountriesCodes();
