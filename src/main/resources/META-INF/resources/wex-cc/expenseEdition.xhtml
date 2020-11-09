@@ -24,7 +24,7 @@
 			<h:outputText value="#{expense.expenseType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
 			<p:autoComplete id="expenseTypeId" value="#{expense.expenseType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
-             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" >
+             	var="expenseTypeIter" itemLabel="#{expenseTypeIter.name}" itemValue="#{expenseTypeIter}" forceSelection="true" >
              	<p:ajax event="itemSelect" update="payeeSelector" />
              </p:autoComplete>
  			
@@ -81,24 +81,32 @@
 			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=applicationController.defaultCurrency.code and not empty expense.exchangeRate}" >
 				<h:panelGroup rendered="#{not cc.attrs.edition}">
 					<div class="p-grid ui-fluid p-field ">
-			        	<div class="p-col">
-			        		<h:panelGroup styleClass="js-date-related">
+			        	<div class="p-col-12">
+			        		<h:panelGroup style="padding-right:5px">
 								<h:outputText value="#{expense.exchangeRate.date}" rendered="#{not cc.attrs.edition}" >
 									<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 								</h:outputText>
 			        		</h:panelGroup>
-							<h:outputText value="#{expense.exchangeRate.institution.prefix}#{expense.exchangeRate.institution.name} #{expense.exchangeRate.institution.extra}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
+							<h:outputText value="#{expense.exchangeRate.institution.prefix}#{expense.exchangeRate.institution.name} #{expense.exchangeRate.institution.extra}" styleClass="wex-field-value"/>
 			        	</div>
-			        	<div class="p-col">
-							<h:outputFormat value="{0,number, 0.00000}" >
+			        	<div class="p-col-12">
+			        		<div style="display:flex;padding-right:2px">
+			        		<span class="wex-field-label">rate </span>
+							<h:outputFormat value="{0,number, 0.00000000}" styleClass="wex-field-inline-value" >
 								<f:param value="#{expense.exchangeRate.rate}" />
-							</h:outputFormat>							
-							<h:outputFormat value="{0,number, 0.00#}%" rendered="#{not empty expense.exchangeRate.fee}" >
-								<f:param value="x #{expense.exchangeRate.fee}" />
 							</h:outputFormat>
-							<h:outputFormat value="{0,number, 0.00} " rendered="#{not empty expense.exchangeRate.fixFee}" >
-								<f:param value="+ #{expense.exchangeRate.fixFee}" />
+										
+							<p:outputLabel for="@next" value="fee" styleClass="wex-field-label" rendered="#{not empty expense.exchangeRate.fee}" />
+							<h:outputFormat value="{0,number, 0.00#}%" rendered="#{not empty expense.exchangeRate.fee}" styleClass="wex-field-inline-value" >
+								<f:param value="#{expense.exchangeRate.fee}" />
 							</h:outputFormat>
+							
+							<p:outputLabel for="@next" value="fix" styleClass="wex-field-label" rendered="#{not empty expense.exchangeRate.fixFee}" />
+							<h:outputFormat value="{0,number, 0.00} " rendered="#{not empty expense.exchangeRate.fixFee}" styleClass="wex-field-inline-value" style="margin-right:2px">
+								<f:param value="#{expense.exchangeRate.fixFee}"/>
+							</h:outputFormat>
+							<h:outputFormat value="#{expense.currencyCode}" rendered="#{not empty expense.exchangeRate.fixFee}" />							
+							</div>
 			        	</div>
 		        	</div>
 				</h:panelGroup>
@@ -107,33 +115,33 @@
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col-12 p-md-4">
 				            <p:outputLabel for="exchangeRateDateId" value="date" />
-							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" rendered="#{cc.attrs.edition}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" appendTo="@(body)"/>
+							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" appendTo="@(body)" styleClass="js-date-related"/>
 			        	</div>
 			        	
 			        	<div class="p-col-12 p-md-8">
 				            <p:outputLabel for="exchangeRateInstutionId" value="provider" />
-							<p:autoComplete id="exchangeRateInstutionId" value="#{expense.exchangeRate.institution}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+							<p:autoComplete id="exchangeRateInstutionId" value="#{expense.exchangeRate.institution}" styleClass="wex-field-edit"
 				 				dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
-		            			var="theme" itemLabel="#{theme.prefix}#{theme.name} #{theme.extra}" itemValue="#{theme}" forceSelection="true" />
+		            			var="xRateIter" itemLabel="#{xRateIter.prefix}#{xRateIter.name} #{xRateIter.extra}" itemValue="#{xRateIter}" forceSelection="true" />
 		            		</div>
 		
 			            <div class="p-col-12 p-md-6">
 				            <p:outputLabel for="xrateId" value="rate" />
-							<p:inputNumber id="xrateId" value="#{expense.exchangeRate.rate}" thousandSeparator="'" decimalPlaces="8" rendered="#{cc.attrs.edition}" >
+							<p:inputNumber id="xrateId" value="#{expense.exchangeRate.rate}" thousandSeparator="'" decimalPlaces="8" >
 						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>					    			
 					    </div>
 					    
 			            <div class="p-col-12 p-md-3">
 				            <p:outputLabel for="xfeeId" value="fee" />
-							<p:inputNumber id="xfeeId" value="#{expense.exchangeRate.fee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol="%" symbolPosition="s" decimalPlaces="3" >
+							<p:inputNumber id="xfeeId" value="#{expense.exchangeRate.fee}" thousandSeparator="'" symbol="%" symbolPosition="s" decimalPlaces="8" >
 						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>
 					    </div>
 					    
 			            <div class="p-col-12 p-md-3">
 				            <p:outputLabel for="xfixFeeId" value="fix fee" />
-							<p:inputNumber id="xfixFeeId" value="#{expense.exchangeRate.fixFee}" thousandSeparator="'" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s" >
+							<p:inputNumber id="xfixFeeId" value="#{expense.exchangeRate.fixFee}" thousandSeparator="'" symbol=" #{expense.currencyCode}" symbolPosition="s" >
 						    	<p:ajax listener="#{expenseEditionController.onAmountChange}" update="expenseFieldsPanelId @(.js-value-related)" />
 						    </p:inputNumber>
 					    </div>
@@ -249,10 +257,10 @@
 					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{cc.attrs.edition}">
-					<p:autoComplete multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
-						itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
+					<p:autoComplete multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="entryIter"
+						itemLabel="#{entryIter.name}" itemValue="#{entryIter}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
 						<p:column>
-							<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.type}" />
+							<h:outputText value="#{entryIter.name}" styleClass="wex-tags-#{entryIter.type}" />
 						</p:column>
 					</p:autoComplete>
 				</h:panelGroup>
