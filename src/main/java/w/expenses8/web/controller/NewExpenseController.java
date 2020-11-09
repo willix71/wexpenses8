@@ -18,12 +18,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.ExpenseType;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.enums.TagType;
+import w.expenses8.data.domain.service.IExchangeRateService;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
@@ -41,6 +43,16 @@ public class NewExpenseController extends ExpenseController {
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private IExpenseService expenseService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private IExchangeRateService exchangeRateService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private CurrencyValue currencyValue;
 	
 	private Payee payee;
 
@@ -85,7 +97,8 @@ public class NewExpenseController extends ExpenseController {
 	}
 
 	public void newEmptyExpense() {
-		Expense newExpense = ExpenseHelper.build(expenseType, payee);
+		Expense newExpense = ExpenseHelper.build(expenseType, payee, currencyValue);
+		
 		log.info("created new expense {}",newExpense);
 		getEditionController().setCurrentElement(newExpense);
 	}
@@ -101,16 +114,10 @@ public class NewExpenseController extends ExpenseController {
 		if (options.contains("documents")) {
 			CollectionHelper.stream(baseExpense.getDocumentFiles()).forEach(d->newExpense.addDocumentFile(d));
 		}
-		if (options.contains("rate") && baseExpense.getExchangeRate()!=null) {
-			newExpense.setExchangeRate(ExchangeRate.with()
-					.date(newExpense.getDate()==null?null:newExpense.getDate().toLocalDate())
-					.institution(baseExpense.getExchangeRate().getInstitution())
-					.fromCurrencyCode(baseExpense.getExchangeRate().getFromCurrencyCode())
-					.toCurrencyCode(baseExpense.getExchangeRate().getToCurrencyCode())
-					.rate(baseExpense.getExchangeRate().getRate())
-					.fee(baseExpense.getExchangeRate().getFee())
-					.fixFee(baseExpense.getExchangeRate().getFixFee())
-					.build());
+		if (!currencyValue.isDefaultCurrency(newExpense.getCurrencyCode())) {
+			ExchangeRate xr = options.contains("rate")?exchangeRateService.copyExchangeRate(baseExpense.getExchangeRate()):exchangeRateService.buildExchangeRate(newExpense);
+			xr.setDate(newExpense.getDate()==null?null:newExpense.getDate().toLocalDate());
+			newExpense.setExchangeRate(xr);
 		}
 		log.info("duplicated new expense {}",newExpense);
 		getEditionController().setCurrentElement(newExpense);

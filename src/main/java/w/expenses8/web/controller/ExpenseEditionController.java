@@ -21,8 +21,8 @@ import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
-import w.expenses8.data.domain.service.IPayeeService;
-import w.expenses8.data.domain.service.impl.CountryService;
+import w.expenses8.data.domain.service.ICountryService;
+import w.expenses8.data.domain.service.IExchangeRateService;
 import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.data.utils.TransactionsSums;
 
@@ -35,17 +35,17 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	private static final long serialVersionUID = 3351336696734127296L;
 
 	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private ICountryService countryService;
+	
+	@Inject
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	private IExchangeRateService exchangeRateService;
+
+	@Inject
 	private DocumentFileSelector documentFileSelector;
-	
-	@Inject
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
-	private CountryService countryService;
-	
-	@Inject
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
-	private IPayeeService payeeService;
 	
 	@Inject
 	private CurrencyValue currencyValue;
@@ -102,27 +102,17 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	public void onCurrencyChange() {
 		String newCurrencyCode = currentElement.getCurrencyCode();
 		log.debug("onCurrencyChange {}", newCurrencyCode);
-		if (currencyValue.getCode().equals(newCurrencyCode)) {
+		if (currencyValue.isDefaultCurrency(newCurrencyCode)) {
 			currentElement.setExchangeRate(null);
 		} else {
 			ExchangeRate potentialExchangeRate = potentialExchangeRates.get(newCurrencyCode);
 			if (potentialExchangeRate!=null) {
 				currentElement.setExchangeRate(potentialExchangeRate);
 			} else {
-				Long institutionId = currentElement.getTransactions().stream().flatMap(f->f.getTags().stream()).filter(f->f.getInstitution()!=null && f.getInstitution().getId()!=null).map(f->f.getInstitution().getId()).findFirst().orElse(null);
-				Payee institution = institutionId==null?null:payeeService.load(institutionId);
-				
-				// new expense rate
-				ExchangeRate newExchangeRate = ExchangeRate.with()
-						.institution(institution)
-						.date(currentElement.getDate()==null?null:currentElement.getDate().toLocalDate())
-						.fromCurrencyCode(newCurrencyCode)
-						.toCurrencyCode(currencyValue.getCode())
-						.rate(1.2)
-						.build();
-				
-				potentialExchangeRates.put(newCurrencyCode, newExchangeRate);
+				ExchangeRate newExchangeRate = exchangeRateService.buildExchangeRate(currentElement);
 				currentElement.setExchangeRate(newExchangeRate);
+
+				potentialExchangeRates.put(newCurrencyCode, newExchangeRate);
 			}
 		}
 	}
