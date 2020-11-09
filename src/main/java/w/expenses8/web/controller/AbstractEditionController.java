@@ -1,6 +1,7 @@
 package w.expenses8.web.controller;
 
 import java.time.Instant;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -8,7 +9,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 
 import org.primefaces.PrimeFaces;
@@ -23,7 +23,6 @@ import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.core.service.IGenericService;
 import w.expenses8.data.core.service.IReloadableService;
 import w.expenses8.data.domain.validation.Warning;
-import w.expenses8.data.utils.ValidationHelper;
 
 @Slf4j
 @Getter @Setter @NoArgsConstructor
@@ -99,10 +98,9 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 
 	public boolean isValid() {
 		if (currentElement != null) {
-			try {
-				ValidationHelper.validate(validator, currentElement);
-			} catch(ConstraintViolationException ex) {
-				for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
+			Set<ConstraintViolation<T>> violations = validator.validate(currentElement);
+			if (!violations.isEmpty()) {
+				for(ConstraintViolation<?> viol: violations) {
 					log.warn("ConstraintViolation errors for {} : {}", viol.getPropertyPath(), viol.getMessage());
 					FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
 				}
@@ -112,10 +110,9 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 			Instant now = Instant.now();
 			if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
 				lastWarningTime = now;
-				try {
-					ValidationHelper.validate(validator, currentElement, Warning.class);
-				} catch(ConstraintViolationException ex) {
-					for(ConstraintViolation<?> viol: ex.getConstraintViolations()) {
+				violations = validator.validate(currentElement, Warning.class);
+				if (!violations.isEmpty()) {
+					for(ConstraintViolation<?> viol: violations) {
 						log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
 						FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
 					}

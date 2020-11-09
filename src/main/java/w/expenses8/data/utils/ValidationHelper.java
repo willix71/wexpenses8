@@ -7,7 +7,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+// might want to autowire a validator rather than using this helper
 public class ValidationHelper {
+	
 	protected static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
 	public static <T> String validate(T o, Class<?>... groups) {
