@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.DocumentFile;
@@ -92,6 +93,10 @@ public class ExpenseHelper {
 				} else {
 					x.addTransaction(TransactionEntry.in(t));
 				}
+				continue;
+			}
+			if (o instanceof CurrencyValue) {
+				x.setCurrencyCode(((CurrencyValue)o).getCode());
 				continue;
 			}
 			if (o instanceof String) {

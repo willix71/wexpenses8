@@ -20,6 +20,10 @@ public class CurrencyValue {
 	
 	private BigDecimal precision;
 	
+	public boolean isDefaultCurrency(String currencyCode) {
+		return currencyCode!=null & currencyCode.equals(code);
+	}
+	
 	public BigDecimal applyPrecision(BigDecimal amount) {
 		return applyPrecision(amount, precision);
 	}
