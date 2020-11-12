@@ -24,7 +24,7 @@ public class AbstractListController<T extends DBable<T>> extends AbstractControl
 	public AbstractListController(Class<T> clazz) {
 		super(clazz);
 	}
-
+	
 	public List<T> getElements() {
 		if (elements == null) {
 			loadEntities();
@@ -35,12 +35,12 @@ public class AbstractListController<T extends DBable<T>> extends AbstractControl
 	public T getSelectedElement() {
 		return selectedElement;
 	}
-
+	
 	public void setSelectedElement(T selectedElement) {
 		log.debug("Selecting {}", selectedElement);
 		this.selectedElement = selectedElement;
 	}
-
+	
 	public void refresh() {
 		log.info("Refreshing {}", clazz.getSimpleName());
 		loadEntities();
@@ -50,5 +50,4 @@ public class AbstractListController<T extends DBable<T>> extends AbstractControl
 	protected void loadEntities() {
 		elements = elementService.loadAll();
 	}
-
 }
