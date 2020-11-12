@@ -19,13 +19,13 @@ public class WexpensesLegacyApplication {
 		SpringApplication.run(WexpensesLegacyApplication.class, args);
 	}
 
-	  @Bean
-	  public CommandLineRunner demo(MigrateService service) {
-	    return (args) -> {
-	    	log.info("Started up");
-	    	service.migrate();
-	    	service.consolidate();
-	    	log.info("Done migrating");
-	    };
-	  }
+	@Bean
+	public CommandLineRunner demo(MigrateService service) {
+		return (args) -> {
+			log.info("Migrating Started");
+			service.migrate();
+			service.consolidate();
+			log.info("Done migrating");
+		};
+	}
 }

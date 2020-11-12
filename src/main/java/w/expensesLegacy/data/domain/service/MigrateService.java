@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.CurrencyValue;
 import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.DocumentFile;
@@ -40,6 +42,7 @@ import w.expenses8.data.utils.ConsolidationHelper;
 import w.expenses8.data.utils.DateHelper;
 import w.expensesLegacy.data.domain.model.Discriminator;
 
+@Slf4j
 @Service
 public class MigrateService {
 
@@ -85,56 +88,67 @@ public class MigrateService {
 	public void migrate() {
 		HashMap<Long, DocumentFile> consolidationsDocument = getCondsolidationDocuments();
 		
+		Map<w.expensesLegacy.data.domain.model.Expense,Exception> errors = new HashMap<>();
 		int i = 0;
+		Expense newx = null;
 		for(w.expensesLegacy.data.domain.model.Expense legacyExpense: entityManager.createQuery("SELECT a from ExpenseOld a order by a.date DESC", w.expensesLegacy.data.domain.model.Expense.class).getResultList()) {
-			//if (i>1000) break;
-			System.err.println(++i + ") " + legacyExpense);
-			
-			Expense newx = w.expenses8.data.domain.model.Expense.with()
-					.version(legacyExpense.getVersion()).uid(legacyExpense.getUid()).createdTs(legacyExpense.getCreatedTs()).modifiedTs(legacyExpense.getModifiedTs())
-					.expenseType(getExpenseType(legacyExpense.getType()))
-					.date(DateHelper.toLocalDateTime(legacyExpense.getDate()))
-					.currencyAmount(legacyExpense.getAmount())
-					.currencyCode(legacyExpense.getCurrency().getCode())
-					.description(legacyExpense.getDescription())
-					.externalReference(legacyExpense.getExternalReference())
-					.payee(getPayee(legacyExpense.getPayee()))
-					.build();
-			
-			w.expensesLegacy.data.domain.model.ExchangeRate rate = null;
-			for(w.expensesLegacy.data.domain.model.TransactionLine line: legacyExpense.getTransactions()) {
-				TransactionEntry entry = TransactionEntry.with().version(line.getVersion()).createdTs(line.getCreatedTs()).modifiedTs(line.getModifiedTs())
-						.factor(line.getFactor())
-						.currencyAmount(line.getAmount())
-						// TODO
-						//.accountingDate(line.getDate())
-						//.description(line.getDescription())
-						.tags(getTags(line.getAccount(),line.getDiscriminator(),line.getConsolidation()))
+			try {
+				++i;
+				//if (i<1440) continue;
+				//if (i>1000) break;
+				System.err.println(i + ") " + legacyExpense.getId() + " " + legacyExpense);
+				
+				newx = w.expenses8.data.domain.model.Expense.with()
+						.version(legacyExpense.getVersion()).uid(legacyExpense.getUid()).createdTs(legacyExpense.getCreatedTs()).modifiedTs(legacyExpense.getModifiedTs())
+						.expenseType(getExpenseType(legacyExpense.getType()))
+						.date(DateHelper.toLocalDateTime(legacyExpense.getDate()))
+						.currencyAmount(legacyExpense.getAmount())
+						.currencyCode(legacyExpense.getCurrency().getCode())
+						.description(legacyExpense.getDescription())
+						.externalReference(legacyExpense.getExternalReference())
+						.payee(getPayee(legacyExpense.getPayee()))
 						.build();
-				if (line.getExchangeRate() != null && "CHF".equals(line.getExchangeRate().getToCurrency().getCode())) {
-					if (rate == null) {
-						rate = line.getExchangeRate();
-					} else if (!rate.equals(line.getExchangeRate())) {
-						// two different rates for same expense
-						throw new RuntimeException("two different rates for same expense " + legacyExpense.getUid());
+				
+				w.expensesLegacy.data.domain.model.ExchangeRate rate = null;
+				for(w.expensesLegacy.data.domain.model.TransactionLine line: legacyExpense.getTransactions()) {
+					TransactionEntry entry = TransactionEntry.with().version(line.getVersion()).createdTs(line.getCreatedTs()).modifiedTs(line.getModifiedTs())
+							.factor(line.getFactor())
+							.currencyAmount(line.getAmount())
+							.tags(getTags(line.getAccount(),line.getDiscriminator(),line.getConsolidation()))
+							// TODO	//.accountingDate(line.getDate()) //.description(line.getDescription())
+							.build();
+					if (line.getExchangeRate() != null && "CHF".equals(line.getExchangeRate().getToCurrency().getCode())) {
+						if (rate == null) {
+							rate = line.getExchangeRate();
+						} else if (!rate.equals(line.getExchangeRate())) {
+							// two different rates for same expense
+							throw new RuntimeException("two different rates for same expense " + legacyExpense.getUid());
+						}
 					}
+					
+					entry.setConsolidation(getConsolidation(line.getConsolidation(), consolidationsDocument));
+					newx.addTransaction(entry);
 				}
-				entry.setConsolidation(getConsolidation(line.getConsolidation(), consolidationsDocument));
-				newx.addTransaction(entry);
+				newx.setExchangeRate(getExchangeRate(rate));
+				newx.updateValues(currencyValue.getPrecision());
+				if (legacyExpense.getFileDate()!=null && legacyExpense.getFileName()!=null) {
+					newx.addDocumentFile(getDocumentFile(DateHelper.toLocalDate(legacyExpense.getFileDate()), legacyExpense.getFileName()));
+				}
+				
+				if (legacyExpense.getPayment() != null) {
+					newx.setPayedDate(DateHelper.toLocalDate(legacyExpense.getPayment().getDate()));
+				}
+				
+				entityManager.persist(newx);
+				entityManager.flush();
+			}catch(Exception e) {
+				log.error("Error processing id {} : {}", legacyExpense.getId(), legacyExpense, e);
+				errors.put(legacyExpense, e);
 			}
-			newx.setExchangeRate(getExchangeRate(rate));
-			newx.updateValues(currencyValue.getPrecision());
-			if (legacyExpense.getFileDate()!=null && legacyExpense.getFileName()!=null) {
-				newx.addDocumentFile(getDocumentFile(DateHelper.toLocalDate(legacyExpense.getFileDate()), legacyExpense.getFileName()));
-			}
-			
-			if (legacyExpense.getPayment() != null) {
-				newx.setPayedDate(DateHelper.toLocalDate(legacyExpense.getPayment().getDate()));
-			}
-			
-			entityManager.persist(newx);
-			//entityManager.flush();
 		}
+		
+		System.err.println("--------" + errors.size() + " errors --------");
+		errors.entrySet().stream().forEach(e->System.err.println("Error processing "  + e.getKey().getId() + " "+ e.getKey() + ": " + e.getValue()));
 	}
 	
 	protected Set<Tag> getTags(w.expensesLegacy.data.domain.model.Account account, Discriminator discriminator, w.expensesLegacy.data.domain.model.Consolidation consolidation) {
@@ -142,6 +156,7 @@ public class MigrateService {
 		if (account != null) {
 			switch(account.getType()) {
 			case ASSET:
+			case FILTER:				
 				tags.add(getTag(account.getName(), 1000, TagType.ASSET, getPayee(account.getOwner())));
 				break;
 			case LIABILITY:
@@ -173,6 +188,9 @@ public class MigrateService {
 		if (consolidation != null) {
 			tags.add(buildConsolidationTag(consolidation.getDate()));
 		}
+		if (tags.isEmpty()) {
+			log.warn("No tags");
+		}
 		return tags;
 	}
 
@@ -191,7 +209,7 @@ public class MigrateService {
 					.institution(institution)
 					.build();
 			entityManager.persist(newType);
-			entityManager.flush();
+			//entityManager.flush();
 			return newType;
 		}
 			
@@ -221,7 +239,7 @@ public class MigrateService {
 				break;
 			}
 			entityManager.persist(newType);
-			entityManager.flush();
+			//entityManager.flush();
 			return newType;
 		}
 	}
@@ -239,7 +257,7 @@ public class MigrateService {
 				.fixFee(legacy.getFixFee())
 				.build();
 		entityManager.persist(newType);
-		entityManager.flush();
+		//entityManager.flush();
 		return newType;
 	}
 	
@@ -265,7 +283,7 @@ public class MigrateService {
 					.iban(legacy.getIban())
 					.build();
 			entityManager.persist(newPayee);
-			entityManager.flush();
+			//entityManager.flush();
 			return newPayee;
 		}
 	}
@@ -278,7 +296,7 @@ public class MigrateService {
 			PayeeType newType = PayeeType.with().uid(legacy.getUid()).version(legacy.getVersion()).createdTs(legacy.getCreatedTs()).modifiedTs(legacy.getModifiedTs())
 					.name(legacy.getName()).selectable(legacy.isSelectable()).build();
 			entityManager.persist(newType);
-			entityManager.flush();
+			//entityManager.flush();
 			return newType;
 		}
 	}
@@ -315,7 +333,7 @@ public class MigrateService {
 				newType.setDeltaValue(legacy.getDeltaBalance());
 			}
 			entityManager.persist(newType);
-			entityManager.flush();
+			//entityManager.flush();
 			return newType;
 		}
 		

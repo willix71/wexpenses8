@@ -57,7 +57,6 @@ alter table WEX_TransactionEntry add constraint FKhpbdedn7oje5tfkyl6axf1opd fore
 alter table WEX_TransactionEntry add constraint FKlmnlduq5cyn0r5o6deuwcrseu foreign key (expense_id) references WEX_Expense on delete cascade;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FK8xv4ycc4ihpivm3gvywfe9u9i foreign key (tags_id) references WEX_Tag;
 alter table WEX_TransactionEntry_WEX_Tag add constraint FKdwcj0kkm9qmbip0jmrtnfj7gs foreign key (WEX_TransactionEntry_id) references WEX_TransactionEntry;
-
 drop table if exists WEX_Country CASCADE;
 create table WEX_Country (countryCode varchar(2),countryName varchar(255),currencyCode varchar(3),primary key (countryCode));
 insert into WEX_Country values ('CH','Switzerland','CHF');
