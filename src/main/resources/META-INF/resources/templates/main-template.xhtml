@@ -19,34 +19,36 @@
 
 <h:body>
 	<f:view>
-		<div class="wx-title">
-			<a href="#{request.contextPath}/index.xhtml">
-				<h:graphicImage name="logo.jpeg" library="images" width="50" height="50"/>
-			</a>
-			<h2><ui:insert name="title">Wexpenses</ui:insert></h2>
-		</div>
-
-		<h:form id="menuForm">
-			 <p:menubar>
-		        <p:submenu label="View" icon="pi pi-calendar">
-		            <p:menuitem value="New" url="newExpense.xhtml" icon="pi pi-dollar"/>
-		            <p:menuitem value="Expenses" url="expenses2.xhtml" icon="pi pi-dollar"/>
-		            <p:menuitem value="Accounts" url="accounts2.xhtml" icon="pi pi-list"/>
-		            <p:menuitem value="Consolidations" url="consolidations2.xhtml" icon="pi pi-calendar"/>
-		            <p:menuitem value="ToPay" 
-		            	onclick="window.open('nextPayments.xhtml','newwindow','width=400,height=295');return false;" icon="pi pi-money-bill"/>
-		        </p:submenu>
-		     	<p:submenu label="Classifications" icon="pi pi-tags">
-		            <p:menuitem value="Tags" url="tags.xhtml" icon="pi pi-tag"/>
-		            <p:menuitem value="TagGroups" url="tagGroups.xhtml" icon="pi pi-tag"/>
-		            <p:separator />
-		            <p:menuitem value="Payees" url="payees2.xhtml" icon="pi pi-user"/>
-		            <p:separator />
-		            <p:menuitem value="Payee Types" url="payeeTypes.xhtml" />
-		            <p:menuitem value="Expense Types" url="expenseTypes.xhtml" />
-		        </p:submenu>
-		      </p:menubar>
-        </h:form>
+		<h:panelGroup rendered="#{not pageController.hideMenu}">
+			<div class="wx-title">
+				<a href="#{request.contextPath}/index.xhtml">
+					<h:graphicImage name="logo.jpeg" library="images" width="50" height="50"/>
+				</a>
+				<h2><ui:insert name="title">Wexpenses</ui:insert></h2>
+			</div>
+	
+			<h:form id="menuForm">
+				 <p:menubar>
+			        <p:submenu label="View" icon="pi pi-calendar">
+			            <p:menuitem value="New" url="newExpense.xhtml" icon="pi pi-dollar"/>
+			            <p:menuitem value="Expenses" url="expenses2.xhtml" icon="pi pi-dollar"/>
+			            <p:menuitem value="Accounts" url="accounts2.xhtml" icon="pi pi-list"/>
+			            <p:menuitem value="Consolidations" url="consolidations2.xhtml" icon="pi pi-calendar"/>
+			            <p:menuitem value="ToPay" 
+			            	onclick="window.open('nextPayments.xhtml','newwindow','width=400,height=295');return false;" icon="pi pi-money-bill"/>
+			        </p:submenu>
+			     	<p:submenu label="Classifications" icon="pi pi-tags">
+			            <p:menuitem value="Tags" url="tags.xhtml" icon="pi pi-tag"/>
+			            <p:menuitem value="TagGroups" url="tagGroups.xhtml" icon="pi pi-tag"/>
+			            <p:separator />
+			            <p:menuitem value="Payees" url="payees2.xhtml" icon="pi pi-user"/>
+			            <p:separator />
+			            <p:menuitem value="Payee Types" url="payeeTypes.xhtml" />
+			            <p:menuitem value="Expense Types" url="expenseTypes.xhtml" />
+			        </p:submenu>
+			      </p:menubar>
+	        </h:form>
+		</h:panelGroup>
 		
 		<ui:insert name="content" />
 		
