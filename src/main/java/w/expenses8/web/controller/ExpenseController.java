@@ -30,9 +30,6 @@ import w.expenses8.data.domain.service.IExpenseService;
 public class ExpenseController extends AbstractListEditionController<Expense, Expense> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
-
-	@Inject 
-	private ExpenseEditionController expenseEditionController;
 	
 	@Inject
 	@Getter(AccessLevel.NONE)
@@ -67,11 +64,6 @@ public class ExpenseController extends AbstractListEditionController<Expense, Ex
 	protected void loadEntities() {
 		log.info("loading expenses with {}", criteria);
 		elements = expenseService.findExpenses(criteria);
-	}
-	
-	@Override
-	protected AbstractEditionController<Expense> getEditionController() {
-		return expenseEditionController;
 	}
 	
 	@Override

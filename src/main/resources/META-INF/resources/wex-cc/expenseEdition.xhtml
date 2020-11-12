@@ -9,7 +9,6 @@
    	xmlns:composite="http://java.sun.com/jsf/composite">
    	
 	<composite:interface>
-		<composite:attribute name="edition" default="false" />
 	</composite:interface>
 	
 	<composite:implementation>
@@ -21,23 +20,33 @@
 
 		<h:panelGrid id="expenseFieldsPanelId" columns="2" rendered="#{not empty expense}" style="width:100%" styleClass="js-expense">
 			<h:outputText value="type" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.expenseType.name}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:autoComplete id="expenseTypeId" value="#{expense.expenseType}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"
+			<h:outputText value="#{expense.expenseType.name}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value"/>
+			<p:autoComplete id="expenseTypeId" value="#{expense.expenseType}" rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit"
 			 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
              	var="expenseTypeIter" itemLabel="#{expenseTypeIter.name}" itemValue="#{expenseTypeIter}" forceSelection="true" >
              	<p:ajax event="itemSelect" update="payeeSelector" />
              </p:autoComplete>
  			
 			<h:outputText value="payee" styleClass="wex-field-label"/>
-			<p:outputPanel id="payeeSelector">
-				<wex:payeeSelector payee="#{expense.payee}" payeeDisplayer="#{expense.expenseType.displayer}" edition="#{cc.attrs.edition}" handleSelect="#{expenseEditionController.handlePayeeChange}" update="@(.js-expense)" />
+			<p:outputPanel id="payeeSelector" styleClass="js-payee-selector">
+				<h:panelGroup id="payeeSelectorId" >
+					<wex:payeeSelector payee="#{expense.payee}" payeeDisplayer="#{expense.expenseType.displayer}" edition="#{expenseEditionController.editable}" handleSelect="#{expenseEditionController.handlePayeeChange}" update="@(.js-expense)" />
+				</h:panelGroup>
+	           	<p:contextMenu for="payeeSelectorId" >
+	       			<p:menuitem value="Edit" icon="pi pi-pencil" action="#{expenseEditionController.editPayee}">
+	       				<p:ajax event="dialogReturn" listener="#{expenseEditionController.onPayeeReturn}" update="@(.js-expense)"/>
+	       			</p:menuitem>
+	       			<p:menuitem value="New" icon="pi pi-plus"  action="#{expenseEditionController.newPayee}">
+	       				<p:ajax event="dialogReturn" listener="#{expenseEditionController.onPayeeReturn}" update="@(.js-expense)"/>
+	       			</p:menuitem>
+	       		</p:contextMenu>
 			</p:outputPanel>			
-             	
+       		 	
 			<h:outputText value="date" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.date}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+			<h:outputText value="#{expense.date}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
 				<f:converter converterId="localDateTimeCustomConverter" />
 			</h:outputText>
-			<h:panelGrid columns="3" rendered="#{cc.attrs.edition}" >
+			<h:panelGrid columns="3" rendered="#{expenseEditionController.editable}" >
 				<p:inputText id="expenseDateText" value="#{expense.date}">
 				 	<f:converter converterId="localDateTimeCustomConverter"/> 
 				 	<p:ajax listener="#{expenseEditionController.onDateChange}" update="expenseDateText expenseDateError expenseDatePicker @(.js-date-related)"  />
@@ -52,7 +61,7 @@
 			</h:panelGrid>
 				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
-			<h:panelGroup rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+			<h:panelGroup rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
 				<h:outputFormat value="{0,number, ###0.00} #{expense.currencyCode}">
 					<f:param value="#{expense.currencyAmount}" />
 				</h:outputFormat>
@@ -61,7 +70,7 @@
 					<f:param value="#{expense.accountingValue}" />
 				</h:outputFormat>
 			</h:panelGroup>
-			<h:panelGroup rendered="#{cc.attrs.edition}" styleClass="wex-field-edit">
+			<h:panelGroup rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit">
 			    <p:inputNumber id="expenseCurrencyAmountId" value="#{expense.currencyAmount}" thousandSeparator="'">
 			    	<p:ajax listener="#{expenseEditionController.onAmountChange}"  update="expenseFieldsPanelId @(.js-value-related)" />
 			    </p:inputNumber>  
@@ -79,15 +88,15 @@
 				<h:outputText  value="exchange rate" styleClass="wex-field-label" />
 			</h:panelGroup>
 			<h:panelGroup id="exchangeRatePanelId" rendered="#{expense.currencyCode!=applicationController.defaultCurrency.code and not empty expense.exchangeRate}" >
-				<h:panelGroup rendered="#{not cc.attrs.edition}">
+				<h:panelGroup rendered="#{not expenseEditionController.editable}">
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col-12">
 			        		<h:panelGroup style="padding-right:5px">
-								<h:outputText value="#{expense.exchangeRate.date}" rendered="#{not cc.attrs.edition}" >
+								<h:outputText value="#{expense.exchangeRate.date}" rendered="#{not expenseEditionController.editable}" >
 									<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 								</h:outputText>
 			        		</h:panelGroup>
-							<h:outputText value="#{expense.exchangeRate.institution.prefix}#{expense.exchangeRate.institution.name} #{expense.exchangeRate.institution.extra}" styleClass="wex-field-value"/>
+			        		<wex:payeeSelector payee="#{expense.exchangeRate.institution}" edition="false" />
 			        	</div>
 			        	<div class="p-col-12">
 			        		<div style="display:flex;padding-right:2px">
@@ -111,19 +120,17 @@
 		        	</div>
 				</h:panelGroup>
 				
-				<h:panelGroup rendered="#{cc.attrs.edition}">
+				<h:panelGroup rendered="#{expenseEditionController.editable}">
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col-12 p-md-4">
-				            <p:outputLabel for="exchangeRateDateId" value="date" />
+				            <p:outputLabel for="@next" value="date" />
 							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" appendTo="@(body)" styleClass="js-date-related"/>
 			        	</div>
 			        	
 			        	<div class="p-col-12 p-md-8">
 				            <p:outputLabel for="exchangeRateInstutionId" value="provider" />
-							<p:autoComplete id="exchangeRateInstutionId" value="#{expense.exchangeRate.institution}" styleClass="wex-field-edit"
-				 				dropdown="true" completeMethod="#{dropboxController.completePayee}" converter="#{payeeConverter}" 
-		            			var="xRateIter" itemLabel="#{xRateIter.prefix}#{xRateIter.name} #{xRateIter.extra}" itemValue="#{xRateIter}" forceSelection="true" />
-		            		</div>
+							<wex:payeeSelector id="exchangeRateInstutionId"  payee="#{expense.exchangeRate.institution}" edition="true" />
+		            	</div>
 		
 			            <div class="p-col-12 p-md-6">
 				            <p:outputLabel for="xrateId" value="rate" />
@@ -150,12 +157,12 @@
 			</h:panelGroup>
 
 			<h:outputText value="external reference" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.externalReference}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="expenseExternalReferenceId" value="#{expense.externalReference}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{expense.externalReference}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value"/>
+			<p:inputText id="expenseExternalReferenceId" value="#{expense.externalReference}" rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit"/>
 			
 			<h:outputText value="description" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.description}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value"/>
-			<p:inputText id="expenseDescriptionId" value="#{expense.description}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit"/>
+			<h:outputText value="#{expense.description}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value"/>
+			<p:inputText id="expenseDescriptionId" value="#{expense.description}" rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit"/>
 		</h:panelGrid>
 
 		<p/>
@@ -176,10 +183,10 @@
 			-->
 			
 			<f:facet name="footer"  >
-				<p:outputPanel rendered="#{cc.attrs.edition}" style="display:flex">
+				<p:outputPanel rendered="#{expenseEditionController.editable}" style="display:flex">
 					<p:commandButton style="font-size: small;margin:10px 0;" value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.addDocumentFile}"/>
 					<p:outputPanel style="width:100%">
-						<wex:documentFileSelector extra="#{expense}" edition="#{cc.attrs.edition}" />
+						<wex:documentFileSelector extra="#{expense}" edition="#{expenseEditionController.editable}" />
 					</p:outputPanel>
 				</p:outputPanel>
 			</f:facet>
@@ -189,10 +196,10 @@
 			</ui:include>	    
 			
             <p:column headerText="Date" style="max-width:130px; width:130px">
-            	<h:outputText value="#{docFile.documentDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+            	<h:outputText value="#{docFile.documentDate}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
 					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 				</h:outputText>
-				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{cc.attrs.edition}" styleClass="wex-small-datepicker"
+				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{expenseEditionController.editable}" styleClass="wex-small-datepicker"
 					pattern="dd/MM/yyyy"
 					showIcon="true"
 					showButtonBar="true"
@@ -202,8 +209,8 @@
     	   	</p:column>
             
             <p:column headerText="Filename (#{expense.documentCount})" style="width:100%">
-           		<h:outputText value="#{docFile.fileName}" rendered="#{not cc.attrs.edition}" />
-          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{cc.attrs.edition}" styleClass="wex-field-edit js-docdate-related"/>
+           		<h:outputText value="#{docFile.fileName}" rendered="#{not expenseEditionController.editable}" />
+          		<p:inputText id="fileNameId" value="#{docFile.fileName}" rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit js-docdate-related"/>
        		</p:column>
        		
        		<p:column headerText="View" style="max-width:50px;width:50px" >
@@ -229,10 +236,10 @@
 			</ui:include>
 			
             <p:column headerText="Date" styleClass="wex-cell-centered" style="max-width:130px; width:130px" >
-            	<h:outputText value="#{tentry.accountingDate}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+            	<h:outputText value="#{tentry.accountingDate}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
 					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 				</h:outputText>
-				<p:datePicker id="transcationDateId" value="#{tentry.accountingDate}" rendered="#{cc.attrs.edition}" 
+				<p:datePicker id="transcationDateId" value="#{tentry.accountingDate}" rendered="#{expenseEditionController.editable}" 
 					pattern="dd/MM/yyyy"
 					showIcon="true"
 					showButtonBar="true"
@@ -242,8 +249,8 @@
        		</p:column>
        					
 			<p:column headerText="Year" styleClass="wex-cell-centered" style="max-width:70px; width:70px">
-				<h:outputText value="#{tentry.accountingYear}" rendered="#{not cc.attrs.edition}" />
-				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{cc.attrs.edition}" styleClass="wex-input-70" thousandSeparator=""/>
+				<h:outputText value="#{tentry.accountingYear}" rendered="#{not expenseEditionController.editable}" />
+				<p:spinner id="accountingYearId" value="#{tentry.accountingYear}" rendered="#{expenseEditionController.editable}" styleClass="wex-input-70" thousandSeparator=""/>
 			</p:column>
 
             <p:column headerText="Consolidated" styleClass="wex-cell-centered" style="max-width:120px; width:120px" >
@@ -253,10 +260,10 @@
 			</p:column>
 			
 			<p:column headerText="Accounts" style="width:100%" >
-				<h:panelGroup rendered="#{not cc.attrs.edition}">
+				<h:panelGroup rendered="#{not expenseEditionController.editable}">
 					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
 				</h:panelGroup>
-				<h:panelGroup rendered="#{cc.attrs.edition}">
+				<h:panelGroup rendered="#{expenseEditionController.editable}">
 					<p:autoComplete multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="entryIter"
 						itemLabel="#{entryIter.name}" itemValue="#{entryIter}" converter="#{tagConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags">
 						<p:column>
@@ -267,16 +274,16 @@
 			</p:column>
 
 			<p:column headerText="Factor" style="max-width:120px; width:120px">
-				<h:outputText value="#{tentry.factor}" rendered="#{not cc.attrs.edition}" />
-				<p:selectOneButton value="#{tentry.factor}" rendered="#{cc.attrs.edition}" converter="#{transactionFactorConverter}">
+				<h:outputText value="#{tentry.factor}" rendered="#{not expenseEditionController.editable}" />
+				<p:selectOneButton value="#{tentry.factor}" rendered="#{expenseEditionController.editable}" converter="#{transactionFactorConverter}">
 					<f:selectItems value="#{dropboxController.transactionFactors}" />
 					<p:ajax listener="#{expenseEditionController.onTransactionAmountChange(tentry)}" update="@(.js-transaction-value-related)" />
 				</p:selectOneButton>
 			</p:column>
 
 			<p:column headerText="Amount" styleClass="wex-cell-righted" style="max-width:160px; width:160px">
-				<h:outputText value="#{tentry.currencyAmount} #{expense.currencyCode}" rendered="#{not cc.attrs.edition}" />
-				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{cc.attrs.edition}" symbol=" #{expense.currencyCode}" symbolPosition="s" thousandSeparator="'" styleClass="wex-input-right wex-input-150" >
+				<h:outputText value="#{tentry.currencyAmount} #{expense.currencyCode}" rendered="#{not expenseEditionController.editable}" />
+				<p:inputNumber value="#{tentry.currencyAmount}" rendered="#{expenseEditionController.editable}" symbol=" #{expense.currencyCode}" symbolPosition="s" thousandSeparator="'" styleClass="wex-input-right wex-input-150" >
 					<p:ajax listener="#{expenseEditionController.onTransactionAmountChange(tentry)}" update="@(.js-transaction-value-related)" />
 				</p:inputNumber>
 				<f:facet name="footer">

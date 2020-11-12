@@ -8,6 +8,7 @@
 
 	<ui:include src="/includes/dbableColumns.xhtml">
 		<ui:param name="dba" value="#{x}" />
+		<ui:param name="singlePage" value="payee" />		
 	</ui:include>
 				
 	<p:column headerText="Type" sortBy="#{x.payeeType.name}" filterBy="#{x.payeeType.name}" filterMatchMode="contains">

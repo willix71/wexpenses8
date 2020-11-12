@@ -1,14 +1,12 @@
 package w.expenses8.web.controller;
 
+import java.util.Map;
+
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.primefaces.PrimeFaces;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.MenuModel;
-
 import w.expenses8.data.domain.model.Consolidation;
+import w.expenses8.web.controller.extra.EditionMode;
 
 @Named
 @ViewScoped
@@ -16,35 +14,18 @@ public class ConsolidationController extends AbstractListEditionController<Conso
 
 	private static final long serialVersionUID = 3351336696734127296L;
 
-	@Inject
-	private ConsolidationEditionController consolidationEditionController;
-
 	@Override
-	protected MenuModel buildMenuModel() {
-		MenuModel menuModel = super.buildMenuModel();
-		
-		DefaultMenuItem item = DefaultMenuItem.builder()
-				.value("Next")
-				.icon("pi pi-step-forward")
-				.update("wexEditionForm:wexDbableEditDialog:wexEditionPanel")
-				.oncomplete("PF('w_wexEditionDialog').show()")
-				.command("#{controller.setNextElement}"	)
-				.build();
-		menuModel.getElements().add(3,item);
-		
-		return menuModel;
+	protected Map<String, Object> getEditorDialogOptions() {
+		Map<String, Object> options = super.getEditorDialogOptions();
+	    options.put("contentHeight", "2000");
+	    options.put("minHeight", "2000");
+	    options.put("height", "2000");
+	    return options;
 	}
-	
-	public void setNextElement() {
+
+	public void openNextConsolidation() {
 		Consolidation last = convert(getSelectedElement());
 		Consolidation next = Consolidation.with().date(last.getDate().plusMonths(1)).institution(last.getInstitution()).openingValue(last.getClosingValue()).build();
-		getEditionController().setCurrentElement(next);
-		PrimeFaces.current().resetInputs("wexEditionForm");
+		openEditor(next, EditionMode.EDIT);
 	}
-	
-	@Override
-	protected AbstractEditionController<Consolidation> getEditionController() {
-		return consolidationEditionController;
-	}
-
 }

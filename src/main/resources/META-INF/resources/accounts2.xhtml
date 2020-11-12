@@ -12,11 +12,9 @@
 	<ui:define name="title">Wexpenses Accounts</ui:define>
 
 	<ui:define name="content">
+		<c:set var="controller" value="#{transactionEntryController}" />
+		
 		<h:form id="wexTableForm">
-			<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
-			
-			<c:set var="controller" value="#{transactionEntryController}" />
-
 			<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500" style="margin-bottom: 20px;">
 				 <wex:expenseCriteria criteria="#{controller.criteria}" action="#{controller.refresh}" update="@(.js-wexTable)"/>
 				 
@@ -26,19 +24,9 @@
 				</h:panelGrid>
 			</p:fieldset>
 			
-			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/accountsColumns.xhtml" >
-				<f:facet name="elementViewer">
-					<wex:expenseEdition edition="false"/>
-				</f:facet>
-			</wex:dbableTable>
-		</h:form>
-		
-		<h:form id="wexEditionForm" >
-			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Account" update="wexTableForm">
-				<f:facet name="elementViewer">
-					<wex:expenseEdition edition="true"/>
-				</f:facet>
-			</wex:dbableEditDialog>
+			<wex:dbableTable controller="#{transactionEntryController}" hasExpandedRows="true">				
+				<ui:include src="/includes/accountsColumns.xhtml" />
+			</wex:dbableTable>			
 		</h:form>
 	</ui:define>
 </ui:composition>	

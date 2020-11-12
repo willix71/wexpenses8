@@ -8,17 +8,14 @@
    	
 	<composite:interface>
 		<composite:attribute name="controller" type="w.expenses8.web.controller.AbstractListEditionController" required="true" />
-		<composite:attribute name="columsDefinition" required="true"/>
 		<composite:attribute name="hasExpandedRows" default="false"/>
-		<composite:attribute name="singlePage" required="false"/>
 		<composite:attribute name="rowsPerPage" default="100"/>
-		<composite:facet name="elementViewer" required="true"/>
 	</composite:interface>
 	
 	<composite:implementation>
-		<c:set var="controller" value="#{cc.attrs.controller}" />
+		<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
 		
-		<c:set var="singlePage" value="#{cc.attrs.singlePage}" />
+		<c:set var="controller" value="#{cc.attrs.controller}" />
 
 		<p:dataTable id="wexTable" styleClass="js-wexTable" var="x" value="#{controller.elements}" resizableColumns="true"
                 paginator="true"
@@ -42,33 +39,30 @@
 					</p:selectBooleanCheckbox>
 				</h:panelGroup>
 			</f:facet>
-			
-			<ui:include src="#{cc.attrs.columsDefinition}"/>
-			
-			<p:ajax event="rowDblselect" update="wexEditionForm" listener="#{controller.onRowDoubleClick}" oncomplete="PF('w_wexEditionDialog').show()" />
+						
+			<p:column headerText="Expand" style="width:8px" rendered="#{cc.attrs.hasExpandedRows}">
+			    <p:rowToggler />
+		    </p:column>
+		    	
+			<composite:insertChildren />
+					
+			<p:ajax event="rowDblselect" listener="#{controller.onRowDoubleClick}" />
 		</p:dataTable>
 			
-		<p:contextMenu for="wexTable" model="#{controller.menuModel}"/>
-		
-		<p:outputPanel id="wexDetailPanel">
- 			<p:dialog id="wexDetailDialog" widgetVar="w_wexDetailDialog" header="Expense" position="top" modal="true">
-				<composite:renderFacet name="elementViewer" />
-				<h:panelGroup styleClass="wex-edit-buttons-panel">
-					<p:commandButton id="wexCloseBtn" value="Close" type="button" onclick="PF('w_wexDetailDialog').hide()" />
-				</h:panelGroup>			
-			</p:dialog>
-		</p:outputPanel>
-
-		<p:outputPanel id="wexDeletePanel">
- 			<p:dialog id="wexDeleteDialog" widgetVar="w_wexDeleteDialog" header="Expense" position="top" modal="true">
-				<composite:renderFacet name="elementViewer" />
-				<h:panelGroup styleClass="wex-edit-buttons-panel">
-					<p:commandButton id="wexDeleteBtn" value="Delete" type="submit" oncomplete="PF('w_wexDeleteDialog').hide()" update="@('.js-wexTable')">
-						<f:actionListener binding="#{controller.deleteElement()}" />
-					</p:commandButton>
-					<p:commandButton id="wexCancelDeleteBtn" value="Cancel" type="button" onclick="PF('w_wexDeleteDialog').hide()" />
-				</h:panelGroup>
-			</p:dialog>
-		</p:outputPanel>
+		<p:contextMenu for="wexTable" >
+			<p:menuitem value="View" icon="pi pi-eye" action="#{controller.openViewElement}">
+	        	<p:ajax event="dialogReturn" listener="#{controller.onReturnFromEdition}" update="wexTable growl"/>
+	        </p:menuitem>
+	        <p:menuitem value="Edit" icon="pi pi-pencil" action="#{controller.openEditElement}">
+	        	<p:ajax event="dialogReturn" listener="#{controller.onReturnFromEdition}" update="wexTable growl"/>
+	        </p:menuitem>
+	        <p:menuitem value="Delete" icon="pi pi-trash" action="#{controller.openDeleteElement}">
+	        	<p:ajax event="dialogReturn" listener="#{controller.onReturnFromEdition}" update="wexTable growl"/>
+	        </p:menuitem>
+	        <p:menuitem value="New" icon="pi pi-plus" action="#{controller.openNewElement}">
+	        	<p:ajax event="dialogReturn" listener="#{controller.onReturnFromEdition}" update="wexTable growl"/>
+	        </p:menuitem>
+		   <p:menuitem value="Refresh" icon="pi pi-replay" action="#{controller.refresh}" update="wexTable growl"/>		
+	    </p:contextMenu>	
 	</composite:implementation>
 </ui:component>

@@ -25,6 +25,9 @@ import w.expenses8.data.domain.service.ICountryService;
 import w.expenses8.data.domain.service.IExchangeRateService;
 import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.data.utils.TransactionsSums;
+import w.expenses8.web.controller.extra.EditionMode;
+import w.expenses8.web.controller.extra.EditorReturnValue;
+import w.expenses8.web.controller.extra.FacesHelper;
 
 @Slf4j
 @Named
@@ -179,4 +182,22 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 	}
 
+	public void editPayee() {
+		FacesHelper.openEditor(currentElement.getPayee(), EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+	}
+	
+	public void newPayee() {
+		FacesHelper.openEditor(null, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+	}
+	
+	public void onPayeeReturn(SelectEvent<EditorReturnValue<Payee>> event) {
+    	if (event==null) {
+    		log.error("Fuck no event again!!!");
+    	} else {
+			EditorReturnValue<Payee> value = event.getObject();
+			if (value!=null) {
+				currentElement.setPayee(value.getElement());
+			}
+    	}
+	}
 }

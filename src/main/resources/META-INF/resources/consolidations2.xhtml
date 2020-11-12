@@ -12,39 +12,14 @@
 	<ui:define name="title">Wexpenses Consolidations</ui:define>
 
 	<ui:define name="content">
-		<h:form id="wexTableForm">
-			<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
-			
-			<c:set var="controller" value="#{consolidationController}" />
+		<c:set var="controller" value="#{consolidationController}" />
 
-			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/consolidationsColumns.xhtml" singlePage="consolidation">
-				<f:facet name="elementViewer">
-					<wex:consolidationEdition edition="false"/>
-				</f:facet>
-			</wex:dbableTable>
+		<h:form id="wexTableForm">
+			<h:panelGroup id="wexTablePanel">
+				<wex:dbableTable controller="#{consolidationController}" hasExpandedRows="true">				
+					<ui:include src="/includes/consolidationsColumns.xhtml" />
+				</wex:dbableTable>
+			</h:panelGroup>
 		</h:form>
-		
-		<h:form id="wexEditionForm" >
-			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Consolidation" update="wexTableForm">
-				<f:facet name="elementViewer">
-					<wex:consolidationEdition edition="true"/>
-				</f:facet>
-			</wex:dbableEditDialog>
-		</h:form>
-		
-		<h:form id="wexEditionForm2" >
-			<p:dialog id="wexEditionDialog2" widgetVar="w_wexEditionDialog2" header="Expense" position="top" modal="true">
-				<p:outputPanel id="wexEditionPanel2" >
-					<wex:expenseEdition edition="true"/>
-				</p:outputPanel>
-				
-				<h:panelGroup styleClass="wex-edit-buttons-panel">
-					<p:commandButton id="wexCancel2" value="Cancel" onclick="PF('w_wexEditionDialog2').hide()" />
-					<p:commandButton id="wexSave2" value="Save" oncomplete="if (args &amp;&amp; args.isSaved) PF('w_wexEditionDialog2').hide()" update="wexEditionPanel2 @(.js-consolidationEditionPanel)"	>
-						<f:actionListener binding="#{consolidationEditionController.saveExpense()}" />
-					</p:commandButton>
-				</h:panelGroup>
-			</p:dialog>
-		</h:form>	
 	</ui:define>
 </ui:composition>	

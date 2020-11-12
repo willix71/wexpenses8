@@ -38,6 +38,9 @@ import w.expenses8.data.domain.service.ITagService;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ConsolidationHelper;
+import w.expenses8.web.controller.extra.EditionMode;
+import w.expenses8.web.controller.extra.EditorReturnValue;
+import w.expenses8.web.controller.extra.FacesHelper;
 import w.expenses8.web.converter.DbableConverter;
 
 @Slf4j
@@ -49,9 +52,6 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	private static final long serialVersionUID = 3351336696734127296L;
 
 	static final String NEXT_CONSOLIDATION_FLASH_ID = "_NEXT_CONSOLIDATION_";
-
-	@Inject
-	ExpenseEditionController expenseEditionController;
 	
 	@Inject
 	DocumentFileSelector documentFileSelector;
@@ -212,14 +212,18 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	}
 	
 	public void showExpense() {
-		log.debug("Editing expense {}",selectedEntry.getExpense());
-		expenseEditionController.setCurrentElement(selectedEntry.getExpense());
+		if (selectedEntry!=null) {
+			Expense e = selectedEntry.getExpense();
+			log.debug("Editing expense {}", e);
+			FacesHelper.openEditor(e, EditionMode.EDIT, "expense", FacesHelper.getDefaultDialogOptions());
+		}
 	}
 	
-	public void saveExpense() {
-		log.info("Saving expense");
-		expenseEditionController.save();
-		updateEntries(expenseEditionController.getCurrentElement(),getTargetEntries());
+	public void onReturnFromExpenseEdition(SelectEvent<EditorReturnValue<Expense>> event) {
+		Expense e = event==null||event.getObject()==null?null:event.getObject().getElement();
+		if (e!=null) {
+			updateEntries(e,getTargetEntries());
+		}
 		updateSourceEntries();
 		compute();
 	}
@@ -240,7 +244,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 	public Converter<TransactionEntry> getTransactionEntryConverter() {
 		return converter;
 	}
-	
+
 	private Converter<TransactionEntry> converter = new DbableConverter<TransactionEntry>() {
 		@Override
 		public TransactionEntry getAsObject(FacesContext fc, UIComponent uic, String uid) {

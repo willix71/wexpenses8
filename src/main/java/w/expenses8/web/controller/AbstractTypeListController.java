@@ -4,6 +4,7 @@ import org.primefaces.event.RowEditEvent;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.core.model.AbstractType;
+import w.expenses8.data.core.model.DBable;
 
 @Slf4j
 public class AbstractTypeListController<T extends AbstractType<T>> extends AbstractListController<T> {
@@ -37,9 +38,10 @@ public class AbstractTypeListController<T extends AbstractType<T>> extends Abstr
 	}
 	
 	@Override
-	protected String nameOf(T entity) {
+	@SuppressWarnings("unchecked")
+	protected String nameOf(DBable<?> entity) {
 		String name = super.nameOf(entity);
-		if (entity!=null) name += " [" + entity.getName() + "]";
+		if (entity!=null) name += " [" + ((AbstractType<T>)entity).getName() + "]";
 		return name;
 	}
 }

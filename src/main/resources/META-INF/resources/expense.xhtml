@@ -13,11 +13,9 @@
 
 	<ui:define name="content">
 		<h:form id="wexEditionForm" styleClass="wex-single-element">
-			<p:outputPanel>
-				<wex:expenseEdition edition="#{expenseEditionController.edition}"/>
-			</p:outputPanel>
-			
-			<wex:dbableEditSinglePage controller="#{expenseEditionController}" />
+			<wex:dbableEditor controller="#{expenseEditionController}" >
+				<wex:expenseEdition/>
+			</wex:dbableEditor>
 		</h:form>
 	</ui:define>
 </ui:composition>	

@@ -8,7 +8,6 @@
 	xmlns:composite="http://java.sun.com/jsf/composite">
    	
 	<composite:interface>
-		<composite:attribute name="edition" default="false" />
 		<composite:attribute name="rows" default="1000" />
 	</composite:interface>
 	
@@ -23,7 +22,7 @@
 	   	    <h:panelGroup styleClass="wex-form-row" >
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:160px">
 	   	    		<p:outputLabel for="@next" value="date" styleClass="wex-field-label" />
-	   	    		<p:datePicker value="#{conso.date}" rendered="#{cc.attrs.edition}" 
+	   	    		<p:datePicker value="#{conso.date}" rendered="#{consolidationEditionController.editable}" 
 	   	    			view="month"  
 						pattern="MMM yyyy"
 						showIcon="true"
@@ -33,39 +32,39 @@
 						styleClass="wex-small-datepicker js-date-related">
 						<p:ajax event="dateSelect" listener="#{consolidationEditionController.onConsoDateChange}" update="@(.js-conso-target)" />
 					</p:datePicker>
-	   	    		<h:outputText value="#{conso.date}" rendered="#{not cc.attrs.edition}" >
+	   	    		<h:outputText value="#{conso.date}" rendered="#{not consolidationEditionController.editable}" >
 						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
 					</h:outputText>
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:100%">
 	   	    		<p:outputLabel for="@next" value="institution" styleClass="wex-field-label" />
-					<wex:payeeSelector payee="#{conso.institution}" edition="#{cc.attrs.edition}" handleSelect="#{consolidationEditionController.onConsoInstitutionChange}" update="@(.js-conso-source)"/>
+	   	    		<wex:payeeSelector payee="#{conso.institution}" edition="#{consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>
 	   	    </h:panelGroup>
 	   	    
 	   	    <h:panelGroup styleClass="wex-form-row" >
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:100%">
 	   	    		<p:outputLabel for="@next" value="document" styleClass="wex-field-label" />
-					<wex:documentFileSelector extra="#{conso}" edition="#{cc.attrs.edition}" />
+					<wex:documentFileSelector extra="#{conso}" edition="#{consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>
 			</h:panelGroup>
 			
 			<h:panelGroup styleClass="wex-form-row" >
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
-	   	    		<p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening value" rendered="#{cc.attrs.edition}" >
+	   	    		<p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening value" rendered="#{consolidationEditionController.editable}" >
 	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
 	   	    		</p:inputNumber>
-	   	    		<h:outputText value="#{conso.openingValue}" rendered="#{not cc.attrs.edition}" />
+	   	    		<h:outputText value="#{conso.openingValue}" rendered="#{not consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
-	   	    		<p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closin value" rendered="#{cc.attrs.edition}" >
+	   	    		<p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closin value" rendered="#{consolidationEditionController.editable}" >
 	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
 	   	    		</p:inputNumber>
-	   	    		<h:outputText value="#{conso.closingValue}" rendered="#{not cc.attrs.edition}" />
+	   	    		<h:outputText value="#{conso.closingValue}" rendered="#{not consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
@@ -84,7 +83,7 @@
 	   	    	</h:panelGroup>
 			</h:panelGroup>
 			
-			<h:panelGroup styleClass="wex-form-row" rendered="#{cc.attrs.edition}" >
+			<h:panelGroup styleClass="wex-form-row" rendered="#{consolidationEditionController.editable}" >
 				<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">	   	    	
 	   	    		<h:outputText for="@next" value="source tag" styleClass="wex-field-label"/>
 					<p:autoComplete id="sourceTags" multiple="true" value="#{consolidationEditionController.sourceTags}" completeMethod="#{dropboxController.completeTag}" unique="true" var="theme"
@@ -115,7 +114,7 @@
 	   	    	</h:panelGroup>
 			</h:panelGroup>
 
-			<h:panelGroup id="consoTransactionEntriesPanel" styleClass="wex-form-row" rendered="#{cc.attrs.edition}" >
+			<h:panelGroup id="consoTransactionEntriesPanel" styleClass="wex-form-row" rendered="#{consolidationEditionController.editable}" >
 			    <p:pickList id="consoTransactionEntries" rendered="#{not empty conso}" styleClass="js-wexTable js-conso-source wex-conso-picklist" var="xct" value="#{consolidationEditionController.entries}"
 	                itemValue="#{xct}" itemLabel="#{xct.uid}" converter="#{consolidationEditionController.transactionEntryConverter}" 
 	                showTargetControls="true" 
@@ -158,17 +157,14 @@
 				</p:pickList>
 				
 				<p:contextMenu id="consoTransactionEntriesMenu" for="consoTransactionEntries" styleClass="js-conso-expense-selected">
-			        <p:menuitem value="edit" icon="pi pi-trash" 
-			        	disabled="#{not consolidationEditionController.expenseEditable}"
-			        	action="#{consolidationEditionController.showExpense}"
-			        	update="wexEditionForm2:wexEditionPanel2"
-			        	oncomplete="PF('w_wexEditionDialog2').show()"
-			        	/>
+			        <p:menuitem value="edit" icon="pi pi-trash" action="#{consolidationEditionController.showExpense}" update="consolidationEditionPanel">
+			        	<p:ajax event="dialogReturn" listener="#{consolidationEditionController.onReturnFromExpenseEdition}" update="consolidationEditionPanel"/>
+			        </p:menuitem>
 			        <p:menuitem value="refresh" icon="pi pi-replay" action="#{consolidationEditionController.updateSourceEntries}" update="consolidationEditionPanel" />        	
 			    </p:contextMenu>
 			</h:panelGroup>
 			
-			<h:panelGroup styleClass="wex-form-row" rendered="#{not cc.attrs.edition}" >
+			<h:panelGroup styleClass="wex-form-row" rendered="#{not consolidationEditionController.editable}" >
 				<p:dataTable id="consoTransactionEntriesRO" styleClass="js-wexTable"
 					var="xct" value="#{consolidationEditionController.targetEntries}" 
 					resizableColumns="true" paginator="true" 					

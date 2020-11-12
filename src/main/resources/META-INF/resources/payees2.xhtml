@@ -12,24 +12,12 @@
 	<ui:define name="title">Wexpenses Payees</ui:define>
 
 	<ui:define name="content">
-		<h:form id="wexTableForm">
-			<p:growl id="growl" showDetail="true" showSummary="true" severity="info"/>
-			
-			<c:set var="controller" value="#{payeeController}" />
+		<c:set var="controller" value="#{payeeController}" />
 
-			<wex:dbableTable controller="#{controller}" columsDefinition="/includes/payeesColumns.xhtml" singlePage="payee">
-				<f:facet name="elementViewer">
-					<wex:payeeEdition edition="false"/>
-				</f:facet>
+		<h:form id="wexTableForm">
+			<wex:dbableTable controller="#{payeeController}" hasExpandedRows="true">				
+				<ui:include src="/includes/payeesColumns.xhtml" />
 			</wex:dbableTable>
-		</h:form>
-		
-		<h:form id="wexEditionForm" >
-			<wex:dbableEditDialog id="wexDbableEditDialog" controller="#{controller}" header="Payee" update="wexTableForm">
-				<f:facet name="elementViewer">
-					<wex:payeeEdition edition="true"/>
-				</f:facet>
-			</wex:dbableEditDialog>
 		</h:form>
 	</ui:define>
 </ui:composition>	

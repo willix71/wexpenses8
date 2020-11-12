@@ -14,6 +14,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.primefaces.event.SelectEvent;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +31,9 @@ import w.expenses8.data.domain.service.IExchangeRateService;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.web.controller.extra.EditionMode;
+import w.expenses8.web.controller.extra.EditorReturnValue;
+import w.expenses8.web.controller.extra.FacesHelper;
 import w.expenses8.web.converter.DbableConverter;
 
 @Slf4j
@@ -100,7 +105,7 @@ public class NewExpenseController extends ExpenseController {
 		Expense newExpense = ExpenseHelper.build(expenseType, payee, currencyValue);
 		
 		log.info("created new expense {}",newExpense);
-		getEditionController().setCurrentElement(newExpense);
+		openEditor(newExpense, EditionMode.EDIT);
 	}
 	
 	public void newDuplicatedExpense() {
@@ -120,18 +125,18 @@ public class NewExpenseController extends ExpenseController {
 			newExpense.setExchangeRate(xr);
 		}
 		log.info("duplicated new expense {}",newExpense);
-		getEditionController().setCurrentElement(newExpense);
+		openEditor(newExpense, EditionMode.EDIT);
 	}	
 
 	@Override
-	public void saveElement() {
-		super.saveElement();
+    public void onReturnFromEdition(SelectEvent<EditorReturnValue<Expense>> event) {
 		payee = null;
 		expenseType = null;
 		baseExpense = null;
 		copyOptions = null;
+		super.onReturnFromEdition(event);
 	}
-	
+		
 	public Converter<Expense> getExpenseConverter() {
 		return converter;
 	}
@@ -142,4 +147,23 @@ public class NewExpenseController extends ExpenseController {
 			return CollectionHelper.stream(lastPayeeExpenses).filter(e->uid.equals(e.getUid())).findFirst().orElseGet(null);
 		}		
 	};
+	
+	public void editPayee() {
+		FacesHelper.openEditor(payee, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+	}
+	
+	public void newPayee() {
+		FacesHelper.openEditor(null, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+	}
+	
+	public void onPayeeReturn(SelectEvent<EditorReturnValue<Payee>> event) {
+    	if (event==null) {
+    		log.error("Fuck no event again!!!");
+    	} else {
+			EditorReturnValue<Payee> value = event.getObject();
+			if (value!=null) {
+				payee = value.getElement();
+			}
+    	}
+	}
 }

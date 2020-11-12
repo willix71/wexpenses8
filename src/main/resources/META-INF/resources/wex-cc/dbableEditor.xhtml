@@ -1,0 +1,42 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+   	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="controller" type="w.expenses8.web.controller.AbstractEditionController" required="true" />
+	</composite:interface>
+		
+	<composite:implementation>
+		<p:outputPanel id="wexEditionPanel" >
+			<i id="customheader" class="pi pi-home" style="display:none" ></i>
+		
+			<composite:insertChildren/>
+					
+			<h:panelGroup styleClass="wex-edit-buttons-panel" rendered="#{cc.attrs.controller.viewMode}">
+				<p:commandButton id="wexCloseBtn" value="Close" action="#{cc.attrs.controller.closeDialog}"/>
+			</h:panelGroup>	
+			
+			<h:panelGroup styleClass="wex-edit-buttons-panel" rendered="#{cc.attrs.controller.deleteMode}">
+				<p:commandButton id="wexCancelDeleteBtn" value="Cancel" icon="pi pi-times" action="#{cc.attrs.controller.closeDialog}" />
+				<p:commandButton id="wexDeleteBtn" value="Delete" icon="pi pi-trash" type="submit" action="#{cc.attrs.controller.deleteAndCloseDialog}" update="wexEditionPanel" />
+			</h:panelGroup>			
+			
+			<h:panelGroup styleClass="wex-edit-buttons-panel" rendered="#{cc.attrs.controller.editMode}">
+				<p:commandButton id="wexCancelSaveBtn" value="Cancel" icon="pi pi-times" action="#{cc.attrs.controller.closeDialog}" />
+				<p:commandButton id="wexSaveBtn" value="Save" icon="pi pi-check" type="submit" action="#{cc.attrs.controller.saveAndCloseDialog}" update="@form" />
+			</h:panelGroup>
+			
+			<h:panelGroup styleClass="wex-edit-buttons-panel" rendered="#{cc.attrs.controller.pageMode}">
+				Edit
+				<p:toggleSwitch value="#{cc.attrs.controller.editable}" style="margin: 0px 20px 0px 5px;">
+	            	<p:ajax update="wexEditionPanel" />
+	        	</p:toggleSwitch>
+	     		<p:commandButton id="wexSave" value="Save" action="#{cc.attrs.controller.validateAndSave}" update="wexEditionPanel" />
+	     	</h:panelGroup>
+		</p:outputPanel>
+	</composite:implementation>
+</ui:component>

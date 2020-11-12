@@ -21,10 +21,16 @@ public class AbstractController<T extends DBable<T>> implements Serializable{
 		clazz = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 	
-	protected String nameOf(T entity) {
-		String name = clazz.getSimpleName(); 
-		if (entity!=null) name +=" " + entity.getFullId();
-		return name;
+	protected String getClassName() {
+		return clazz.getSimpleName();
+	}
+	
+	protected String nameOf(DBable<?> entity) {
+		if (entity == null) {
+			return clazz.getSimpleName();
+		} else {
+			return entity.getClass().getSimpleName()  + " " + entity.getFullId();
+		}
 	}
 	
 	protected void showMessage(String event, T element) {

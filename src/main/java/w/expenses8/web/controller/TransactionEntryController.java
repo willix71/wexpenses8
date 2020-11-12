@@ -43,16 +43,16 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 	private ITransactionEntryService transactionEntryService;
 	
 	private TransactionEntryCriteria criteria = TransactionEntryCriteria.from(Year.now().getValue());
-
-	@Override
-	protected AbstractEditionController<Expense> getEditionController() {
-		return expenseEditionController;
-	}
 	
 	public void reset() {
 		criteria = TransactionEntryCriteria.from(Year.now().getValue());
 	}
 
+	@Override
+	public String getEditorsPage() {
+		return "expense";
+	}
+	
 	@Override
 	public void setSelectedElement(TransactionEntry selectedElement) {
 		super.setSelectedElement(selectedElement);

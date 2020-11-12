@@ -8,6 +8,7 @@
 
 	<ui:include src="/includes/dbableColumns.xhtml">
 		<ui:param name="dba" value="#{x}" />
+		<ui:param name="singlePage" value="consolidation" />
 	</ui:include>
 			
 	<p:column headerText="Date" sortBy="#{x.date}" filterBy="#{x.date}" filterFunction="#{dropboxController.filterByDate}" style="max-width:150px; width:120px">

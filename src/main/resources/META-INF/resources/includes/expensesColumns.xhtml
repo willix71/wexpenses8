@@ -6,13 +6,9 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc" >
 
-				
-	<p:column headerText="Expand" style="width:8px">
-	    <p:rowToggler />
-    </p:column>
-
 	<ui:include src="/includes/dbableColumns.xhtml">
 		<ui:param name="dba" value="#{x}" />
+		<ui:param name="singlePage" value="expense" />
 	</ui:include>
 	
 	<p:column headerText="Date" styleClass="wex-cell-righted" style="width:90px">
