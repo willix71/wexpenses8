@@ -16,7 +16,7 @@
 
 		<h:form id="wexTableForm">
 			<h:panelGroup id="wexTablePanel">
-				<wex:dbableTable controller="#{consolidationController}" hasExpandedRows="true">				
+				<wex:dbableTable controller="#{consolidationController}" hasExpandedRows="true" updateMenu="true" extraMenu="/includes/consolidationsExtraMenu.xhtml">				
 					<ui:include src="/includes/consolidationsColumns.xhtml" />
 				</wex:dbableTable>
 			</h:panelGroup>

@@ -10,6 +10,8 @@
 		<composite:attribute name="controller" type="w.expenses8.web.controller.AbstractListEditionController" required="true" />
 		<composite:attribute name="hasExpandedRows" default="false"/>
 		<composite:attribute name="rowsPerPage" default="100"/>
+		<composite:attribute name="updateMenu" default="false"/>
+		<composite:attribute name="extraMenu" default=""/>
 	</composite:interface>
 	
 	<composite:implementation>
@@ -46,11 +48,14 @@
 		    	
 			<composite:insertChildren />
 					
-			<p:ajax event="rowDblselect" listener="#{controller.onRowDoubleClick}" />
+			<p:ajax event="rowSelect" update="@(.js-wexTableMenu)" disabled="#{not cc.attrs.updateMenu}"/>
+			<p:ajax event="rowUnselect" update="@(.js-wexTableMenu)" disabled="#{not cc.attrs.updateMenu}"/>
 		</p:dataTable>
 			
-		<p:contextMenu for="wexTable" >
-			<p:menuitem value="View" icon="pi pi-eye" action="#{controller.openViewElement}">
+		<p:contextMenu id="wexTableMenu" styleClass="js-wexTableMenu" for="wexTable" >
+			<ui:include src="#{cc.attrs.extraMenu}" />
+			
+			<p:menuitem value="View" icon="pi pi-eye" action="#{controller.openViewElement}" >
 	        	<p:ajax event="dialogReturn" listener="#{controller.onReturnFromEdition}" update="wexTable growl"/>
 	        </p:menuitem>
 	        <p:menuitem value="Edit" icon="pi pi-pencil" action="#{controller.openEditElement}">
