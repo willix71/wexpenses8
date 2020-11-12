@@ -39,7 +39,8 @@ joinfaces:
 
 wexpenses:
   documents:
-    root: /somewhere/{0,date,yyyy}/{1}
+    url: ${server.servlet.context-path}/documents/{0,date,yyyy}/{1}
+    root: ./
   currency-value:
     code: CHF
     precision: 0.05
@@ -53,3 +54,17 @@ spring:
     hibernate:
       ddl-auto: none
 
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:h2:C:/Users/willi/Documents/wexpenses/wexdb/wexpenses-prod-v2;AUTO_SERVER=TRUE
+  jpa:
+    hibernate:
+      ddl-auto: none
+logging:
+  file:
+    name: C:/Users/willi/Documents/wexpenses/logs/wexpenses.log
+wexpenses:
+  documents:
+    root: C:/Users/willi/Documents/wexpenses/documentstore

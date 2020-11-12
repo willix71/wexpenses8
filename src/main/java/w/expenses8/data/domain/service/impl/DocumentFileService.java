@@ -27,7 +27,7 @@ import w.expenses8.data.utils.CriteriaHelper;
 @Service
 public class DocumentFileService extends GenericServiceImpl<DocumentFile, Long, IDocumentFileDao>  implements IDocumentFileService {
 	
-	@Value("${wexpenses.documents.root}")
+	@Value("${wexpenses.documents.url}")
 	private String urlFormat;
 	
 	@Inject
