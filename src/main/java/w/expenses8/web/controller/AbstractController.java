@@ -33,7 +33,7 @@ public class AbstractController<T extends DBable<T>> implements Serializable{
 		}
 	}
 	
-	protected void showMessage(String event, T element) {
+	protected void showMessage(String event, DBable<?> element) {
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, event, nameOf(element)));
 	}
 }

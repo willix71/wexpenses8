@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.CurrencyValue;
+import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
@@ -129,7 +130,7 @@ public class NewExpenseController extends ExpenseController {
 	}	
 
 	@Override
-    public void onReturnFromEdition(SelectEvent<EditorReturnValue<Expense>> event) {
+    public void onReturnFromEdition(SelectEvent<EditorReturnValue<DBable<?>>> event) {
 		payee = null;
 		expenseType = null;
 		baseExpense = null;

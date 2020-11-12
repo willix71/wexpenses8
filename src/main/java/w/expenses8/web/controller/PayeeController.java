@@ -7,7 +7,7 @@ import w.expenses8.data.domain.model.Payee;
 
 @Named
 @ViewScoped
-public class PayeeController extends AbstractListEditionController<Payee,Payee>{
+public class PayeeController extends AbstractListEditionController<Payee>{
 
 	private static final long serialVersionUID = 3351336696734127296L;
 

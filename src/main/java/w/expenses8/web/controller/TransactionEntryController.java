@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import w.expenses8.data.core.model.DBable;
 import w.expenses8.data.domain.criteria.TransactionEntryCriteria;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.TransactionEntry;
@@ -23,7 +24,7 @@ import w.expenses8.data.utils.ConsolidationHelper;
 @Named
 @ViewScoped
 @Getter @Setter
-public class TransactionEntryController extends AbstractListEditionController<TransactionEntry, Expense> {
+public class TransactionEntryController extends AbstractListEditionController<TransactionEntry> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 	
@@ -83,9 +84,9 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 			e.setLiveBalance(liveBalance);
 		}
 	}
-
+	
 	@Override
-	public Expense convert(TransactionEntry t) {
+	public DBable<?> convert(TransactionEntry t) {
 		return t.getExpense();
 	}
 	

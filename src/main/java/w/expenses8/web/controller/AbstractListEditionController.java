@@ -2,9 +2,6 @@ package w.expenses8.web.controller;
 
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.menu.MenuModel;
 
@@ -18,7 +15,7 @@ import w.expenses8.web.controller.extra.FacesHelper;
 
 @Slf4j
 @Getter @Setter
-public abstract class AbstractListEditionController<T extends DBable<T>, E extends DBable<E>> extends AbstractListController<T> {
+public abstract class AbstractListEditionController<T extends DBable<T>> extends AbstractListController<T> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 	
@@ -58,10 +55,8 @@ public abstract class AbstractListEditionController<T extends DBable<T>, E exten
 		openEditor(null,EditionMode.EDIT);
 	}
 	
-	protected E convert(T t) {
-		@SuppressWarnings("unchecked")
-		E e = (E) t;
-		return e;
+	protected DBable<?> convert(T t) {
+		return t;
 	}
 	
 	protected String getEditorsPage() {
@@ -77,11 +72,11 @@ public abstract class AbstractListEditionController<T extends DBable<T>, E exten
 		FacesHelper.openEditor(e, mode, getEditorsPage(), getEditorDialogOptions());
 	}
 	
-    public void onReturnFromEdition(SelectEvent<EditorReturnValue<E>> event) {
+    public void onReturnFromEdition(SelectEvent<EditorReturnValue<DBable<?>>> event) {
     	loadEntities();
-    	EditorReturnValue<E> value = event.getObject();
+    	EditorReturnValue<DBable<?>> value = event.getObject();
     	if (value!=null) {
-    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(value.getEvent(), nameOf(value.getElement())));
+    		showMessage(value.getEvent(), value.getElement());
     	}
     }
 }

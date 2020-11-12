@@ -27,7 +27,7 @@ import w.expenses8.data.domain.service.IExpenseService;
 @Named
 @ViewScoped
 @Getter @Setter
-public class ExpenseController extends AbstractListEditionController<Expense, Expense> {
+public class ExpenseController extends AbstractListEditionController<Expense> {
 
 	private static final long serialVersionUID = 3351336696734127296L;
 	
