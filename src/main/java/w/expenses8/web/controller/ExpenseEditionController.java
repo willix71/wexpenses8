@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,6 +25,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.ICountryService;
 import w.expenses8.data.domain.service.IExchangeRateService;
+import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.data.utils.TransactionsSums;
 import w.expenses8.web.controller.extra.EditionMode;
@@ -79,6 +82,21 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		documentFileSelector.reset();
 	}
 
+
+	@Override
+	protected boolean hasValidationWarnings() {
+		boolean hasValidationWarnings = super.hasValidationWarnings();
+		
+		DocumentFile newDocFile = documentFileSelector.getCurrentDocumentFile();
+		if (newDocFile!=null && (CollectionHelper.isEmpty(this.currentElement.getDocumentFiles()) || !this.currentElement.getDocumentFiles().contains(newDocFile))) {
+			log.warn("DocumentFile has not been added");
+			FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, "documentFiles", "DocumentFile has not been added"));
+			return true;
+		}
+
+		return hasValidationWarnings;
+	}
+	
 	public void handlePayeeChange(SelectEvent<Payee> event) {
 		if (this.currentElement.getPayee()!=null) {
 			String newCurrencyCode = countryService.getCurrency(this.currentElement.getPayee().getCountryCode());
@@ -200,4 +218,5 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 			}
     	}
 	}
+
 }

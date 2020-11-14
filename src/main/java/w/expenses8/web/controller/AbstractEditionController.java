@@ -136,29 +136,38 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 
 	public boolean isValid() {
 		if (currentElement != null) {
-			Set<ConstraintViolation<T>> violations = validator.validate(currentElement);
-			if (!violations.isEmpty()) {
-				for(ConstraintViolation<?> viol: violations) {
-					log.warn("ConstraintViolation errors for {} : {}", viol.getPropertyPath(), viol.getMessage());
-					FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
-				}
-				return false;
-			}
-			
-			Instant now = Instant.now();
-			if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
-				lastWarningTime = now;
-				violations = validator.validate(currentElement, Warning.class);
-				if (!violations.isEmpty()) {
-					for(ConstraintViolation<?> viol: violations) {
-						log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
-						FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
-					}
-					return false;
-				}
-			}
+			if (hasValidationErrors()) return false;
+			if (hasValidationWarnings()) return false;
 		}
 		return true;
+	}
+	
+	protected boolean hasValidationErrors() { 
+		Set<ConstraintViolation<T>> violations = validator.validate(currentElement);
+		if (!violations.isEmpty()) {
+			for(ConstraintViolation<?> viol: violations) {
+				log.warn("ConstraintViolation errors for {} : {}", viol.getPropertyPath(), viol.getMessage());
+				FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_ERROR, viol.getPropertyPath().toString(), viol.getMessage()));
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean hasValidationWarnings() {
+		Instant now = Instant.now();
+		if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
+			lastWarningTime = now;
+			Set<ConstraintViolation<T>>  violations = validator.validate(currentElement, Warning.class);
+			if (!violations.isEmpty()) {
+				for(ConstraintViolation<?> viol: violations) {
+					log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
+					FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void save() {
