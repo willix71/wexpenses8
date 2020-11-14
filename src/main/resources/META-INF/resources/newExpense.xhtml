@@ -64,10 +64,10 @@
 					</p:selectOneListbox>
 	
 					<h:panelGroup style="width:100%;display:flex;align-items:center;justify-content:flex-center" >
-			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.newEmptyExpense}" update="newExpensePanel" >
+			     		<p:commandButton id="wexNewExpense" value="New" action="#{newExpenseController.newEmptyExpense}"  >
 			     			<p:ajax event="dialogReturn" listener="#{newExpenseController.onReturnFromEdition}" update="newExpensePanel"/>
 			     		</p:commandButton>
-			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.newDuplicatedExpense}" update="newExpensePanel" disabled="#{empty newExpenseController.baseExpense}">
+			     		<p:commandButton id="wexCopyExpense" value="Copy" action="#{newExpenseController.newDuplicatedExpense}" disabled="#{empty newExpenseController.baseExpense}">
 			     			<p:ajax event="dialogReturn" listener="#{newExpenseController.onReturnFromEdition}" update="newExpensePanel"/>
 			     		</p:commandButton>
 						<p:selectManyCheckbox value="#{newExpenseController.copyOptions}" disabled="#{empty newExpenseController.baseExpense}">
