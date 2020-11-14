@@ -26,7 +26,7 @@
 			</h:panelGroup>			
 			
 			<h:panelGroup styleClass="wex-edit-buttons-panel" rendered="#{cc.attrs.controller.editMode}">
-				<p:commandButton id="wexCancelSaveBtn" value="Cancel" icon="pi pi-times" action="#{cc.attrs.controller.closeDialog}" />
+				<p:commandButton id="wexCancelSaveBtn" value="Cancel" icon="pi pi-times" immediate="true" action="#{cc.attrs.controller.closeDialog}" />
 				<p:commandButton id="wexSaveBtn" value="Save" icon="pi pi-check" type="submit" action="#{cc.attrs.controller.saveAndCloseDialog}" update="@form" />
 			</h:panelGroup>
 			
