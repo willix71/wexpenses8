@@ -37,13 +37,15 @@
 				<p:tab >
 					<div style="width:100%;display:flex;justify-content:space-between" >
 			        	<span style="min-width:150px; width:150px">
-								<p:datePicker id="documentDateId" value="#{documentFileSelector.documentDate}" styleClass="wex-small-datepicker"
-									pattern="dd/MM/yyyy"
-									showIcon="true"
-									showButtonBar="true"
-									appendTo="@(body)">
-							 		<p:ajax event="dateSelect" listener="#{documentFileSelector.onDocumentFileDateChange(cc.attrs.extra)}" update="@(.js-docdate-related)"  />
-							 	</p:datePicker>
+							<p:datePicker id="documentDateId" value="#{documentFileSelector.documentDate}" styleClass="wex-small-datepicker"
+								pattern="dd/MM/yyyy"
+								showIcon="true"
+								showButtonBar="true"
+								focusOnSelect="true"
+								showOnFocus="false"
+								appendTo="@(body)">
+						 		<p:ajax event="dateSelect" listener="#{documentFileSelector.onDocumentFileDateChange(cc.attrs.extra)}" update="@(.js-docdate-related)"  />
+						 	</p:datePicker>
 						</span>
 				 
 					   	<p:inputText id="fileNameId" value="#{documentFileSelector.fileName}" styleClass="wex-field-edit js-docdate-related"/>

@@ -27,8 +27,9 @@
 						pattern="MMM yyyy"
 						showIcon="true"
 						showButtonBar="true"
-						appendTo="@(body)"
+						focusOnSelect="true"
 						showOnFocus="false"
+						appendTo="@(body)"
 						styleClass="wex-small-datepicker js-date-related">
 						<p:ajax event="dateSelect" listener="#{consolidationEditionController.onConsoDateChange}" update="@(.js-conso-target)" />
 					</p:datePicker>

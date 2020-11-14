@@ -124,7 +124,7 @@
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col-12 p-md-4">
 				            <p:outputLabel for="@next" value="date" />
-							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true" appendTo="@(body)" styleClass="js-date-related"/>
+							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true"  focusOnSelect="true" showOnFocus="false" appendTo="@(body)" styleClass="js-date-related"/>
 			        	</div>
 			        	
 			        	<div class="p-col-12 p-md-8">
@@ -184,10 +184,10 @@
 			
 			<f:facet name="footer"  >
 				<p:outputPanel rendered="#{expenseEditionController.editable}" style="display:flex">
-					<p:commandButton style="font-size: small;margin:10px 0;" value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.addDocumentFile}"/>
 					<p:outputPanel style="width:100%">
 						<wex:documentFileSelector extra="#{expense}" edition="#{expenseEditionController.editable}" />
 					</p:outputPanel>
+					<p:commandButton style="font-size: small;margin:10px 0;" value="Add" update="documentFilesTableId" icon="pi pi-plus" action="#{expenseEditionController.addDocumentFile}"/>
 				</p:outputPanel>
 			</f:facet>
 			
@@ -203,6 +203,8 @@
 					pattern="dd/MM/yyyy"
 					showIcon="true"
 					showButtonBar="true"
+					focusOnSelect="true"
+					showOnFocus="false"
 					appendTo="@(body)">
 			 		<p:ajax event="dateSelect" listener="#{expenseEditionController.onDocumentFileDateChange(docFile)}" update="@(.js-docdate-related)"  />
 			 	</p:datePicker>
@@ -242,7 +244,9 @@
 				<p:datePicker id="transcationDateId" value="#{tentry.accountingDate}" rendered="#{expenseEditionController.editable}" 
 					pattern="dd/MM/yyyy"
 					showIcon="true"
-					showButtonBar="true"
+					showButtonBar="true" 
+					focusOnSelect="true" 
+					showOnFocus="false" 
 					appendTo="@(body)"
 					styleClass="wex-small-datepicker "
 			 	/>
