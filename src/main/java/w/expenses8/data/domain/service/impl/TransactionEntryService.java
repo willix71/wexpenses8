@@ -35,6 +35,7 @@ import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.ITransactionEntryService;
 import w.expenses8.data.utils.CriteriaHelper;
 import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.data.utils.StringHelper;
 
 @Service
 public class TransactionEntryService extends GenericServiceImpl<TransactionEntry, Long, ITransactionEntryDao> implements ITransactionEntryService {
@@ -81,6 +82,20 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		Predicate payeeTextPredicate = CriteriaHelper.getPayeeTextCriteria(QExpense.expense.payee, criteria.getPayeeText());
 		if (payeeTextPredicate!=null) {
 			predicate = predicate.and(payeeTextPredicate);
+		}
+		if (criteria.getDescription()!=null) {
+			if (StringHelper.hasUpperCase(criteria.getDescription())) {
+				predicate = predicate.and(QExpense.expense.description.like(CriteriaHelper.like(criteria.getDescription())));
+			} else {
+				predicate = predicate.and(QExpense.expense.description.lower().like(CriteriaHelper.like(criteria.getDescription())));
+			}
+		}
+		if (criteria.getExternalReference()!=null) {
+			if (StringHelper.hasUpperCase(criteria.getExternalReference())) {
+				predicate = predicate.and(QExpense.expense.externalReference.like(CriteriaHelper.like(criteria.getExternalReference())));
+			} else {
+				predicate = predicate.and(QExpense.expense.externalReference.lower().like(CriteriaHelper.like(criteria.getExternalReference())));
+			}
 		}
 		
 		// TransactionEntry criteria

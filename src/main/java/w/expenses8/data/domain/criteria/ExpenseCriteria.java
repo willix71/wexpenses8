@@ -30,6 +30,8 @@ public class ExpenseCriteria implements Serializable {
 	private String payeeText;
 	private ExpenseType expenseType;
 	private String currencyCode;
+	private String description;
+	private String externalReference;
 
 	private Integer accountingYear;
 	@Builder.Default

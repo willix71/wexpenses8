@@ -39,6 +39,7 @@ import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
 import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.data.utils.StringHelper;
 import w.expenses8.data.utils.ValidationHelper;
 
 @Service
@@ -161,6 +162,21 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 					continue;
 				}
 				not = false;
+			}
+		}
+		
+		if (criteria.getDescription()!=null) {
+			if (StringHelper.hasUpperCase(criteria.getDescription())) {
+				predicate = predicate.and(ex.description.like(CriteriaHelper.like(criteria.getDescription())));
+			} else {
+				predicate = predicate.and(ex.description.lower().like(CriteriaHelper.like(criteria.getDescription())));
+			}
+		}
+		if (criteria.getExternalReference()!=null) {
+			if (StringHelper.hasUpperCase(criteria.getExternalReference())) {
+				predicate = predicate.and(ex.externalReference.like(CriteriaHelper.like(criteria.getExternalReference())));
+			} else {
+				predicate = predicate.and(ex.externalReference.lower().like(CriteriaHelper.like(criteria.getExternalReference())));
 			}
 		}
 		
