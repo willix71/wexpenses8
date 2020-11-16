@@ -265,7 +265,9 @@
 			
 			<p:column headerText="Accounts" style="width:100%" >
 				<h:panelGroup rendered="#{not expenseEditionController.editable}">
-					<ui:repeat var="t" value="#{tentry.tags}">#{t.name}</ui:repeat>
+					<ui:repeat var="t" value="#{tentry.tags}">
+						<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
+					</ui:repeat>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{expenseEditionController.editable}">
 					<p:autoComplete multiple="true" value="#{tentry.tagsList}" completeMethod="#{dropboxController.completeTag}" unique="true" var="entryIter"
