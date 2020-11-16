@@ -32,6 +32,9 @@ server:
   max-http-header-size: 10000000
   servlet:
     context-path: /wexpenses8
+  error:
+    whitelabel:
+      enabled: false
 
 joinfaces:
   jsf:
