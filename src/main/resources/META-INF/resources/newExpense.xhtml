@@ -80,7 +80,7 @@
 	        	</p:outputPanel>
 
 	        	<p:outputPanel id="lastExpensesId" rendered="#{not newExpenseController.payeeSelected}" style="padding-top: 20px;">				
-					<wex:dbableTable controller="#{expenseController}" hasExpandedRows="true">				
+					<wex:dbableTable controller="#{newExpenseController}" hasExpandedRows="true">				
 						<ui:include src="/includes/expensesColumns.xhtml" />
 					</wex:dbableTable>
 	        	</p:outputPanel>
