@@ -20,12 +20,8 @@
 					<wex:expenseCriteria criteria="#{expenseController.criteria}" action="#{expenseController.refresh}" update="@(.js-wexTable)"/>
 					
 			        <h:panelGrid columns="2" cellpadding="2">
-						<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="@(.js-wexTable)" />
-						<p:splitButton id="clearFilterBtn" value="Clear" icon="pi pi-times">
-	            			<p:menuitem value="Month" action="#{expenseController.resetMonth}" update="criteriaFields @(.js-wexTable)" />
-	            			<p:menuitem value="Year" action="#{expenseController.resetYear}" update="criteriaFields @(.js-wexTable)" />
-	            			<p:menuitem value="All" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
-	            		</p:splitButton>
+						<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="criteriaFields @(.js-wexTable)" />
+						<p:commandButton id="clearFilterBtn" icon="pi pi-times" value="Clear" immediate="true" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
 					</h:panelGrid>
 				</p:fieldset>
 	
