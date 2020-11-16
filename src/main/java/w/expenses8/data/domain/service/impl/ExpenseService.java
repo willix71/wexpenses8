@@ -75,7 +75,13 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		} else if (o instanceof Long) {
 			return query.where(QExpense.expense.id.eq((Long)o)).fetchOne();
 		} else if (o instanceof String) {
-			return query.where(QExpense.expense.uid.eq((String)o)).fetchOne();
+			String uid = (String)o;
+			if (uid.contains(".")) {
+				Expense xx = loadByUid(uid);
+				if (xx==null) return null;
+				uid = xx.getUid(); // get the full uid;
+			}
+			return query.where(QExpense.expense.uid.eq(uid)).fetchOne();
 		} else {
 			throw new IllegalArgumentException("Can't reload Expense from " + o);
 		}
@@ -165,14 +171,14 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			}
 		}
 		
-		if (criteria.getDescription()!=null) {
+		if (!StringHelper.isEmpty(criteria.getDescription())) {
 			if (StringHelper.hasUpperCase(criteria.getDescription())) {
 				predicate = predicate.and(ex.description.like(CriteriaHelper.like(criteria.getDescription())));
 			} else {
 				predicate = predicate.and(ex.description.lower().like(CriteriaHelper.like(criteria.getDescription())));
 			}
 		}
-		if (criteria.getExternalReference()!=null) {
+		if (!StringHelper.isEmpty(criteria.getExternalReference())) {
 			if (StringHelper.hasUpperCase(criteria.getExternalReference())) {
 				predicate = predicate.and(ex.externalReference.like(CriteriaHelper.like(criteria.getExternalReference())));
 			} else {

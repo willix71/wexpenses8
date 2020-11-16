@@ -61,7 +61,13 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		} else if (o instanceof Long) {
 			return query.where(QTransactionEntry.transactionEntry.id.eq((Long)o)).fetchOne();
 		} else if (o instanceof String) {
-			return query.where(QTransactionEntry.transactionEntry.uid.eq((String)o)).fetchOne();
+			String uid = (String)o;
+			if (uid.contains(".")) {
+				TransactionEntry xx = loadByUid(uid);
+				if (xx==null) return null;
+				uid = xx.getUid(); // get the full uid;
+			}
+			return query.where(QTransactionEntry.transactionEntry.uid.eq(uid)).fetchOne();
 		} else {
 			throw new IllegalArgumentException("Can't reload TransactionEntry from " + o);
 		}

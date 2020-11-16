@@ -50,8 +50,15 @@ public class ConsolidationService extends GenericServiceImpl<Consolidation, Long
 			id = x.getId();
 		} else if (o instanceof Long) {
 			id = (Long)o;
-		} else {			
-			id = loadByUid((String) o).getId();
+		} else {
+			String uid = (String)o;
+			if (uid.contains(".")) {
+				Consolidation xx = loadByUid(uid);
+				if (xx==null) return null;
+				id = xx.getId(); 
+			} else {
+				id = loadByUid((String) o).getId();
+			}
 		}
 		return getDao().reload(id);
 	}

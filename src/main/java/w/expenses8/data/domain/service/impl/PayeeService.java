@@ -36,8 +36,15 @@ public class PayeeService extends GenericServiceImpl<Payee, Long, IPayeeDao> imp
 			id = p.getId();
 		} else if (o instanceof Long) {
 			id = (Long)o;
-		} else {			
-			id = loadByUid((String) o).getId();
+		} else {
+			String uid = (String)o;
+			if (uid.contains(".")) {
+				Payee xx = loadByUid(uid);
+				if (xx==null) return null;
+				id = xx.getId(); 
+			} else {
+				id = loadByUid((String) o).getId();
+			}
 		}
 		return getDao().reload(id);
 	}
