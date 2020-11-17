@@ -25,7 +25,7 @@
 					</h:panelGrid>
 				</p:fieldset>
 	
-				<wex:dbableTable controller="#{expenseController}" hasExpandedRows="true">				
+				<wex:dbableTable controller="#{expenseController}" hasExpandedRows="true" extraMenu="/includes/expensesExtraMenu.xhtml" >				
 					<ui:include src="/includes/expensesColumns.xhtml" />
 				</wex:dbableTable>
 			</h:panelGroup>

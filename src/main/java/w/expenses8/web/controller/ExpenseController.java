@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -19,9 +20,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.model.DocumentFile;
+import w.expenses8.data.domain.model.ExchangeRate;
 import w.expenses8.data.domain.model.Expense;
+import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.domain.service.IExpenseService;
+import w.expenses8.data.utils.ExpenseHelper;
+import w.expenses8.web.controller.extra.EditionMode;
 
 @Slf4j
 @Named
@@ -58,6 +63,20 @@ public class ExpenseController extends AbstractListEditionController<Expense> {
 	public void resetAll() {
 		criteria = ExpenseCriteria.from(null);
 		loadEntities();
+	}
+	
+	public void duplicateExpense() {
+		Expense baseExpense = getSelectedElement();
+		
+		ExchangeRate copyXR = baseExpense.getExchangeRate()==null?null:baseExpense.getExchangeRate().duplicate();
+		Expense copy = ExpenseHelper.build(
+				baseExpense.getPayee(), baseExpense.getExpenseType(), baseExpense.getDate(),baseExpense.getCurrencyAmount(), baseExpense.getCurrencyCode(), copyXR,
+				baseExpense.getTransactions().stream().map(e->ExpenseHelper.buildTransactionEntry(e.getTags().stream().filter(t->t.getType()!=TagType.CONSOLIDATION).collect(Collectors.toList()),e.getFactor())).collect(Collectors.toList()));
+
+		copy.setExternalReference(baseExpense.getExternalReference());
+		copy.setDescription(baseExpense.getDescription());
+
+		openEditor(copy, EditionMode.EDIT);
 	}
 	
 	@Override
