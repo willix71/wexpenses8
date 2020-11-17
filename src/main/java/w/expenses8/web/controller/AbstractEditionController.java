@@ -66,8 +66,13 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 	@PostConstruct
 	public void initSelectedElementId() {
 		Object id = getInitialElementId();
-		// only set the initial element if we are sure it has to be set
-		if (id != null) resetCurrentElement(id);
+		if (id != null) {
+			// only set the initial element if we are sure it has to be set
+			resetCurrentElement(id);
+			if (id==WexpensesConstants.NEW_INSTANCE) {
+				mode = EditionMode.EDIT;
+			}
+		}
 	}
 	
 	protected Object getInitialElementId() {
