@@ -1,9 +1,12 @@
 package w.expenses8.web.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,6 +66,8 @@ public class NewExpenseController extends ExpenseController {
 	private Payee payee;
 
 	private ExpenseType expenseType;
+	
+	private LocalDate referenceDate;
 
 	private List<Expense> lastPayeeExpenses;
 	
@@ -112,7 +117,7 @@ public class NewExpenseController extends ExpenseController {
 	public void newDuplicatedExpense() {
 		Set<String> options = new HashSet<>(Arrays.asList(copyOptions));
 		Expense newExpense = ExpenseHelper.build(
-				payee, expenseType!=null?expenseType:baseExpense.getExpenseType(), options.contains("date")?baseExpense.getDate():null,baseExpense.getCurrencyAmount(), baseExpense.getCurrencyCode(), 
+				payee, expenseType!=null?expenseType:baseExpense.getExpenseType(), options.contains("date")?baseExpense.getDate():null,options.contains("amount")?baseExpense.getCurrencyAmount():null, baseExpense.getCurrencyCode(), 
 				baseExpense.getTransactions().stream().map(e->ExpenseHelper.buildTransactionEntry(e.getTags().stream().filter(t->t.getType()!=TagType.CONSOLIDATION).collect(Collectors.toList()),e.getFactor())).collect(Collectors.toList()));
 		if (options.contains("reference")) {
 			newExpense.setExternalReference(baseExpense.getExternalReference());
@@ -128,6 +133,15 @@ public class NewExpenseController extends ExpenseController {
 		log.info("duplicated new expense {}",newExpense);
 		openEditor(newExpense, EditionMode.EDIT);
 	}	
+
+	@Override
+	protected Map<String, List<String>> getDefaultEditionParam(DBable<?> e, EditionMode mode) {
+		Map<String, List<String>> params = super.getDefaultEditionParam(e, mode);
+		if (referenceDate!=null) {
+			params.put(LocalDateCustomConverterController.referenceDateParam, Collections.singletonList(referenceDate.format(LocalDateCustomConverterController.referenceDateFormat)));
+		}
+		return params;
+	}
 
 	@Override
     public void onReturnFromEdition(SelectEvent<EditorReturnValue<DBable<?>>> event) {
@@ -150,12 +164,12 @@ public class NewExpenseController extends ExpenseController {
 	};
 	
 	public void editPayee() {
-		FacesHelper.openEditor(payee, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+		FacesHelper.openEditor("payee", payee, EditionMode.EDIT);
 	}
 	
 	public void newPayee() {
-		FacesHelper.openEditor(null, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
-	}
+		FacesHelper.openEditor("payee", null, EditionMode.EDIT);
+	}	
 	
 	public void onPayeeReturn(SelectEvent<EditorReturnValue<Payee>> event) {
     	if (event==null) {
@@ -167,4 +181,5 @@ public class NewExpenseController extends ExpenseController {
 			}
     	}
 	}
+
 }

@@ -207,11 +207,11 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	}
 
 	public void editPayee() {
-		FacesHelper.openEditor(currentElement.getPayee(), EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+		FacesHelper.openEditor("payee", currentElement.getPayee(), EditionMode.EDIT);
 	}
 	
 	public void newPayee() {
-		FacesHelper.openEditor(null, EditionMode.EDIT, "payee", FacesHelper.getDefaultDialogOptions());
+		FacesHelper.openEditor("payee", null, EditionMode.EDIT);
 	}
 	
 	public void onPayeeReturn(SelectEvent<EditorReturnValue<Payee>> event) {
@@ -230,5 +230,4 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		this.currentElement.setDate(LocalDateTime.of(currentDate, LocalTime.of(localHours, localMinutes)));
 		super.save();
 	}
-
 }

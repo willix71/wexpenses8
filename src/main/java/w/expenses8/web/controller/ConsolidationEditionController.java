@@ -216,7 +216,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		if (selectedEntry!=null) {
 			Expense e = selectedEntry.getExpense();
 			log.debug("Editing expense {}", e);
-			FacesHelper.openEditor(e, EditionMode.EDIT, "expense", FacesHelper.getDefaultDialogOptions());
+			FacesHelper.openEditor("expense", e, EditionMode.EDIT);
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package w.expenses8.web.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.primefaces.event.SelectEvent;
@@ -67,9 +68,13 @@ public abstract class AbstractListEditionController<T extends DBable<T>> extends
 	    return FacesHelper.getDefaultDialogOptions();
 	}
 	
+	protected Map<String,List<String>> getDefaultEditionParam(DBable<?> e, EditionMode mode) {
+		return FacesHelper.getDefaultEditionParam(e, mode);
+	}
+	
 	public void openEditor(DBable<?> e, EditionMode mode) {
 		log.info("opening editor for {} in mode {}", e, mode);
-		FacesHelper.openEditor(e, mode, getEditorsPage(), getEditorDialogOptions());
+		FacesHelper.openEditor(getEditorsPage(), getEditorDialogOptions(), getDefaultEditionParam(e, mode));
 	}
 	
     public void onReturnFromEdition(SelectEvent<EditorReturnValue<DBable<?>>> event) {

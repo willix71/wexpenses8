@@ -54,5 +54,9 @@ public class LocalDateCustomConverter implements Converter<LocalDate> {
 		log.debug("Converting [{}] from LocalDate", value);
 		return value==null?null:value.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 	}
+	
+	public String getReference() {
+		return reference.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+	}
 }
 

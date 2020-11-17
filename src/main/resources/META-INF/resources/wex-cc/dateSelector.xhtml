@@ -20,9 +20,9 @@
 			<f:converter converterId="localDateCustomConverter" />
 		</h:outputText>
 		<h:panelGroup rendered="#{cc.attrs.edition}" style="display:flex;justify-content:flex-start">
-			<p:inputText id="expenseDateText" value="#{cc.attrs.date}" style="width:100px">
-			 	<f:converter converterId="localDateCustomConverter"/> 
-			 	<p:ajax listener="#{cc.attrs.listener}" update="expenseDateText expenseDatePicker  #{cc.attrs.update}"  />
+			<p:inputText id="expenseDateText" value="#{cc.attrs.date}" style="width:100px" placeholder="#{localDateCustomConverterController.converter.reference}">
+			 	<f:converter binding="#{localDateCustomConverterController.converter}"/> 
+			 	<p:ajax listener="#{cc.attrs.listener}" update="expenseDateText expenseDatePicker #{cc.attrs.update}"  />
 			</p:inputText>
 			<p:datePicker id="expenseDatePicker" value="#{cc.attrs.date}" 
 					styleClass="wex-datepicker" 

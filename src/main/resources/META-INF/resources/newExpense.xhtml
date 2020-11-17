@@ -28,11 +28,14 @@
 	       			</p:menuitem>
 	       		</p:contextMenu>
 	       		
-				<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
-				 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
-	             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" placeholder="type">
-	             	<p:ajax event="itemSelect" update="wexTableForm" />
-	            </p:autoComplete>
+	       		<h:panelGrid columns="2">
+					<p:autoComplete value="#{newExpenseController.expenseType}" styleClass="wex-field-edit"
+					 	dropdown="true" completeMethod="#{dropboxController.completeExpenseType}" converter="#{expenseTypeConverter}" 
+		             	var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" forceSelection="true" placeholder="type">
+		             	<p:ajax event="itemSelect" update="wexTableForm" />
+		            </p:autoComplete>
+					<wex:dateSelector date="#{newExpenseController.referenceDate}" edition="true" />
+	       		</h:panelGrid>
 			
 	        	<p:outputPanel id="payeeLastExpensesId" rendered="#{newExpenseController.payeeSelected}">
 			        <p:selectOneListbox value="#{newExpenseController.baseExpense}" converter="#{newExpenseController.expenseConverter}" var="x" style="width:100%">
@@ -71,6 +74,7 @@
 			     			<p:ajax event="dialogReturn" listener="#{newExpenseController.onReturnFromEdition}" update="newExpensePanel"/>
 			     		</p:commandButton>
 						<p:selectManyCheckbox value="#{newExpenseController.copyOptions}" disabled="#{empty newExpenseController.baseExpense}">
+					        <f:selectItem itemLabel="Amount" itemValue="amount" />
 					        <f:selectItem itemLabel="Date" itemValue="date" />
 					        <f:selectItem itemLabel="Reference" itemValue="reference" itemDisabled="#{empty newExpenseController.baseExpense.externalReference}"/>
 					        <f:selectItem itemLabel="Documents" itemValue="documents" itemDisabled="#{empty newExpenseController.baseExpense.documentFiles}"/>

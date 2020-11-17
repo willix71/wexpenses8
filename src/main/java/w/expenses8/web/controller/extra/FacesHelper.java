@@ -13,7 +13,7 @@ import org.primefaces.PrimeFaces;
 import w.expenses8.data.core.model.DBable;
 
 public class FacesHelper {
-
+	
 	public static void setElementForRetrival(Object o) {
 		((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getSession().setAttribute("_wex_", o);
 	}
@@ -39,7 +39,7 @@ public class FacesHelper {
 	    return options;
 	}
 	
-	public static void openEditor(DBable<?> e, EditionMode mode, String page, Map<String,Object> options) {
+	public static Map<String,List<String>> getDefaultEditionParam(DBable<?> e, EditionMode mode) {
 	    Map<String,List<String>> params = new HashMap<String, List<String>>();
 	    params.put("hideMenu",  Collections.singletonList("true"));
 	    params.put("mode", Collections.singletonList(mode.toString()));
@@ -51,7 +51,14 @@ public class FacesHelper {
 	    } else {
 	    	params.put("id", Collections.singletonList(String.valueOf(e.getId())));
 	    }
-	    
+	    return params;
+	}
+
+	public static void openEditor(String page, DBable<?> e, EditionMode mode) {
+		openEditor(page, getDefaultDialogOptions(), getDefaultEditionParam(e, mode));
+	}
+
+	public static void openEditor(String page, Map<String,Object> options, Map<String,List<String>> params) {
 	    PrimeFaces.current().dialog().openDynamic(page, options, params);
 	}
 }
