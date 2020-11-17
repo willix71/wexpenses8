@@ -20,16 +20,21 @@ public class ApplicationController {
 
 	@Inject
 	private CurrencyValue defaultCurrency;
+
 	
+    public void action() {
+        log.trace("action");
+    }
+    
     public void handleSelect(SelectEvent<?> event) {
-        log.trace("autocomplete selected {}", event==null?"No event":event.getObject());
+        log.info("selected {}", event==null?"No event":event.getObject());
     }
     
     public void handleUnselect(UnselectEvent<?> event) {
-    	log.trace("autocomplete unselected {}", event==null?"No event":event.getObject());
+    	log.trace("unselected {}", event==null?"No event":event.getObject());
     }
     
 	public void valueChangeMethod(ValueChangeEvent event){
-		log.trace("autocomplete unselected {}", event==null?"No event":event.getOldValue());
+		log.trace("valueChange old {}", event==null?"No event":event.getOldValue());
 	}
 }
