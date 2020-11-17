@@ -37,7 +37,17 @@ public class DocumentFileSelector {
 	
 	private String fileName;
 	
+	private DBable<?> source;
+	
 	private int activeTabIndex = 0;
+
+	public void reset(DBable<?> source, DocumentFile currentDocumentFile) {
+		this.source = source;
+		this.documentFile = currentDocumentFile;
+		this.documentUid =  currentDocumentFile==null?null:currentDocumentFile.getUid();
+		this.documentDate = currentDocumentFile==null?null:currentDocumentFile.getDocumentDate();
+		this.fileName = currentDocumentFile==null?null:currentDocumentFile.getFileName();
+	}
 	
 	public DocumentFile getCurrentDocumentFile() {
 		if (activeTabIndex == 0) {
@@ -52,17 +62,6 @@ public class DocumentFileSelector {
 		return documentFile;
 	}
 
-	public void setCurrentDocumentFile(DocumentFile currentDocumentFile) {
-		this.documentFile = currentDocumentFile;
-		this.documentUid =  currentDocumentFile==null?null:currentDocumentFile.getUid();
-		this.documentDate = currentDocumentFile==null?null:currentDocumentFile.getDocumentDate();
-		this.fileName = currentDocumentFile==null?null:currentDocumentFile.getFileName();
-	}
-	
-	public void reset() {
-		setCurrentDocumentFile(null);	
-	}
-
 	public void onTabChange(TabChangeEvent<?> event) {
 	    log.trace("Tab has changed to {}", activeTabIndex);
 	}
@@ -70,12 +69,16 @@ public class DocumentFileSelector {
 	public void onDocumentFileSelection(SelectEvent<?> event) {
 		log.trace("Tab has changed to {}", activeTabIndex);
 	}
-
-	public void onDocumentFileDateChange(DBable<?> o) {
-		if (documentFile == null || fileName == null) {
+	
+	public void onDocumentDateChange(SelectEvent<LocalDate> event) {
+		updateFileName();
+	}
+	
+	public void updateFileName() {
+		if (documentDate!=null && (documentFile == null || StringHelper.isEmpty(fileName))) {
 			log.info("Generating document filename");
-			fileName = documentFileService.generateFilename(documentDate, o);
-		}		
+			fileName = documentFileService.generateFilename(documentDate, source);
+		}	
 	}
 	
 	public String getDocumentFileUrl() {

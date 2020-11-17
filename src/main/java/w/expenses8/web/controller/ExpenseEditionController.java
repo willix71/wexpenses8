@@ -1,7 +1,9 @@
 package w.expenses8.web.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,7 +58,10 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 	@Inject
 	private CurrencyValue currencyValue;
 	
-	private LocalDateTime previousDate;
+	private LocalDate currentDate;
+	private int localHours;
+	private int localMinutes;
+	private LocalDate previousDate;
 	private BigDecimal previousAmount;
 	private Map<String,ExchangeRate> potentialExchangeRates = new HashMap<String, ExchangeRate>();
 	
@@ -71,7 +76,14 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		this.potentialExchangeRates.clear();
 
 		if (currentElement != null) {
-			this.previousDate = currentElement.getDate();
+			if (currentElement.getDate()!=null) {
+				this.currentDate = currentElement.getDate().toLocalDate();
+				LocalTime currentTime = currentElement.getDate().toLocalTime();
+				this.localHours = currentTime.getHour();
+				this.localMinutes = currentTime.getMinute();
+			}
+			this.previousDate = this.currentDate;
+			
 			this.previousAmount = currentElement.getCurrencyAmount();
 			
 			if (currentElement.getExchangeRate()!=null) {
@@ -79,7 +91,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 			}
 			transactionsSums.compute(currentElement.getTransactions());
 		}
-		documentFileSelector.reset();
+		documentFileSelector.reset(currentElement, null);
 	}
 
 
@@ -107,17 +119,11 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 	}
 	
-	public void handleDateChange(SelectEvent<LocalDateTime> event) {
-		LocalDateTime newdate = event.getObject();
-		log.debug("handleDateChange old {} new {}",previousDate, newdate);
+	public void onLocalDateChange(SelectEvent<LocalDate> event) {
+		log.debug("localDate has changed");
+		this.currentElement.setDate(LocalDateTime.of(currentDate, LocalTime.of(localHours, localMinutes)));
 		currentElement.updateDate(previousDate);
-		previousDate = newdate;
-	}
-	
-	public void onDateChange() {
-		log.debug("onDateChange old {} new {}",previousDate, currentElement.getDate());
-		currentElement.updateDate(previousDate);
-		previousDate = currentElement.getDate();
+		previousDate = currentDate;
 	}
 	
 	public void onCurrencyChange() {
@@ -188,7 +194,7 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		if (docFile != null) {
 			currentElement.addDocumentFile(docFile);		
 			currentElement.updateDocumentCount();
-			documentFileSelector.reset();
+			documentFileSelector.reset(currentElement, null);
 		}
 	}
 	
@@ -217,6 +223,12 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 				currentElement.setPayee(value.getElement());
 			}
     	}
+	}
+
+	@Override
+	public void save() {
+		this.currentElement.setDate(LocalDateTime.of(currentDate, LocalTime.of(localHours, localMinutes)));
+		super.save();
 	}
 
 }

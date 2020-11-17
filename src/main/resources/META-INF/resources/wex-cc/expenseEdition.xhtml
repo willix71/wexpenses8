@@ -43,22 +43,17 @@
 			</p:outputPanel>			
        		 	
 			<h:outputText value="date" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.date}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
-				<f:converter converterId="localDateTimeCustomConverter" />
+			<h:outputText value="#{expense.date}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value" >
+				<f:convertDateTime type="localDateTime" pattern="EEE dd/MM/yyyy HH:mm" />
 			</h:outputText>
-			<h:panelGrid columns="3" rendered="#{expenseEditionController.editable}" >
-				<p:inputText id="expenseDateText" value="#{expense.date}">
-				 	<f:converter converterId="localDateTimeCustomConverter"/> 
-				 	<p:ajax listener="#{expenseEditionController.onDateChange}" update="expenseDateText expenseDateError expenseDatePicker @(.js-date-related)"  />
-				</p:inputText>
-				<p:datePicker id="expenseDatePicker" value="#{expense.date}" showIcon="true" showButtonBar="true" readonlyInput="true" showTime="true" styleClass="wex-datepicker" >
-				 	<p:ajax event="dateSelect" listener="#{expenseEditionController.handleDateChange}" update="expenseDateText expenseDateError @(.js-date-related)"  />
-				</p:datePicker>
-				<h:panelGrid columns="2" id="expenseDateError">
-					<p:message for="expenseDateText" display="icon" showDetail="true" />
-					<p:message for="expenseDatePicker" display="icon" showDetail="true" />
-				</h:panelGrid>
-			</h:panelGrid>
+			<h:panelGroup rendered="#{expenseEditionController.editable}"  style="display:flex;align-items:center;justify-content:flex-start">
+				<h:outputText id="dayOfTheWeek"  value="#{expenseEditionController.currentDate}" styleClass="wex-field-value js-date-related" style="padding-right:4px">
+					<f:convertDateTime type="localDateTime" pattern="EEE" />
+				</h:outputText>
+				<wex:dateSelector date="#{expenseEditionController.currentDate}" listener="#{expenseEditionController.onLocalDateChange}" update="@(.js-date-related)" edition="true"/>
+				<p:spinner value="#{expenseEditionController.localHours}" min="0" max="23" rotate="true" style="width:50px" />
+				<p:spinner value="#{expenseEditionController.localMinutes}" min="0" max="59" rotate="true" style="width:50px" />
+			</h:panelGroup>
 				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
 			<h:panelGroup rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
@@ -73,9 +68,11 @@
 			<h:panelGroup rendered="#{expenseEditionController.editable}" styleClass="wex-field-edit">
 			    <p:inputNumber id="expenseCurrencyAmountId" value="#{expense.currencyAmount}" thousandSeparator="'">
 			    	<p:ajax listener="#{expenseEditionController.onAmountChange}"  update="expenseFieldsPanelId @(.js-value-related)" />
+   	    			<p:ajax listener="#{documentFileSelector.updateFileName}" update="@(.js-docdate-related)" />
 			    </p:inputNumber>  
 			    <p:selectOneMenu id="expenseCurrencyCodeId" value="#{expense.currencyCode}" >
 			    	<p:ajax listener="#{expenseEditionController.onCurrencyChange}"  update="expenseFieldsPanelId @(.js-value-related)" />
+  	    			<p:ajax listener="#{documentFileSelector.updateFileName}" update="@(.js-docdate-related)" />			    	
                 	<f:selectItems value="#{dropboxController.currencies}" />
                 	<h:outputText value="#{expense.accountingValue}"/>
             	</p:selectOneMenu>
@@ -124,7 +121,7 @@
 					<div class="p-grid ui-fluid p-field ">
 			        	<div class="p-col-12 p-md-4">
 				            <p:outputLabel for="@next" value="date" />
-							<p:datePicker id="exchangeRateDateId" value="#{expense.exchangeRate.date}" pattern="dd/MM/yyyy" showIcon="true" showButtonBar="true"  focusOnSelect="true" showOnFocus="false" appendTo="@(body)" styleClass="js-date-related"/>
+				            <wex:dateSelector id="exchangeRateDateId" date="#{expense.exchangeRate.date}" styleClass="js-date-related" edition="true"/>
 			        	</div>
 			        	
 			        	<div class="p-col-12 p-md-8">
@@ -196,18 +193,7 @@
 			</ui:include>	    
 			
             <p:column headerText="Date" style="max-width:130px; width:130px">
-            	<h:outputText value="#{docFile.documentDate}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
-					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
-				</h:outputText>
-				<p:datePicker id="documentDateId" value="#{docFile.documentDate}" rendered="#{expenseEditionController.editable}" styleClass="wex-small-datepicker"
-					pattern="dd/MM/yyyy"
-					showIcon="true"
-					showButtonBar="true"
-					focusOnSelect="true"
-					showOnFocus="false"
-					appendTo="@(body)">
-			 		<p:ajax event="dateSelect" listener="#{expenseEditionController.onDocumentFileDateChange(docFile)}" update="@(.js-docdate-related)"  />
-			 	</p:datePicker>
+				 <wex:dateSelector id="documentDateId" date="#{docFile.documentDate}" edition="#{expenseEditionController.editable}"/>
     	   	</p:column>
             
             <p:column headerText="Filename (#{expense.documentCount})" style="width:100%">
@@ -238,18 +224,7 @@
 			</ui:include>
 			
             <p:column headerText="Date" styleClass="wex-cell-centered" style="max-width:130px; width:130px" >
-            	<h:outputText value="#{tentry.accountingDate}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value">
-					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
-				</h:outputText>
-				<p:datePicker id="transcationDateId" value="#{tentry.accountingDate}" rendered="#{expenseEditionController.editable}" 
-					pattern="dd/MM/yyyy"
-					showIcon="true"
-					showButtonBar="true" 
-					focusOnSelect="true" 
-					showOnFocus="false" 
-					appendTo="@(body)"
-					styleClass="wex-small-datepicker "
-			 	/>
+            	<wex:dateSelector date="#{tentry.accountingDate}" edition="#{expenseEditionController.editable}"/>
        		</p:column>
        					
 			<p:column headerText="Year" styleClass="wex-cell-centered" style="max-width:70px; width:70px">

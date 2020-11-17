@@ -157,11 +157,11 @@ public class Expense extends DBable<Expense> {
 		updateAmountValues(null, precision);
 	}
 	
-	public void updateDate(LocalDateTime previousDate) {
+	public void updateDate(LocalDate previousDate) {
 		if (date==null) return;
-		if (exchangeRate!=null && (exchangeRate.getDate()==null || (previousDate!=null && exchangeRate.getDate().equals(previousDate.toLocalDate())))) exchangeRate.setDate(date.toLocalDate());
+		if (exchangeRate!=null && (exchangeRate.getDate()==null || (previousDate!=null && exchangeRate.getDate().equals(previousDate)))) exchangeRate.setDate(date.toLocalDate());
 		transactions.stream().filter(t->t.getAccountingYear()==null || (previousDate!=null && t.getAccountingYear().equals(previousDate.getYear()))).forEach(t->t.setAccountingYear(date.getYear()));
-		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate.toLocalDate()))).forEach(t->t.setAccountingDate(date.toLocalDate()));
+		transactions.stream().filter(t->t.getAccountingDate()==null || (previousDate!=null && t.getAccountingDate().equals(previousDate))).forEach(t->t.setAccountingDate(date.toLocalDate()));
 	}
 	
 	public void updateAmountValues(BigDecimal previousAmount, BigDecimal precision) {

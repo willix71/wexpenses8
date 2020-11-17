@@ -10,20 +10,19 @@
    	
 	<composite:interface>
 		<composite:attribute name="edition" default="false" />
-		<composite:attribute name="extra"/>
 	</composite:interface>
 	
 	<composite:implementation>
 		<h:panelGroup rendered="#{not cc.attrs.edition}">
 			<div style="width:100%;display:flex;justify-content:space-between" >
 	        	<span style="min-width:150px; width:150px">
-			       	<h:outputText value="#{documentFileSelector.currentDocumentFile.documentDate}" styleClass="wex-field-value">
+			       	<h:outputText value="#{documentFileSelector.documentDate}" styleClass="wex-field-value">
 						<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 					</h:outputText>
 				 </span>
 				 
 				<span style="width:100%">
-			   		<h:outputText value="#{documentFileSelector.currentDocumentFile.fileName}" styleClass="wex-field-value" />
+			   		<h:outputText value="#{documentFileSelector.fileName}" styleClass="wex-field-value" />
 				</span>
 				
 				<p:button href="#{documentFileSelector.documentFileUrl}" icon="pi pi-search" target="_blank"/>
@@ -35,23 +34,13 @@
 				<p:ajax event="tabChange" listener="#{documentFileSelector.onTabChange}" />
 				
 				<p:tab >
-					<div style="width:100%;display:flex;justify-content:space-between" >
-			        	<span style="min-width:150px; width:150px">
-							<p:datePicker id="documentDateId" value="#{documentFileSelector.documentDate}" styleClass="wex-small-datepicker"
-								pattern="dd/MM/yyyy"
-								showIcon="true"
-								showButtonBar="true"
-								focusOnSelect="true"
-								showOnFocus="false"
-								appendTo="@(body)">
-						 		<p:ajax event="dateSelect" listener="#{documentFileSelector.onDocumentFileDateChange(cc.attrs.extra)}" update="@(.js-docdate-related)"  />
-						 	</p:datePicker>
-						</span>
+					<h:panelGroup style="display:flex;justify-content:space-between" >
+		        		<wex:dateSelector date="#{documentFileSelector.documentDate}" listener="#{documentFileSelector.onDocumentDateChange}" update="@(.js-docdate-related)" edition="true"/>
 				 
-					   	<p:inputText id="fileNameId" value="#{documentFileSelector.fileName}" styleClass="wex-field-edit js-docdate-related"/>
+					   	<p:inputText id="fileNameId" value="#{documentFileSelector.fileName}" styleClass="wex-field-edit js-docdate-related" />
 			     		
 				   		<p:button href="#{documentFileSelector.documentFileUrl}" icon="pi pi-search" target="_blank"/>
-		   			</div>
+		   			</h:panelGroup>
 		   		</p:tab>
 		   		
 		   		<p:tab >

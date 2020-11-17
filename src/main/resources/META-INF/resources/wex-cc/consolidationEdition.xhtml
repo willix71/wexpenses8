@@ -55,15 +55,16 @@
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
 	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
 	   	    		<p:inputNumber value="#{conso.openingValue}" thousandSeparator="'" label="opening value" rendered="#{consolidationEditionController.editable}" >
-	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
+	   	    			<p:ajax listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
 	   	    		</p:inputNumber>
 	   	    		<h:outputText value="#{conso.openingValue}" rendered="#{not consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="padding-right:20px">
-	   	    		<p:outputLabel for="@next" value="opening value" styleClass="wex-field-label" />
+	   	    		<p:outputLabel for="@next" value="closing value" styleClass="wex-field-label" />
 	   	    		<p:inputNumber value="#{conso.closingValue}" thousandSeparator="'" label="closin value" rendered="#{consolidationEditionController.editable}" >
-	   	    			<p:ajax event="valueChange" listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
+	   	    			<p:ajax listener="#{consolidationEditionController.compute}" update="@(.js-conso-total)" />
+	   	    			<p:ajax listener="#{documentFileSelector.updateFileName}" update="@(.js-docdate-related)" />
 	   	    		</p:inputNumber>
 	   	    		<h:outputText value="#{conso.closingValue}" rendered="#{not consolidationEditionController.editable}" />
 	   	    	</h:panelGroup>

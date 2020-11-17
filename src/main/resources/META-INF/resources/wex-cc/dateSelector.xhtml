@@ -1,0 +1,42 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:wex="http://java.sun.com/jsf/composite/wex-cc"	
+   	xmlns:composite="http://java.sun.com/jsf/composite">
+   	
+	<composite:interface>
+		<composite:attribute name="date" required="true"/>
+		<composite:attribute name="edition" default="false" />
+		<composite:attribute name="listener" method-signature="void select(org.primefaces.event.SelectEvent)" default="#{applicationController.handleSelect}"/>
+		<composite:attribute name="update" default=""/>
+	</composite:interface>
+	
+	<composite:implementation>
+		<h:outputText value="#{cc.attrs.date}" rendered="#{not cc.attrs.edition}" styleClass="wex-field-value">
+			<f:converter converterId="localDateCustomConverter" />
+		</h:outputText>
+		<h:panelGroup rendered="#{cc.attrs.edition}" style="display:flex;justify-content:flex-start">
+			<p:inputText id="expenseDateText" value="#{cc.attrs.date}" style="width:100px">
+			 	<f:converter converterId="localDateCustomConverter"/> 
+			 	<p:ajax listener="#{cc.attrs.listener}" update="expenseDateText expenseDatePicker  #{cc.attrs.update}"  />
+			</p:inputText>
+			<p:datePicker id="expenseDatePicker" value="#{cc.attrs.date}" 
+					styleClass="wex-datepicker" 
+					showIcon="true" 
+					showButtonBar="true" 
+					focusOnSelect="true" 
+					showOnFocus="false"
+					appendTo="@(body)" 
+					readonlyInput="true" 
+					style="width:45px">
+			 	<p:ajax event="dateSelect" listener="#{cc.attrs.listener}" update="expenseDateText expenseDatePicker #{cc.attrs.update}"  />
+			</p:datePicker>
+			<p:message for="expenseDateText" display="icon" showDetail="true" />
+			<p:message for="expenseDatePicker" display="icon" showDetail="true" />
+		</h:panelGroup>
+   	</composite:implementation>
+</ui:component>

@@ -1,6 +1,7 @@
 package w.expenses8.web.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -96,7 +97,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 				setTargetEntries(transactionEntryService.findConsolidationEntries(this.currentElement));
 			}
 
-			documentFileSelector.setCurrentDocumentFile(this.currentElement.getDocumentFile());
+			documentFileSelector.reset(this.currentElement, this.currentElement.getDocumentFile());
 			
 			updateSourceEntries();
 
@@ -105,7 +106,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 			targetTags = null;
 			setSourceEntries(new ArrayList<>());
 			setTargetEntries(new ArrayList<>());
-			documentFileSelector.reset();
+			documentFileSelector.reset(null, null);
 		}
 	}
 
@@ -113,7 +114,7 @@ public class ConsolidationEditionController extends AbstractEditionController<Co
 		setCurrentElement(Consolidation.with().date(conso.getDate().plusMonths(1)).institution(conso.getInstitution()).openingValue(conso.getClosingValue()).build());
 	}
 	
-	public void onConsoDateChange() {
+	public void onConsoDateChange(SelectEvent<LocalDate> eventS) {
 		targetTags = new ArrayList<TagCriteria>(Collections.singleton(tagService.getConsolidationTag(this.currentElement.getDate())));
 		updateSourceEntries();
 	}
