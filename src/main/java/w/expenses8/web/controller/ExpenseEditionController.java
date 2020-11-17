@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -27,6 +28,7 @@ import w.expenses8.data.domain.model.Payee;
 import w.expenses8.data.domain.model.TransactionEntry;
 import w.expenses8.data.domain.service.ICountryService;
 import w.expenses8.data.domain.service.IExchangeRateService;
+import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.data.utils.TransactionsSums;
@@ -103,9 +105,16 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		if (newDocFile!=null && (CollectionHelper.isEmpty(this.currentElement.getDocumentFiles()) || !this.currentElement.getDocumentFiles().contains(newDocFile))) {
 			log.warn("DocumentFile has not been added");
 			FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, "documentFiles", "DocumentFile has not been added"));
-			return true;
+			hasValidationWarnings = true;
 		}
 
+		List<Expense> similar = ((IExpenseService) elementService).findSimiliarExpenses(this.currentElement);
+		if (!CollectionHelper.isEmpty(similar)) {
+			log.warn("Similar expenses have been found");
+			FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, null, similar.size() + " similar expenses have been found"));
+			hasValidationWarnings = true;
+		}
+		
 		return hasValidationWarnings;
 	}
 	
