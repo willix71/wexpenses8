@@ -18,7 +18,10 @@
 				<h:outputText value="#{x.type}" />
 			</f:facet>
 			<f:facet name="input">
-				<p:inputText value="#{x.type}" style="width:100%" label="name" />
+				<p:selectOneMenu value="#{x.type}" converter="#{tagTypeConverter}" label="type" style="width:-webkit-fill-available	">
+					<f:selectItem itemLabel="" itemValue="#{null}" noSelectionOption="true" />
+					<f:selectItems value="#{dropboxController.tagTypes}" />
+				</p:selectOneMenu>
 			</f:facet>
 		</p:cellEditor>
 	</p:column>
