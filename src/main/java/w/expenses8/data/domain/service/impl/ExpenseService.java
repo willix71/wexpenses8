@@ -34,6 +34,7 @@ import w.expenses8.data.domain.model.QTagGroup;
 import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TagGroup;
+import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
@@ -221,6 +222,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		QExpense ex = QExpense.expense;
 		
 		BooleanBuilder predicate = new BooleanBuilder().and(ex.payedDate.isNull());
+		predicate = predicate.and(ex.expenseType.displayer.ne(PayeeDisplayer.DEFAULT));
 		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(LocalDateTime.now().toLocalDate(),null), ex.date);
 		
 		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
