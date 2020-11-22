@@ -89,14 +89,14 @@ public class TransactionEntryService extends GenericServiceImpl<TransactionEntry
 		if (payeeTextPredicate!=null) {
 			predicate = predicate.and(payeeTextPredicate);
 		}
-		if (criteria.getDescription()!=null) {
+		if (!StringHelper.isEmpty(criteria.getDescription())) {
 			if (StringHelper.hasUpperCase(criteria.getDescription())) {
 				predicate = predicate.and(QExpense.expense.description.like(CriteriaHelper.like(criteria.getDescription())));
 			} else {
 				predicate = predicate.and(QExpense.expense.description.lower().like(CriteriaHelper.like(criteria.getDescription())));
 			}
 		}
-		if (criteria.getExternalReference()!=null) {
+		if (!StringHelper.isEmpty(criteria.getExternalReference())) {
 			if (StringHelper.hasUpperCase(criteria.getExternalReference())) {
 				predicate = predicate.and(QExpense.expense.externalReference.like(CriteriaHelper.like(criteria.getExternalReference())));
 			} else {
