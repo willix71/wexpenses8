@@ -47,6 +47,7 @@ public class TransactionEntryController extends AbstractListEditionController<Tr
 	
 	public void reset() {
 		criteria = TransactionEntryCriteria.from(Year.now().getValue());
+		loadEntities();
 	}
 
 	@Override
