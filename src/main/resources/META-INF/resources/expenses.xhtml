@@ -21,7 +21,7 @@
 					
 			        <h:panelGrid columns="2" cellpadding="2">
 						<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="criteriaFields @(.js-wexTable)" />
-						<p:commandButton id="clearFilterBtn" icon="pi pi-times" value="Clear" immediate="true" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
+						<p:commandButton id="clearFilterBtn" icon="pi pi-times" value="Clear" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
 					</h:panelGrid>
 				</p:fieldset>
 	
