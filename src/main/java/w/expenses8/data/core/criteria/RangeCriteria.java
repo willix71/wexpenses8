@@ -19,5 +19,8 @@ public class RangeCriteria<T> implements Serializable {
 	private T from;
 	private T to;
 	
-	
+	public void clear() {
+		from=null;
+		to=null;
+	}
 }

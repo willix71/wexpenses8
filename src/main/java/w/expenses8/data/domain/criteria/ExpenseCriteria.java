@@ -41,6 +41,19 @@ public class ExpenseCriteria implements Serializable {
 	@Builder.Default
 	private List<TagCriteria> tagCriterias = new ArrayList<TagCriteria>();
 
+	public void clear() {
+		payee=null;
+		payeeText=null;
+		expenseType=null;
+		currencyCode= null;
+		description=null;
+		externalReference=null;
+		accountingYear=null;
+		localDate.clear();
+		amountValue.clear();
+		tagCriterias.clear();
+	}
+	
 	public static ExpenseCriteria from(LocalDate d) {
 		ExpenseCriteria criteria = new ExpenseCriteria();
 		criteria.localDate.setFrom(d);

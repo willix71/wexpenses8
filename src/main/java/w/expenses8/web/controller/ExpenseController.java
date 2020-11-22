@@ -2,7 +2,6 @@ package w.expenses8.web.controller;
 
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.time.YearMonth;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -52,16 +51,8 @@ public class ExpenseController extends AbstractListEditionController<Expense> {
 		super(Expense.class);
 	}
 	
-	public void resetMonth() {
-		criteria = ExpenseCriteria.from(YearMonth.now().atDay(1));
-		loadEntities();
-	}
-	public void resetYear() {
-		criteria = ExpenseCriteria.from(Year.now().atDay(1));
-		loadEntities();
-	}
 	public void resetAll() {
-		criteria = ExpenseCriteria.from(null);
+		criteria.clear();
 		loadEntities();
 	}
 	
