@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -31,7 +30,6 @@ import w.expenses8.data.domain.dao.IExpenseDao;
 import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.QExpense;
 import w.expenses8.data.domain.model.QTag;
-import w.expenses8.data.domain.model.QTagGroup;
 import w.expenses8.data.domain.model.QTransactionEntry;
 import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TagGroup;
@@ -135,53 +133,32 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		}
 		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
 			
-			QTransactionEntry subte = new QTransactionEntry("subte");
-			BooleanExpression subPredicate = null;
-			BooleanExpression notPredicate = null;
-
+			int i=0;
 			boolean not = false;
 			for(TagCriteria t:criteria.getTagCriterias()) {
-				BooleanExpression e = null;
-				
 				if (t instanceof Tag) {
-					e = subte.tags.contains((Tag) t);
-				} else if (t instanceof TagGroup) {
-					TagGroup group = (TagGroup) t;
+					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
+					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.contains((Tag) t));
+					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
 					
-					if (!group.isNew()) {
-						QTag tt = new QTag("tt1");
-						QTagGroup tg = new QTagGroup("tg");
-						SubQueryExpression<Tag> se= JPAExpressions.select(tt).from(tg).join(tg.tags, tt).where(tg.eq(group));
-						e = subte.tags.any().in(se);
+				} else if (t instanceof TagGroup) {
+					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
+					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.any().in(((TagGroup) t).getTags()));
+					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
 
-					} else {						
-						e = subte.tags.any().in(group.getTags());
-					}
 				} else if (t instanceof TagType) {
-					QTag ttag = new QTag("tt2");
-					SubQueryExpression<Tag> se= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
-					e = subte.tags.any().in(se);
+					QTag ttag = new QTag("subtt"+(i++));
+					var sub= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
+
+					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
+					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.any().in(sub));
+					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
 					
 				} else if (t==TagCriteria.NOT) {
 					not = true;
 					continue;
 				}
-				
-				if (not) {
-					notPredicate = notPredicate==null?e:notPredicate.and(e);
-				} else {
-					subPredicate = subPredicate==null?e:subPredicate.and(e);
-				}
 				not = false;
-			}
-			
-			if (subPredicate!=null) {
-				LOGGER.info("SubPredicate {}", subPredicate);
-				predicate = predicate.and(ex.in(JPAExpressions.select(subte.expense).from(subte).where(subPredicate)));
-			}
-			if (notPredicate!=null) {
-				LOGGER.info("SubNotPredicate {}", notPredicate);
-				predicate = predicate.and(ex.notIn(JPAExpressions.select(subte.expense).from(subte).where(notPredicate)));
 			}
 		}
 		
