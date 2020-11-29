@@ -34,10 +34,10 @@
 	            <p:outputLabel value="Date" style="display:none"/>
 	            <div class="p-formgrid p-grid">
 		            <div class="p-col-12 p-md-6">
-		            	<wex:dateSelector date="#{cc.attrs.criteria.localDate.from}" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" edition="true"/>
+		            	<wex:dateSelector date="#{cc.attrs.criteria.localDate.from}" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" edition="true" showReset="true"/>
 		        	</div>
 		            <div class="p-col-12 p-md-6">
-		            	<wex:dateSelector date="#{cc.attrs.criteria.localDate.to}" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" edition="true"/>
+		            	<wex:dateSelector date="#{cc.attrs.criteria.localDate.to}" listener="#{cc.attrs.action}" update="#{cc.attrs.update}" edition="true" showReset="true"/>
 		        	</div>
 	            </div>
 	        </div>
@@ -75,7 +75,7 @@
 	        
 	        <div class="p-field p-col-12">
 	            <p:outputLabel for="critra_tagsId" value="Accounts" style="display:none"/>
-				<p:autoComplete id="critra_tagsId" multiple="true" value="#{cc.attrs.criteria.tagCriterias}" completeMethod="#{dropboxController.completeTagGroup}" unique="true" var="theme"
+				<p:autoComplete id="critra_tagsId" multiple="true" value="#{cc.attrs.criteria.tagCriterias}" completeMethod="#{dropboxController.completeTagGroup}" unique="false" var="theme"
 					itemLabel="#{theme.name}" itemValue="#{theme}" converter="#{tagCriteriaConverter}" forceSelection="true" styleClass="wex-field-edit wex-tags" placeholder="accounts">
 					<p:column>
 						<h:outputText value="#{theme.name}" styleClass="wex-tags-#{theme.criteriaType}" />
