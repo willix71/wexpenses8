@@ -23,11 +23,11 @@
 		</h:outputText>
 	</p:column>
 
-	<p:column headerText="Type" style="width:10%">
+	<p:column headerText="Type" styleClass="wex-cell-centered" style="width:80px">
 		<h:outputText value="#{x.expenseType.name}" />
 	</p:column>
 
-	<p:column headerText="Payee" style="width:35%;">
+	<p:column headerText="Payee" >
 		<h:outputText value="#{x.payee.prefix}#{x.payee.name} #{x.payee.extra}" />
 	</p:column>
 
@@ -39,7 +39,7 @@
 		<h:outputText value="#{x.externalReference}" />
 	</p:column>
 
-	<p:column headerText="Accounts" visible="false">
+	<p:column headerText="Accounts" >
 		<ui:repeat var="t" value="#{x.tags}">
 			<span class="wex-tag wex-tag-#{t.type}">#{t.name}</span> 
 		</ui:repeat>
@@ -50,7 +50,7 @@
 		<p:menu model="#{expenseController.getDocumentFileMenu(x.documentFiles)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>
 	</p:column>
 
-	<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:15%">
+	<p:column headerText="Amount" styleClass="wex-cell-righted" style="width:80px">
 		<h:outputFormat value="{0,number, ###0.00}">
 			<f:param value="#{x.currencyAmount}" />
 		</h:outputFormat>
