@@ -13,6 +13,7 @@
 		<composite:attribute name="edition" default="false" />
 		<composite:attribute name="listener" method-signature="void select(org.primefaces.event.SelectEvent)" default="#{applicationController.handleSelect}"/>
 		<composite:attribute name="update" default=""/>
+		<composite:attribute name="showReset" default="false"/>
 	</composite:interface>
 	
 	<composite:implementation>
@@ -35,6 +36,9 @@
 					style="width:45px">
 			 	<p:ajax event="dateSelect" listener="#{cc.attrs.listener}" update="expenseDateText expenseDatePicker #{cc.attrs.update}"  />
 			</p:datePicker>
+			<p:commandButton icon="pi pi-times" style="width:2.4em;" update="expenseDateText expenseDatePicker #{cc.attrs.update}" rendered="#{cc.attrs.showReset}">
+				<f:setPropertyActionListener  value="#{null}" target="#{cc.attrs.date}" />
+			</p:commandButton>
 			<p:message for="expenseDateText" display="icon" showDetail="true" />
 			<p:message for="expenseDatePicker" display="icon" showDetail="true" />
 		</h:panelGroup>

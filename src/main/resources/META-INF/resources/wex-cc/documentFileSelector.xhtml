@@ -35,7 +35,7 @@
 				
 				<p:tab >
 					<h:panelGroup style="display:flex;justify-content:space-between" >
-		        		<wex:dateSelector date="#{documentFileSelector.documentDate}" listener="#{documentFileSelector.onDocumentDateChange}" update="@(.js-docdate-related)" edition="true"/>
+		        		<wex:dateSelector date="#{documentFileSelector.documentDate}" listener="#{documentFileSelector.onDocumentDateChange}" update="@(.js-docdate-related)" edition="true" showReset="true"/>
 				 
 					   	<p:inputText id="fileNameId" value="#{documentFileSelector.fileName}" styleClass="wex-field-edit js-docdate-related" />
 			     		
