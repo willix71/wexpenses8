@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
@@ -133,42 +134,54 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			predicate = predicate.and(QTransactionEntry.transactionEntry.accountingYear.eq(criteria.getAccountingYear()));
 		}
 		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+			
+			QTransactionEntry subte = new QTransactionEntry("subte");
+			BooleanExpression subPredicate = null;
+			BooleanExpression notPredicate = null;
+
 			boolean not = false;
 			for(TagCriteria t:criteria.getTagCriterias()) {
+				BooleanExpression e = null;
+				
 				if (t instanceof Tag) {
-					predicate = not?
-							predicate.andNot(QTransactionEntry.transactionEntry.tags.contains((Tag) t)):							
-							predicate.and(QTransactionEntry.transactionEntry.tags.contains((Tag) t));				
+					e = subte.tags.contains((Tag) t);
 				} else if (t instanceof TagGroup) {
 					TagGroup group = (TagGroup) t;
+					
 					if (!group.isNew()) {
-						QTag tt = new QTag("tt");
+						QTag tt = new QTag("tt1");
 						QTagGroup tg = new QTagGroup("tg");
-						SubQueryExpression<Tag> e= JPAExpressions.select(tt).from(tg).join(tg.tags, tt).where(tg.eq(group));
-						predicate = not?
-								predicate.andNot(QTransactionEntry.transactionEntry.tags.any().in(e)):
-								predicate.and(QTransactionEntry.transactionEntry.tags.any().in(e));
-					} else {
-						// just in case, this code works for a new TagGroup but is sql is longer
-						BooleanBuilder tagpredicate = new BooleanBuilder();
-						for(Tag tt: group.getTags()) {
-							predicate = tagpredicate.or(QTransactionEntry.transactionEntry.tags.contains(tt));
-						}
-						predicate = not?
-								predicate.andNot(tagpredicate):
-								predicate.and(tagpredicate);
+						SubQueryExpression<Tag> se= JPAExpressions.select(tt).from(tg).join(tg.tags, tt).where(tg.eq(group));
+						e = subte.tags.any().in(se);
+
+					} else {						
+						e = subte.tags.any().in(group.getTags());
 					}
 				} else if (t instanceof TagType) {
-					QTag ttag = new QTag("tt");
-					SubQueryExpression<Tag> e= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
-					predicate = not?
-							predicate.andNot(QTransactionEntry.transactionEntry.tags.any().in(e)):
-							predicate.and(QTransactionEntry.transactionEntry.tags.any().in(e));
+					QTag ttag = new QTag("tt2");
+					SubQueryExpression<Tag> se= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
+					e = subte.tags.any().in(se);
+					
 				} else if (t==TagCriteria.NOT) {
 					not = true;
 					continue;
 				}
+				
+				if (not) {
+					notPredicate = notPredicate==null?e:notPredicate.and(e);
+				} else {
+					subPredicate = subPredicate==null?e:subPredicate.and(e);
+				}
 				not = false;
+			}
+			
+			if (subPredicate!=null) {
+				LOGGER.info("SubPredicate {}", subPredicate);
+				predicate = predicate.and(ex.in(JPAExpressions.select(subte.expense).from(subte).where(subPredicate)));
+			}
+			if (notPredicate!=null) {
+				LOGGER.info("SubNotPredicate {}", notPredicate);
+				predicate = predicate.and(ex.notIn(JPAExpressions.select(subte.expense).from(subte).where(notPredicate)));
 			}
 		}
 		
@@ -187,6 +200,7 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			}
 		}
 		
+		LOGGER.info("Predicate {}", predicate);
 		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
 		return query.fetch();
 		
