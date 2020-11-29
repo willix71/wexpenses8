@@ -148,8 +148,19 @@ public class Expense extends DBable<Expense> {
 		return this;
 	}
 	
+	private static final Comparator<Tag> TagComparator = new Comparator<Tag>() {
+		@Override
+		public int compare(Tag o1, Tag o2) {
+			int c = ComparableHelper.compare(o1.getType(), o2.getType());
+			if (c!=0) return c;
+			c = ComparableHelper.compare(o1.getNumber(), o2.getNumber());
+			if (c!=0) return c;
+			return ComparableHelper.compare(o1.getName(), o2.getName());
+		}
+	
+	};
 	public List<Tag> getTags() {
-		return transactions.stream().flatMap(t->t.getTags().stream()).distinct().collect(Collectors.toList());
+		return transactions.stream().flatMap(t->t.getTags().stream()).sorted(TagComparator).distinct().collect(Collectors.toList());
 	}
 	
 	public void updateValues(BigDecimal precision) {
