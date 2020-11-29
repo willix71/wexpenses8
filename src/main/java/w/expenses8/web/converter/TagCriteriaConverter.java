@@ -31,6 +31,8 @@ public class TagCriteriaConverter implements Converter<TagCriteria> {
 		if (uid != null && uid.trim().length() > 0) {
 			try {
 				switch(uid.charAt(0)) {
+				case 'x':
+					return TagCriteria.NOT;
 				case 't':
 					return tagService.loadByUid(uid.substring(1));
 				case 'g':
@@ -49,6 +51,8 @@ public class TagCriteriaConverter implements Converter<TagCriteria> {
 	@Override
 	public String getAsString(FacesContext fc, UIComponent uic, TagCriteria object) {
 		if (object != null) {
+			if (object == TagCriteria.NOT)
+				return "xNot";
 			if (object instanceof Tag)
 				return "t" + ((Tag)object).getUid();
 			if (object instanceof TagGroup)
