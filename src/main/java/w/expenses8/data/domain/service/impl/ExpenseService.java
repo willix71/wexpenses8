@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
@@ -136,28 +135,22 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			int i=0;
 			boolean not = false;
 			for(TagCriteria t:criteria.getTagCriterias()) {
+				QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
+				var subquery = JPAExpressions.select(subte1.expense).from(subte1);
 				if (t instanceof Tag) {
-					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
-					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.contains((Tag) t));
-					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
-					
+					subquery = subquery.where(subte1.tags.contains((Tag) t));
 				} else if (t instanceof TagGroup) {
-					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
-					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.any().in(((TagGroup) t).getTags()));
-					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
-
+					subquery = subquery.where(subte1.tags.any().in(((TagGroup) t).getTags()));
 				} else if (t instanceof TagType) {
 					QTag ttag = new QTag("subtt"+(i++));
 					var sub= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
 
-					QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
-					var subquery = JPAExpressions.select(subte1.expense).from(subte1).where(subte1.tags.any().in(sub));
-					predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
-					
+					subquery = subquery.where(subte1.tags.any().in(sub));
 				} else if (t==TagCriteria.NOT) {
 					not = true;
 					continue;
-				}
+				} 
+				predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
 				not = false;
 			}
 		}
