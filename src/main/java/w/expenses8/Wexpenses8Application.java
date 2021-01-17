@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
 import w.expenses8.data.domain.criteria.ExpenseCriteria;
 import w.expenses8.data.domain.service.IExpenseService;
+import w.expenses8.data.domain.service.impl.ToolService;
 import w.expenses8.web.servlet.FileServlet;
 
 @Slf4j
@@ -29,9 +30,12 @@ public class Wexpenses8Application {
 	} 
 	
 	@Bean
-	public CommandLineRunner demo(IExpenseService service) {
+	public CommandLineRunner demo(IExpenseService service, ToolService toolService) {
 		return (args) -> {
 			log.info("Started up with {} expenses", service.findExpenses(ExpenseCriteria.with().build()).size());
+
+			//toolService.action();
+			//log.info("\nDone\n");
 		};
 	}
 }
