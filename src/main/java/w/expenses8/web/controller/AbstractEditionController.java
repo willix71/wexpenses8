@@ -142,7 +142,13 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 	public boolean isValid() {
 		if (currentElement != null) {
 			if (hasValidationErrors()) return false;
-			if (hasValidationWarnings()) return false;
+			
+			// clicking save twice within 5 seconds ignores the warnings
+			Instant now = Instant.now();
+			if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
+				lastWarningTime = now;
+				if (hasValidationWarnings()) return false;
+			}
 		}
 		return true;
 	}
@@ -160,18 +166,15 @@ public abstract class AbstractEditionController<T extends DBable<T>> extends Abs
 	}
 	
 	protected boolean hasValidationWarnings() {
-		Instant now = Instant.now();
-		if (lastWarningTime==null || now.isAfter(lastWarningTime.plusSeconds(5))) {
-			lastWarningTime = now;
-			Set<ConstraintViolation<T>>  violations = validator.validate(currentElement, Warning.class);
-			if (!violations.isEmpty()) {
-				for(ConstraintViolation<?> viol: violations) {
-					log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
-					FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
-				}
-				return true;
+		Set<ConstraintViolation<T>>  violations = validator.validate(currentElement, Warning.class);
+		if (!violations.isEmpty()) {
+			for(ConstraintViolation<?> viol: violations) {
+				log.warn("ConstraintViolation warnings for {} : {}", viol.getPropertyPath(), viol.getMessage());
+				FacesContext.getCurrentInstance().addMessage("ValidationErrors", new FacesMessage(FacesMessage.SEVERITY_WARN, viol.getPropertyPath().toString(), viol.getMessage()));
 			}
+			return true;
 		}
+
 		return false;
 	}
 	
