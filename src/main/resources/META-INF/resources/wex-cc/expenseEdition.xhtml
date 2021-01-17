@@ -42,17 +42,27 @@
 	       		</p:contextMenu>
 			</p:outputPanel>			
        		 	
-			<h:outputText value="date" styleClass="wex-field-label"/>
-			<h:outputText value="#{expense.date}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value" >
-				<f:convertDateTime type="localDateTime" pattern="EEE dd/MM/yyyy HH:mm" />
-			</h:outputText>
-			<h:panelGroup rendered="#{expenseEditionController.editable}"  style="display:flex;align-items:center;justify-content:flex-start">
-				<h:outputText id="dayOfTheWeek"  value="#{expenseEditionController.currentDate}" styleClass="wex-field-value js-date-related" style="padding-right:4px">
-					<f:convertDateTime type="localDateTime" pattern="EEE" />
+			<h:outputText value="date/payed" styleClass="wex-field-label"/>
+			<h:panelGroup rendered="#{not expenseEditionController.editable}" style="width:100%;display:flex;align-items:center;justify-content:space-between">
+				<h:outputText value="#{expense.date}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value" >
+					<f:convertDateTime type="localDateTime" pattern="EEE dd/MM/yyyy HH:mm" />
 				</h:outputText>
-				<wex:dateSelector date="#{expenseEditionController.currentDate}" listener="#{expenseEditionController.onLocalDateChange}" update="@(.js-date-related)" edition="true"/>
-				<p:spinner value="#{expenseEditionController.localHours}" min="0" max="23" rotate="true" style="width:50px" />
-				<p:spinner value="#{expenseEditionController.localMinutes}" min="0" max="59" rotate="true" style="width:50px" />
+				<h:outputText value="#{expense.payedDate}" rendered="#{not expenseEditionController.editable}" styleClass="wex-field-value" >
+					<f:convertDateTime type="localDateTime" pattern="EEE dd/MM/yyyy" />
+				</h:outputText>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{expenseEditionController.editable}" style="width:100%;display:flex;align-items:center;justify-content:space-between">
+				<h:panelGroup style="display:flex;align-items:center;justify-content:flex-start">
+					<h:outputText id="dayOfTheWeek"  value="#{expenseEditionController.currentDate}" styleClass="wex-field-value js-date-related" style="padding-right:4px">
+						<f:convertDateTime type="localDateTime" pattern="EEE" />
+					</h:outputText>
+					<wex:dateSelector date="#{expenseEditionController.currentDate}" listener="#{expenseEditionController.onLocalDateChange}" update="@(.js-date-related)" edition="true"/>
+					<p:spinner value="#{expenseEditionController.localHours}" min="0" max="23" rotate="true" style="width:50px" />
+					<p:spinner value="#{expenseEditionController.localMinutes}" min="0" max="59" rotate="true" style="width:50px" />
+				</h:panelGroup>
+				<h:panelGroup>
+					<wex:dateSelector date="#{expense.payedDate}" edition="true" showReset="true"/>
+				</h:panelGroup>
 			</h:panelGroup>
 				 
 			<h:outputText value="amount" styleClass="wex-field-label"/>
