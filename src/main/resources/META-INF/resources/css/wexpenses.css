@@ -119,6 +119,9 @@
 .wex-tag-FLAG {
 	background-color: green;
 }
+.wex-tag-WARNING {
+	background-color: olive;
+}
 
 .wex-expense-past {
 }
