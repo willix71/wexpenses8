@@ -14,7 +14,9 @@ public class AbstractTypeListController<T extends AbstractType<T>> extends Abstr
 	public void newElement() throws Exception {
 		log.info("New element {}", clazz);
 		selectedElement = clazz.newInstance();
-		elements.add(selectedElement);
+		selectedElement.setName("AAAAA"); // put at the top of the list
+		selectedElement.setDescription("new " + clazz.getSimpleName());
+		elements.add(0, selectedElement);
 	}
 	
 	public void onRowEdit(RowEditEvent<T> event) {
