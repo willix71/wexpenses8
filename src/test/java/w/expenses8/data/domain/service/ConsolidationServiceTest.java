@@ -14,13 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
 import w.expenses8.data.domain.model.Consolidation;
 import w.expenses8.data.domain.model.DocumentFile;
 import w.expenses8.data.domain.model.Payee;
 
-@Slf4j
 @SpringBootTest
 @Import(DataConfig.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
