@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 import lombok.extern.slf4j.Slf4j;
 import w.expenses8.data.config.DataConfig;
@@ -16,6 +17,7 @@ import w.expenses8.data.domain.service.IExpenseService;
 @SpringBootTest
 @Import(DataConfig.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
+@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=create-drop","spring.datasource.url=jdbc:h2:mem:WexpensesUpdateTool;DB_CLOSE_DELAY=-1"})
 public class WexpensesUpdateTool {
 
 	@Autowired

@@ -36,6 +36,6 @@ public class DocumentServiceTest {
 	@Test
 	public void testGetUrl() {
 		String filename = service.getUrl(DocumentFile.with().fileName("ThisIsATest").documentDate(LocalDate.of(2012, 1, 31)).build());
-		assertThat(filename).isEqualTo("/somewhere/2012/ThisIsATest");
+		assertThat(filename).isEqualTo("/wexpenses/documents/2012/ThisIsATest");
 	}
 }

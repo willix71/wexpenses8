@@ -3,12 +3,12 @@ spring:
      livereload: 
        enabled: true 
   datasource:
-    url: jdbc:h2:c:/tmp/db/wexpenses8-devyml;AUTO_SERVER=TRUE
+    url: jdbc:h2:${wexpenses.base}/db/wexpenses-db;AUTO_SERVER=TRUE    
     username: sa
     password: sa
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
@@ -19,10 +19,7 @@ spring:
         format_sql: false
 
 logging:
-  file:
-    name: c:/tmp/logs/wexpenses8.log
   pattern:
-    file: "%d [%t] %5p %c{1}:%L - %m%n"
     console: "%green(%d) [%t] %highlight(%-5level) %logger : %cyan(%msg%n)"
   level:
     org.springframework.web: DEBUG        
@@ -31,7 +28,7 @@ server:
   port: 8090    
   max-http-header-size: 10000000
   servlet:
-    context-path: /wexpenses8
+    context-path: /wexpenses
   error:
     whitelabel:
       enabled: false
@@ -41,33 +38,35 @@ joinfaces:
     PROJECT_STAGE: Development
 
 wexpenses:
+  base: ${user.home}${server.servlet.context-path}
   documents:
     url: ${server.servlet.context-path}/documents/{0,date,yyyy}/{1}
-    root: ./
+    root: ${wexpenses.base}/documentstore/
   currency-value:
     code: CHF
     precision: 0.05
 
 ---
 spring:
-  profiles: work
-  datasource:
-    url: jdbc:h2:C:/Users/willi/db/wexpenses-work-v2;AUTO_SERVER=TRUE
+  profiles: createDb
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
+
+---
+spring:
+  profiles: logFile
+logging:
+  file:
+    name: ${wexpenses.base}/logs/wexpenses.log
+  pattern:
+    file: "%d [%t] %5p %c{1}:%L - %m%n"
 
 ---
 spring:
   profiles: prod
   datasource:
     url: jdbc:h2:C:/Users/willi/Documents/wexpenses/wexdb/wexpenses-prod-v2;AUTO_SERVER=TRUE
-  jpa:
-    hibernate:
-      ddl-auto: none
-logging:
-  file:
-    name: C:/Users/willi/Documents/wexpenses/logs/wexpenses.log
 wexpenses:
   documents:
     root: C:/Users/willi/Documents/wexpenses/documentstore
