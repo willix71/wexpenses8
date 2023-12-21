@@ -9,7 +9,7 @@
 	<p:column headerText="Id" sortBy="#{dba.id}" style="max-width:65px; width:65px">
 		<h:outputText value="#{dba.fullId}" rendered="#{empty singlePage}" />
 		<p:link outcome="#{singlePage}" value="#{dba.fullId}" target="_blank" rendered="#{not empty singlePage}">
-		    <f:param name="id" value="#{dba.id}" />
+		    <f:param name="#{empty singlePageId?'id':singlePageId}" value="#{dba.id}" />
 		</p:link>
 	</p:column>
 

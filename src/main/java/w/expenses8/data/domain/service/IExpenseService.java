@@ -9,6 +9,8 @@ import w.expenses8.data.domain.model.Expense;
 
 public interface IExpenseService extends IGenericService<Expense, Long>, IReloadableService<Expense> {
 	
+	Long findExpenseIdByTransactionEntryId(Long tid);
+	
 	List<Expense> findSimiliarExpenses(Expense x);
 
 	List<Expense> findExpenses(ExpenseCriteria criteria);

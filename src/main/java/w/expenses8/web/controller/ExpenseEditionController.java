@@ -13,6 +13,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 
@@ -95,7 +96,16 @@ public class ExpenseEditionController extends AbstractEditionController<Expense>
 		}
 		documentFileSelector.reset(currentElement, null);
 	}
-
+	
+	@Override
+	protected Object getInitialElementId() {
+		Object o = super.getInitialElementId();
+		if (o!=null) {
+			return o;
+		}
+		String tid=((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getParameter("tid");
+		return tid==null?null:((IExpenseService) elementService).findExpenseIdByTransactionEntryId(Long.parseLong(tid));
+	}
 
 	@Override
 	protected boolean hasValidationWarnings() {

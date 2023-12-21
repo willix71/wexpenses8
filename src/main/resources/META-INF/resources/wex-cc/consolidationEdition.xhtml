@@ -17,25 +17,27 @@
 		<p:messages showDetail="true" showSummary="true" severity="error,warn" />
 
 		<wex:dbableDetails dbable="#{conso}"/>
-			
+
        	<p:outputPanel id="consolidationEditionPanel" rendered="#{not empty conso}" style="width:100%" styleClass="js-consolidationEditionPanel">
 	   	    <h:panelGroup styleClass="wex-form-row" >
-	   	    	<h:panelGroup styleClass="wex-form-field" style="width:160px">
+	   	    	<h:panelGroup styleClass="wex-form-field" style="width:100px;text-align:center" rendered="#{consolidationEditionController.editable}">
+	   	    		<p:outputLabel for="@next" value="Monthly" styleClass="wex-field-label" />
+		   	    	<p:selectBooleanCheckbox value="#{conso.monthly}"/>
+	   	    	</h:panelGroup>
+	   	    	
+	   	    	<h:panelGroup styleClass="wex-form-field" style="width:250px">
 	   	    		<p:outputLabel for="@next" value="date" styleClass="wex-field-label" />
-	   	    		<p:datePicker value="#{conso.date}" rendered="#{consolidationEditionController.editable}" 
-	   	    			view="month"  
-						pattern="MMM yyyy"
-						showIcon="true"
-						showButtonBar="true"
-						focusOnSelect="true"
-						showOnFocus="false"
-						appendTo="@(body)"
-						styleClass="wex-small-datepicker js-date-related">
-						<p:ajax event="dateSelect" listener="#{consolidationEditionController.onConsoDateChange}" update="@(.js-conso-target)" />
-					</p:datePicker>
-	   	    		<h:outputText value="#{conso.date}" rendered="#{not consolidationEditionController.editable}" >
+		        	<wex:dateSelector date="#{conso.date}" 
+		        		listener="#{consolidationEditionController.onConsoDateChange}" 
+		        		update="@(.js-conso-target)" edition="true" showReset="true"
+		        		rendered="#{consolidationEditionController.editable}" />
+
+	   	    		<h:outputText value="#{conso.date}" rendered="#{not consolidationEditionController.editable and conso.monthly}" >
 						<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
 					</h:outputText>
+	   	    		<h:outputText value="#{conso.date}" rendered="#{not consolidationEditionController.editable and not conso.monthly}" >
+						<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy" />
+					</h:outputText>					
 	   	    	</h:panelGroup>
 	   	    	
 	   	    	<h:panelGroup styleClass="wex-form-field" style="width:100%">
@@ -180,6 +182,8 @@
 	
 					<ui:include src="/includes/dbableColumns.xhtml">
 						<ui:param name="dba" value="#{xct}" />
+						<ui:param name="singlePage" value="expense" />
+						<ui:param name="singlePageId" value="tid" />
 					</ui:include>
 			
 					<p:column styleClass="wex-cell-righted" style="max-width:40px;width:20px" >

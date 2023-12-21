@@ -243,10 +243,13 @@
 			</p:column>
 
             <p:column headerText="Consolidated" styleClass="wex-cell-centered" style="max-width:120px; width:120px" >
-            	<h:outputText value="#{tentry.consolidation.date}" styleClass="wex-field-value">
+            	<h:outputText value="#{tentry.consolidation.date}" styleClass="wex-field-value" rendered="#{tentry.consolidation.monthly}">
 					<f:convertDateTime type="localDate" pattern="MMM yyyy" />
 				</h:outputText>
-			</p:column>
+            	<h:outputText value="#{tentry.consolidation.date}" styleClass="wex-field-value" rendered="#{not tentry.consolidation.monthly}">
+					<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+				</h:outputText>			
+			</p:column>			
 			
 			<p:column headerText="Accounts" style="width:100%" >
 				<h:panelGroup rendered="#{not expenseEditionController.editable}">

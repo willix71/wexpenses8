@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,9 @@ public class Consolidation extends DBable<Consolidation> {
 	
 	@NotNull(message = "Consolidation's date is mandatory")
 	private LocalDate date;
+	
+	@Builder.Default
+	private boolean monthly = true;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Payee institution;

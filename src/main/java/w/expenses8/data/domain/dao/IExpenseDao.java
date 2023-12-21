@@ -13,4 +13,7 @@ public interface IExpenseDao extends IGenericDao<Expense, Long>, IUidableDao<Exp
     @Override
     @Query("select distinct ex from Expense ex left join fetch ex.expenseType left join fetch ex.exchangeRate left join fetch ex.payee left join fetch ex.transactions t left join fetch t.tags")
     List<Expense> findAll();
+    
+    @Query("select ex.id from Expense ex left join ex.transactions t where t.id = ?1")
+    Long findExpenseIdByTransactionEntryId(Long tid);
 }

@@ -177,6 +177,11 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 	}
 	
 	@Override
+	public Long findExpenseIdByTransactionEntryId(Long tid) {
+		return getDao().findExpenseIdByTransactionEntryId(tid);
+	}
+
+	@Override
     public List<Expense> findSimiliarExpenses(Expense x) {
 		QExpense ex = QExpense.expense;
 		
@@ -207,9 +212,9 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 		
 		BooleanBuilder predicate = new BooleanBuilder().and(ex.payedDate.isNull());
 		predicate = predicate.and(ex.expenseType.displayer.ne(PayeeDisplayer.DEFAULT));
-		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(LocalDateTime.now().toLocalDate(),null), ex.date);
+		predicate = CriteriaHelper.addLocalDateTimeRange(predicate, new RangeLocalDateCriteria(LocalDateTime.now().minusDays(30).toLocalDate(),null), ex.date);
 		
-		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.desc());
+		var query = baseQuery(ex).where(predicate).orderBy(QExpense.expense.date.asc());
 		return query.fetch();
 	}
 

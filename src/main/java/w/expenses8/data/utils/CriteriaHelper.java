@@ -74,6 +74,8 @@ public class CriteriaHelper {
 			} else if (lowered.startsWith("iban:")) {
 				String liked = CriteriaHelper.like(lowered.substring(5).trim());
 				p = payee.iban.lower().like(liked);				
+			} else if (lowered.startsWith("id:") && lowered.substring(3).matches("\\d+")) {
+				p = payee.id.eq(Long.valueOf(lowered.substring(3)));
 			} else {
 				String liked = CriteriaHelper.like(lowered);
 				p = payee.prefix.lower().like(liked).or(payee.name.lower().like(liked)).or(payee.extra.lower().like(liked)).or(payee.city.lower().like(liked));

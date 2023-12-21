@@ -8,6 +8,8 @@
 
 	<ui:include src="/includes/dbableColumns.xhtml">
 		<ui:param name="dba" value="#{x}" />
+		<ui:param name="singlePage" value="expense" />
+		<ui:param name="singlePageId" value="tid" />		
 	</ui:include>
 				
 	<p:column headerText="Year" style="width:40px">
@@ -21,9 +23,12 @@
 	</p:column>
 
 	<p:column headerText="Consolidated" styleClass="wex-cell-righted" style="width:90px" >
-		<h:outputText value="#{x.consolidation.date}" >
+		<h:outputText value="#{x.consolidation.date}" rendered="#{x.consolidation.monthly}">
 			<f:convertDateTime type="localDateTime" pattern="MMM yyyy" />
 		</h:outputText>
+        <h:outputText value="#{x.consolidation.date}" rendered="#{not x.consolidation.monthly}">
+			<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+		</h:outputText>				
 	</p:column>
 
 	<p:column headerText="Payee">

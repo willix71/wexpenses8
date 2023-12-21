@@ -12,10 +12,15 @@
 	</ui:include>
 			
 	<p:column headerText="Date" sortBy="#{x.date}" filterBy="#{x.date}" filterFunction="#{dropboxController.filterByDate}" style="max-width:150px; width:120px">
-       	<h:outputText id="consolidationDateId" value="#{x.date}" styleClass="wex-field-value">
-			<f:convertDateTime type="localDate" pattern="MMM yyyy" />
+       	<h:panelGroup rendered="#{x.monthly}">
+	       	<h:outputText id="consolidationDateId" value="#{x.date}" styleClass="wex-field-value">
+				<f:convertDateTime type="localDate" pattern="MMM yyyy" />
+			</h:outputText>	
+			<p:tooltip for="consolidationDateId" value="#{x.date}" />
+       	</h:panelGroup>
+       	<h:outputText value="#{x.date}" styleClass="wex-field-value" rendered="#{not x.monthly}">
+			<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
 		</h:outputText>	
-		<p:tooltip for="consolidationDateId" value="#{x.date}" />
 	</p:column>
 
 	<p:column headerText="Doc" sortBy="#{x.documentFile.documentDate}" filterBy="#{x.documentFile.documentDate}" filterFunction="#{dropboxController.filterByDate}" style="max-width:150px; width:120px">
