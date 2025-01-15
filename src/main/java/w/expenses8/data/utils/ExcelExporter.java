@@ -189,6 +189,8 @@ class TransactionEntryExporter extends AbstractExporter {
 		addHeader("Out", 256*10);
 		addHeader("Balance", 256*10);
 		addHeader("Tags", 256*50);
+		addHeader("Counter Tags", 256*50);
+		addHeader("Description");
 
 		topTotal = sheet.createRow(++rowNumber); // total row (1)
 		
@@ -251,6 +253,9 @@ class TransactionEntryExporter extends AbstractExporter {
 			
 			cell = row.createCell(++columnNumber);
 			cell.setCellValue(entry.getTags().stream().map(t->t.getName()).collect(Collectors.joining("; ")));
+
+			cell = row.createCell(++columnNumber);
+			cell.setCellValue(ex.getTransactions().stream().filter(t->t!=entry).flatMap(t->t.getTags().stream()).map(t->t.getName()).collect(Collectors.joining("; ")));
 
 			cell = row.createCell(++columnNumber);
 			cell.setCellValue(ex.getDescription());
