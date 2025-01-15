@@ -1,10 +1,14 @@
 package w.expenses8.web.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,6 +28,7 @@ import w.expenses8.data.domain.model.Expense;
 import w.expenses8.data.domain.model.enums.TagType;
 import w.expenses8.data.domain.service.IDocumentFileService;
 import w.expenses8.data.domain.service.IExpenseService;
+import w.expenses8.data.utils.ExcelExporter;
 import w.expenses8.data.utils.ExpenseHelper;
 import w.expenses8.web.controller.extra.EditionMode;
 
@@ -54,6 +59,33 @@ public class ExpenseController extends AbstractListEditionController<Expense> {
 	public void resetAll() {
 		criteria.clear();
 		loadEntities();
+	}
+	
+	public void toExcel() throws IOException {
+		log.info("Generating excel export with {}", criteria);
+		downloadExcel("Expenses.xls");
+	}
+    
+	public void downloadExcel(String fileName) throws IOException {
+		// inspired from https://stackoverflow.com/questions/9391838/how-to-provide-a-file-download-from-a-jsf-backing-bean
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+
+		// Some Faces component library or some Filter might have set some headers in
+		// the buffer beforehand. We want to get rid of them, else it may collide.
+		externalContext.responseReset();
+		// Check https://www.iana.org/assignments/media-types for all types.
+		externalContext.setResponseContentType("application/vnd.ms-excel"); 
+		// externalContext.setResponseContentLength(contentLength); // Unknown
+		externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+		OutputStream output = externalContext.getResponseOutputStream();
+		ExcelExporter.exportExcelExpenses(expenseService.findExpenses(criteria),output);
+
+		// Important! Otherwise Faces will attempt to render the response which
+		// obviously will fail since it's already written with a file and closed.
+		facesContext.responseComplete(); 
 	}
 	
 	public void duplicateExpense() {

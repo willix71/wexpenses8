@@ -19,9 +19,10 @@
 				<p:fieldset id="criteriaFields" legend="Filter" toggleable="true" toggleSpeed="500" style="margin-bottom: 20px;">
 					<wex:expenseCriteria criteria="#{expenseController.criteria}" action="#{expenseController.refresh}" update="@(.js-wexTable)"/>
 					
-			        <h:panelGrid columns="2" cellpadding="2">
+			        <h:panelGrid columns="3" cellpadding="2">
 						<p:commandButton id="filterExpensesBtn" icon="pi pi-replay" value="Update" type="submit" action="#{expenseController.refresh}" update="criteriaFields @(.js-wexTable)" />
 						<p:commandButton id="clearFilterBtn" icon="pi pi-times" value="Clear" action="#{expenseController.resetAll}" update="criteriaFields @(.js-wexTable)" />
+						<p:commandButton id="exportExcelBtn" icon="pi pi-file-excel" value="Excel" action="#{expenseController.toExcel}" ajax="false" />
 					</h:panelGrid>
 				</p:fieldset>
 	
