@@ -27,7 +27,7 @@ public class LocalDateCustomConverter implements Converter<LocalDate> {
 		
 	@Override
 	public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
-		log.info("Converting [{}] to LocalDate", value);
+		log.trace("Converting [{}] to LocalDate", value);
 		if (StringHelper.isEmpty(value)) return null;
 
 		if ("t".equals(value)) {
