@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/wexpenses8/src/main/java/w/expenses8/Wexpenses8Application.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.eclemma.core.SCOPE_IDS">
+<listEntry value="=wexpenses8/src\/main\/resources=/maven.pomderived=/true=/"/>
+<listEntry value="=wexpenses8/src\/test\/java=/optional=/true=/=/maven.pomderived=/true=/=/test=/true=/"/>
+<listEntry value="=wexpenses8/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/"/>
+<listEntry value="=wexpenses8/target\/generated-sources\/java=/optional=/true=/=/maven.pomderived=/true=/"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="w.expenses8.Wexpenses8Application"/>
+<stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="wexpenses8"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--spring.profiles.active=logFile"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="wexpenses8"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dwexpenses.base=c:\Me\wexpenses"/>
+</launchConfiguration>
