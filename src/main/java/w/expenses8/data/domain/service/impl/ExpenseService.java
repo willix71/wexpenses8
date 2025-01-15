@@ -34,6 +34,7 @@ import w.expenses8.data.domain.model.Tag;
 import w.expenses8.data.domain.model.TagGroup;
 import w.expenses8.data.domain.model.enums.PayeeDisplayer;
 import w.expenses8.data.domain.model.enums.TagType;
+import w.expenses8.data.domain.model.enums.TransactionFactor;
 import w.expenses8.data.domain.service.IExpenseService;
 import w.expenses8.data.utils.CollectionHelper;
 import w.expenses8.data.utils.CriteriaHelper;
@@ -131,28 +132,63 @@ public class ExpenseService extends GenericServiceImpl<Expense, Long, IExpenseDa
 			predicate = predicate.and(QTransactionEntry.transactionEntry.accountingYear.eq(criteria.getAccountingYear()));
 		}
 		if (!CollectionHelper.isEmpty(criteria.getTagCriterias())) {
+			BooleanBuilder subpredicate = new BooleanBuilder();
 			
 			int i=0;
 			boolean not = false;
+			boolean orPredicate = false;
+			TransactionFactor factor = null;
 			for(TagCriteria t:criteria.getTagCriterias()) {
 				QTransactionEntry subte1 = new QTransactionEntry("subte"+(i++));
 				var subquery = JPAExpressions.select(subte1.expense).from(subte1);
 				if (t instanceof Tag) {
-					subquery = subquery.where(subte1.tags.contains((Tag) t));
+					if (factor==null) {
+						subquery = subquery.where(subte1.tags.contains((Tag) t));
+					} else {
+						subquery = subquery.where(subte1.tags.contains((Tag) t).and(subte1.factor.eq(factor)));
+					}
 				} else if (t instanceof TagGroup) {
-					subquery = subquery.where(subte1.tags.any().in(((TagGroup) t).getTags()));
+					if (factor==null) {
+						subquery = subquery.where(subte1.tags.any().in(((TagGroup) t).getTags()));
+					} else {
+						subquery = subquery.where(subte1.tags.any().in(((TagGroup) t).getTags()).and(subte1.factor.eq(factor)));
+					}
 				} else if (t instanceof TagType) {
 					QTag ttag = new QTag("subtt"+(i++));
 					var sub= JPAExpressions.select(ttag).from(ttag).where(ttag.type.eq((TagType) t));
 
-					subquery = subquery.where(subte1.tags.any().in(sub));
+					if (factor==null) {
+						subquery = subquery.where(subte1.tags.any().in(sub));
+					} else {
+						subquery = subquery.where(subte1.tags.any().in(sub).and(subte1.factor.eq(factor)));
+					}
 				} else if (t==TagCriteria.NOT) {
 					not = true;
 					continue;
-				} 
-				predicate = not?predicate.and(ex.notIn(subquery)):predicate.and(ex.in(subquery));
+				} else if (t==TagCriteria.AND) {
+					 orPredicate = false;
+					continue;
+				} else if (t==TagCriteria.OR) {
+					 orPredicate = true;
+					continue;
+				} else if (t==TagCriteria.IN) {
+					factor = TransactionFactor.IN;
+					continue;
+				} else if (t==TagCriteria.OUT) {
+					factor = TransactionFactor.OUT;
+					continue;
+				}
+				if (orPredicate) {
+					subpredicate = not?subpredicate.or(ex.notIn(subquery)):subpredicate.or(ex.in(subquery));
+				} else {
+					subpredicate = not?subpredicate.and(ex.notIn(subquery)):subpredicate.and(ex.in(subquery));
+				}
 				not = false;
+				orPredicate = false;
+				factor = null;
 			}
+			
+			predicate=predicate.and(subpredicate);
 		}
 		
 		if (!StringHelper.isEmpty(criteria.getDescription())) {

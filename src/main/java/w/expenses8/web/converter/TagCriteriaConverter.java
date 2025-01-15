@@ -33,6 +33,14 @@ public class TagCriteriaConverter implements Converter<TagCriteria> {
 				switch(uid.charAt(0)) {
 				case 'x':
 					return TagCriteria.NOT;
+				case 'd':
+					return TagCriteria.AND;
+				case 'r':
+					return TagCriteria.OR;
+				case 'i':
+					return TagCriteria.IN;
+				case 'o':
+					return TagCriteria.OUT;
 				case 't':
 					return tagService.loadByUid(uid.substring(1));
 				case 'g':
@@ -53,6 +61,14 @@ public class TagCriteriaConverter implements Converter<TagCriteria> {
 		if (object != null) {
 			if (object == TagCriteria.NOT)
 				return "xNot";
+			if (object == TagCriteria.AND)
+				return "dand";
+			if (object == TagCriteria.OR)
+				return "ror";
+			if (object == TagCriteria.IN)
+				return "infactor";
+			if (object == TagCriteria.OUT)
+				return "outfactor";
 			if (object instanceof Tag)
 				return "t" + ((Tag)object).getUid();
 			if (object instanceof TagGroup)
