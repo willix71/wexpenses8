@@ -32,6 +32,11 @@
 	<p:column headerText="Institution" sortBy="#{x.institution.prefix}#{x.institution.name} #{x.institution.extra}" filterBy="#{x.institution.prefix}#{x.institution.name} #{x.institution.extra}" filterMatchMode="contains">
 		<h:outputText value="#{x.institution.prefix}#{x.institution.name} #{x.institution.extra}" />
 	</p:column>
+	
+	<p:column headerText="Docs" style="width:150px;">
+		<p:commandButton id="dynaButton" value="#{x.documentFile.documentDate} " type="button" icon="pi pi-file-o" iconPos="right" rendered="#{not empty x.documentFile}"/>
+		<p:menu model="#{consolidationController.getDocumentFileMenu(x.documentFile)}" overlay="true" trigger="dynaButton" my="right top" at="right bottom"/>		
+	</p:column>
 
 	<p:column headerText="Opening Value" sortBy="#{x.openingValue}" filterBy="#{x.openingValue}" filterFunction="#{dropboxController.filterByValue}" styleClass="wex-cell-righted" style="max-width:150px; width:120px">
 		<h:outputText value="#{x.openingValue}" />
