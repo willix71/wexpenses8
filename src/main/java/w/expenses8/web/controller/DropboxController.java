@@ -88,17 +88,16 @@ public class DropboxController implements Serializable {
 		return tagService.findByText(text);
 	}
 
+	private static List<TagCriteria> operators = Arrays.asList(TagCriteria.NOT,TagCriteria.IN,TagCriteria.OUT,TagCriteria.AND,TagCriteria.OR);
+	
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public List<? extends TagCriteria> completeTagGroup(String text) {
+		String upperText=text.toUpperCase();
 		List tagCriterias = new ArrayList();
-		tagCriterias.add(TagCriteria.NOT);
-		tagCriterias.add(TagCriteria.IN);
-		tagCriterias.add(TagCriteria.OUT);
-		tagCriterias.add(TagCriteria.AND);
-		tagCriterias.add(TagCriteria.OR);
+		operators.stream().filter(tt->tt.getName().startsWith(upperText)).forEach(tagCriterias::add);
 		tagCriterias.addAll(tagService.findByText(text));
 		tagCriterias.addAll(tagGroupService.findByText(text));
-		Arrays.stream(TagType.values()).filter(tt->tt.getName().contains(text.toUpperCase())).forEach(tagCriterias::add);
+		Arrays.stream(TagType.values()).filter(tt->tt.getName().contains(upperText)).forEach(tagCriterias::add);
 		return tagCriterias;
 	}
 	
